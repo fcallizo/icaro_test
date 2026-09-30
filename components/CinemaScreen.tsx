@@ -1,20 +1,17 @@
-import { Dispatch, FormEvent, SetStateAction, useState } from 'react';
+import { Dispatch, FormEvent, SetStateAction } from 'react';
 import { InternationalPhoneInput } from '@/components/common/InternationalPhoneInput';
+import { AvailabilityCalendar, CalendarRequest } from '@/components/common/AvailabilityCalendar';
 
 type TabMode = 'video' | 'foto' | 'produccion';
 
 type ProductionForm = {
   nombre: string;
+  email: string;
   telefono: string;
   fecha: string;
   tipo: string;
   presupuesto: string;
   descripcion: string;
-};
-
-type RequestItem = {
-  type: 'wedding' | 'production';
-  fecha?: string;
 };
 
 type CinemaScreenProps = {
@@ -24,7 +21,8 @@ type CinemaScreenProps = {
   setTab: (tab: TabMode) => void;
   productionForm: ProductionForm;
   setProductionForm: Dispatch<SetStateAction<ProductionForm>>;
-  requests: RequestItem[];
+  requests: CalendarRequest[];
+  unifyCalendars: boolean;
   isSubmitting: boolean;
   onProductionSubmit: (event: FormEvent<HTMLFormElement>) => void;
 };
@@ -37,21 +35,10 @@ export function CinemaScreen({
   productionForm,
   setProductionForm,
   requests,
+  unifyCalendars,
   isSubmitting,
   onProductionSubmit,
 }: CinemaScreenProps) {
-  const [displayedMonth, setDisplayedMonth] = useState(() => new Date());
-  const year = displayedMonth.getFullYear();
-  const month = displayedMonth.getMonth();
-  const firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7;
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const monthLabel = displayedMonth.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-  const bookedDates = new Set(
-    requests
-      .filter((request) => request.type === 'production' && request.fecha)
-      .map((request) => request.fecha),
-  );
-
   return (
     <div className="page-shell">
       <div className="grain-layer" />
@@ -73,7 +60,7 @@ export function CinemaScreen({
               <span>📞 +34 633 716 171</span>
               <span>✉️ icarostudio33@gmail.com</span>
             </div>
-            <a href="#" className="nav-admin-btn">🔑 Panel <span className="nav-badge">1</span></a>
+            <a href="/private" className="nav-admin-btn">🔑 Panel</a>
           </nav>
         </div>
       </header>
@@ -161,28 +148,11 @@ export function CinemaScreen({
             </div>
 
             <div className="reservation-layout">
-              <div className="calendar-block">
-                <h3>🎬 Calendario de Producción</h3>
-                <div className="calendar-box dark">
-                  <div className="calendar-header">
-                    <button type="button" aria-label="Mes anterior" onClick={() => setDisplayedMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1))}>❮</button>
-                    <span>{monthLabel.charAt(0).toLocaleUpperCase('es-ES') + monthLabel.slice(1)}</span>
-                    <button type="button" aria-label="Mes siguiente" onClick={() => setDisplayedMonth((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1))}>❯</button>
-                  </div>
-                  <div className="weekday-row"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
-                  <div className="days-grid">
-                    {Array.from({ length: firstWeekday }, (_, index) => <span key={`empty-${index}`} className="day empty" />)}
-                    {Array.from({ length: daysInMonth }, (_, index) => {
-                      const day = index + 1;
-                      const date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                      const isBooked = bookedDates.has(date);
-
-                      return <span key={date} className={isBooked ? 'day busy' : 'day free'} title={isBooked ? 'Fecha ocupada' : 'Fecha disponible'}>{day}</span>;
-                    })}
-                  </div>
-                </div>
-                <p className="calendar-legend calendar-legend-dark"><span className="legend-free" /> Disponible <span className="legend-busy" /> Ocupado</p>
-              </div>
+              <AvailabilityCalendar
+                title="🎬 Calendario de Producción"
+                requests={requests}
+                requestTypes={unifyCalendars ? undefined : ['production']}
+              />
 
               <div className="booking-form card-dark">
                 <form onSubmit={onProductionSubmit}>
@@ -190,6 +160,10 @@ export function CinemaScreen({
                   <div className="field-group">
                     <label>Nombre / Empresa</label>
                     <input value={productionForm.nombre} onChange={(e) => setProductionForm((current) => ({ ...current, nombre: e.target.value }))} required />
+                  </div>
+                  <div className="field-group">
+                    <label>Correo de contacto</label>
+                    <input type="email" value={productionForm.email} onChange={(e) => setProductionForm((current) => ({ ...current, email: e.target.value }))} placeholder="nombre@ejemplo.com" autoComplete="email" required />
                   </div>
                   <div className="two-col">
                     <div className="field-group">

@@ -1,10 +1,12 @@
 import { Dispatch, FormEvent, SetStateAction, useState } from 'react';
 import { InternationalPhoneInput } from '@/components/common/InternationalPhoneInput';
+import { AvailabilityCalendar, CalendarRequest } from '@/components/common/AvailabilityCalendar';
 
 type WeddingTab = 'video' | 'foto' | 'reserva';
 
 type WeddingForm = {
   nombre: string;
+  email: string;
   telNovio: string;
   telNovia: string;
   fecha: string;
@@ -20,17 +22,13 @@ type WeddingForm = {
   detalles: string;
 };
 
-type RequestItem = {
-  type: 'wedding' | 'production';
-  fecha?: string;
-};
-
 type WeddingScreenProps = {
   onBackToHome: () => void;
   onShowCinema: () => void;
   weddingForm: WeddingForm;
   setWeddingForm: Dispatch<SetStateAction<WeddingForm>>;
-  requests: RequestItem[];
+  requests: CalendarRequest[];
+  unifyCalendars: boolean;
   isSubmitting: boolean;
   onWeddingSubmit: (event: FormEvent<HTMLFormElement>) => void;
 };
@@ -41,21 +39,11 @@ export function WeddingScreen({
   weddingForm,
   setWeddingForm,
   requests,
+  unifyCalendars,
   isSubmitting,
   onWeddingSubmit,
 }: WeddingScreenProps) {
   const [activeTab, setActiveTab] = useState<WeddingTab>('video');
-  const [displayedMonth, setDisplayedMonth] = useState(() => new Date());
-  const year = displayedMonth.getFullYear();
-  const month = displayedMonth.getMonth();
-  const firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7;
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const monthLabel = displayedMonth.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-  const bookedDates = new Set(
-    requests
-      .filter((request) => request.type === 'wedding' && request.fecha)
-      .map((request) => request.fecha),
-  );
 
   return (
     <div className="page-shell page-shell-bodas">
@@ -78,7 +66,7 @@ export function WeddingScreen({
               <span>📞 +34 633 716 171</span>
               <span>✉️ icarostudio33@gmail.com</span>
             </div>
-            <a href="#" className="nav-admin-btn">🔑 Panel <span className="nav-badge">1</span></a>
+            <a href="/private" className="nav-admin-btn">🔑 Panel</a>
           </nav>
         </div>
       </header>
@@ -119,28 +107,12 @@ export function WeddingScreen({
         {activeTab === 'reserva' && (
           <div className="tab-panel" role="tabpanel">
             <div className="reservation-layout">
-              <div className="calendar-block wedding-calendar">
-                <h3>Calendario de Disponibilidad</h3>
-                <div className="calendar-box">
-                  <div className="calendar-header">
-                    <button type="button" aria-label="Mes anterior" onClick={() => setDisplayedMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1))}>❮</button>
-                    <span>{monthLabel.charAt(0).toLocaleUpperCase('es-ES') + monthLabel.slice(1)}</span>
-                    <button type="button" aria-label="Mes siguiente" onClick={() => setDisplayedMonth((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1))}>❯</button>
-                  </div>
-                  <div className="weekday-row"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
-                  <div className="days-grid">
-                    {Array.from({ length: firstWeekday }, (_, index) => <span key={`empty-${index}`} className="day empty" />)}
-                    {Array.from({ length: daysInMonth }, (_, index) => {
-                      const day = index + 1;
-                      const date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                      const isBooked = bookedDates.has(date);
-
-                      return <span key={date} className={isBooked ? 'day busy' : 'day free'} title={isBooked ? 'Fecha ocupada' : 'Fecha disponible'}>{day}</span>;
-                    })}
-                  </div>
-                </div>
-                <p className="calendar-legend"><span className="legend-free" /> Disponible <span className="legend-busy" /> Ocupado</p>
-              </div>
+              <AvailabilityCalendar
+                title="📅 Calendario de Disponibilidad"
+                requests={requests}
+                requestTypes={unifyCalendars ? undefined : ['wedding']}
+                variant="light"
+              />
 
               <div className="booking-form wedding-panel">
                 <form onSubmit={onWeddingSubmit}>
@@ -149,6 +121,10 @@ export function WeddingScreen({
                   <div className="field-group">
                     <label>Nombre completo de los novios</label>
                     <input type="text" value={weddingForm.nombre} onChange={(e) => setWeddingForm((current) => ({ ...current, nombre: e.target.value }))} placeholder="Ej: Paola Gómez & David Alfaro" required />
+                  </div>
+                  <div className="field-group">
+                    <label>Correo de contacto</label>
+                    <input type="email" value={weddingForm.email} onChange={(e) => setWeddingForm((current) => ({ ...current, email: e.target.value }))} placeholder="nombre@ejemplo.com" autoComplete="email" required />
                   </div>
                   <div className="two-col">
                     <div className="field-group">

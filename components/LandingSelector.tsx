@@ -33,7 +33,7 @@ export function LandingSelector({ onSelect }: LandingSelectorProps) {
               <span>📞 +34 633 716 171</span>
               <span>✉️ icarostudio33@gmail.com</span>
             </div>
-            <a href="#" className="nav-admin-btn">🔑 Panel <span className="nav-badge">1</span></a>
+            <a href="/private" className="nav-admin-btn">🔑 Panel</a>
           </nav>
         </div>
       </header>

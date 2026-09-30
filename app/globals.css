@@ -705,6 +705,34 @@ textarea {
   color: #ff8a8a;
 }
 
+.day.pending {
+  background: rgba(244, 197, 66, 0.2);
+  color: #f5d76e;
+}
+
+.calendar-day-button {
+  appearance: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.calendar-day-button:hover {
+  filter: brightness(1.25);
+}
+
+.calendar-day-button.selected {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+}
+
+.calendar-day-button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+}
+
 .field-group {
   margin-bottom: 1rem;
 }
@@ -828,7 +856,8 @@ textarea {
 }
 
 .legend-free,
-.legend-busy {
+.legend-busy,
+.legend-pending {
   width: 0.7rem;
   height: 0.7rem;
   border-radius: 50%;
@@ -841,6 +870,11 @@ textarea {
 .legend-busy {
   margin-left: 0.75rem;
   background: #ff5252;
+}
+
+.legend-pending {
+  margin-left: 0.75rem;
+  background: #f5d76e;
 }
 
 .video-showcase {
@@ -910,6 +944,463 @@ textarea {
   z-index: 40;
 }
 
+.private-page {
+  min-height: 100vh;
+  padding-bottom: 3rem;
+  color: var(--text-light);
+}
+
+.private-page-header,
+.private-toolbar,
+.private-request-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.private-page-header {
+  width: min(1450px, 92%);
+  min-height: 104px;
+  margin: 0 auto;
+  padding: 1.2rem 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.private-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #fff;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 700;
+  letter-spacing: 0.08rem;
+}
+
+.private-brand img {
+  width: auto;
+  height: 44px;
+}
+
+.private-brand strong {
+  color: var(--gold);
+}
+
+.private-page-title {
+  text-align: center;
+}
+
+.private-page-title .eyebrow {
+  color: var(--gold);
+  font-size: 0.65rem;
+}
+
+.private-page-title h1 {
+  margin-top: 0.35rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.6rem;
+}
+
+.private-back-link {
+  justify-self: end;
+  color: #ccc;
+  font-size: 0.78rem;
+}
+
+.private-back-link:hover {
+  color: var(--gold);
+}
+
+.private-page-header > .private-toolbar {
+  justify-self: end;
+  padding: 0;
+}
+
+.private-area-content {
+  width: min(1450px, 92%);
+  margin: 0 auto;
+}
+
+.private-calendar-section {
+  margin-top: 1.5rem;
+}
+
+.private-calendar-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem 1.2rem;
+  margin-bottom: 0.8rem;
+}
+
+.private-calendar-controls p {
+  color: #999;
+  font-size: 0.75rem;
+}
+
+.private-calendar-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: #eee;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.private-calendar-toggle input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.private-calendar-toggle-track {
+  position: relative;
+  width: 38px;
+  height: 22px;
+  flex: 0 0 auto;
+  border: 1px solid #555;
+  border-radius: 999px;
+  background: #292a2b;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.private-calendar-toggle-track::after {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ddd;
+  content: '';
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.private-calendar-toggle input:checked + .private-calendar-toggle-track {
+  border-color: var(--gold);
+  background: rgba(212,175,55,0.3);
+}
+
+.private-calendar-toggle input:checked + .private-calendar-toggle-track::after {
+  transform: translateX(16px);
+  background: var(--gold);
+}
+
+.private-calendar-toggle input:focus-visible + .private-calendar-toggle-track {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+.private-calendar-toggle input:disabled + .private-calendar-toggle-track {
+  opacity: 0.6;
+}
+
+.private-workspace {
+  margin-top: 1.5rem;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  background: #1c1d1e;
+}
+
+.private-login-wrap {
+  width: min(440px, 100%);
+  margin: 2.5rem auto;
+  padding: 2rem 1.5rem 2.4rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  background: #1c1d1e;
+}
+
+.private-login-form {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.private-login-form label {
+  margin-top: 0.5rem;
+  color: #c9c9c9;
+  font-size: 0.78rem;
+}
+
+.private-login-form input {
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #101112;
+  color: #fff;
+}
+
+.private-login-button,
+.private-confirm-button,
+.private-discard-button,
+.private-download-button,
+.private-logout-button {
+  min-height: 40px;
+  padding: 0.65rem 0.9rem;
+  border-radius: 5px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.private-login-button {
+  margin-top: 0.8rem;
+  border: 0;
+  background: var(--gold);
+  color: #111;
+}
+
+.private-login-button:disabled,
+.private-confirm-button:disabled,
+.private-discard-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.private-setup-message,
+.private-state-message,
+.private-empty-state,
+.private-login-hint {
+  color: #aaa;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.private-setup-message {
+  margin-bottom: 1.3rem;
+  padding: 0.85rem 1rem;
+  border-left: 3px solid var(--gold);
+  background: rgba(212,175,55,0.08);
+}
+
+.private-login-hint {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.private-state-message {
+  padding: 2rem;
+  text-align: center;
+}
+
+.private-error-message {
+  margin: 1rem 1.5rem;
+  color: #ff9b9b;
+  font-size: 0.82rem;
+}
+
+.private-toolbar {
+  padding: 1rem 1.5rem;
+  color: #aaa;
+  font-size: 0.78rem;
+}
+
+.private-toolbar strong {
+  color: #fff;
+}
+
+.private-logout-button,
+.private-download-button {
+  border: 1px solid rgba(212,175,55,0.45);
+  background: transparent;
+  color: var(--gold);
+}
+
+.private-tabs {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.private-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  padding: 0 0.9rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #aaa;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.private-tabs button.active {
+  border-bottom-color: var(--gold);
+  color: #fff;
+}
+
+.private-tabs button span {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.3rem;
+  height: 1.3rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: rgba(212,175,55,0.16);
+  color: var(--gold);
+  font-size: 0.68rem;
+}
+
+.private-tab-panel {
+  padding: 1.3rem 1.5rem 1.6rem;
+}
+
+.private-request-section + .private-request-section {
+  margin-top: 1.6rem;
+}
+
+.private-request-section h3 {
+  margin-bottom: 0.85rem;
+  color: #e6e6e6;
+  font-size: 0.95rem;
+}
+
+.private-empty-state {
+  padding: 1rem;
+  border: 1px dashed rgba(255,255,255,0.12);
+}
+
+.private-notification-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.private-confirmed-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 0.85rem;
+}
+
+.private-request-card {
+  padding: 1rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-left: 3px solid var(--gold);
+  border-radius: 6px;
+  background: #111213;
+}
+
+.private-request-card.production {
+  border-left-color: #3399ff;
+}
+
+.private-request-card.wedding {
+  border-left-color: #c98fa2;
+}
+
+.private-request-card.date-conflict-confirmed {
+  border-left-color: #ff5555;
+  background: #392327;
+}
+
+.private-request-card.date-conflict-pending {
+  border-left-color: var(--gold);
+  background: #302b1e;
+}
+
+.private-request-heading {
+  margin-bottom: 0.55rem;
+  color: #999;
+  font-size: 0.72rem;
+}
+
+.private-request-heading time.date-conflict-confirmed {
+  color: #ff6b6b;
+  font-weight: 800;
+}
+
+.private-request-heading time.date-conflict-pending {
+  color: #e4c968;
+  font-weight: 800;
+}
+
+.private-request-kind {
+  color: var(--gold);
+  font-weight: 800;
+}
+
+.private-request-card.production .private-request-kind {
+  color: #69b4ff;
+}
+
+.private-request-card.wedding .private-request-kind {
+  color: #d59aab;
+}
+
+.private-request-card h4 {
+  margin-bottom: 0.8rem;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.private-request-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem 1rem;
+  color: #ccc;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.private-request-details > div {
+  min-width: 0;
+}
+
+.private-request-details .wide {
+  grid-column: 1 / -1;
+}
+
+.private-request-details dt {
+  margin-bottom: 0.15rem;
+  color: #999;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+}
+
+.private-request-details dd {
+  overflow-wrap: anywhere;
+}
+
+.private-request-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.private-confirm-button {
+  flex: 1;
+  border: 0;
+  background: #328c4b;
+  color: #fff;
+}
+
+.private-discard-button {
+  border: 1px solid rgba(255,100,100,0.5);
+  background: transparent;
+  color: #ff9898;
+}
+
+.private-download-button {
+  width: 100%;
+  margin-top: 1rem;
+}
+
 @media (max-width: 900px) {
   .selector-grid,
   .reservation-layout,
@@ -930,5 +1421,52 @@ textarea {
 
   .two-col {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .private-page-header,
+  .private-tab-panel {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+
+  .private-page-header {
+    width: 100%;
+    grid-template-columns: 1fr auto;
+  }
+
+  .private-page-title {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    text-align: left;
+  }
+
+  .private-page-header > .private-toolbar {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .private-back-link {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .private-toolbar {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+
+  .private-tabs {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+
+  .private-request-details {
+    grid-template-columns: 1fr;
+  }
+
+  .private-request-details .wide {
+    grid-column: auto;
   }
 }

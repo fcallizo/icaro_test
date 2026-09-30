@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { LandingSelector } from '@/components/LandingSelector';
 import { CinemaScreen } from '@/components/CinemaScreen';
 import { WeddingScreen } from '@/components/WeddingScreen';
@@ -14,8 +14,10 @@ type RequestItem = {
   nombre?: string;
   nombre_cliente?: string;
   nombre_empresa?: string;
+  email?: string;
   telefono?: string;
   fecha?: string;
+  status?: string;
   lugar?: string;
   descripcion?: string;
   tipo?: string;
@@ -25,6 +27,7 @@ type RequestItem = {
 
 const initialWeddingForm = {
   nombre: '',
+  email: '',
   telNovio: '',
   telNovia: '',
   fecha: '',
@@ -42,6 +45,7 @@ const initialWeddingForm = {
 
 const initialProductionForm = {
   nombre: '',
+  email: '',
   telefono: '',
   fecha: '',
   tipo: '',
@@ -55,6 +59,7 @@ export default function HomePage() {
   const [weddingForm, setWeddingForm] = useState(initialWeddingForm);
   const [productionForm, setProductionForm] = useState(initialProductionForm);
   const [requests, setRequests] = useState<RequestItem[]>([]);
+  const [unifyCalendars, setUnifyCalendars] = useState(false);
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -66,6 +71,7 @@ export default function HomePage() {
         if (Array.isArray(data.requests)) {
           setRequests(data.requests);
         }
+        setUnifyCalendars(Boolean(data.unifyCalendars));
       } catch (error) {
         console.warn('No se pudieron cargar las solicitudes:', error);
       }
@@ -73,8 +79,6 @@ export default function HomePage() {
 
     loadRequests();
   }, []);
-
-  const notificationCount = useMemo(() => requests.length + 1, [requests.length]);
 
   const handleWeddingSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -155,6 +159,7 @@ export default function HomePage() {
           productionForm={productionForm}
           setProductionForm={setProductionForm}
           requests={requests}
+          unifyCalendars={unifyCalendars}
           isSubmitting={isSubmitting}
           onProductionSubmit={handleProductionSubmit}
         />
@@ -171,11 +176,11 @@ export default function HomePage() {
         weddingForm={weddingForm}
         setWeddingForm={setWeddingForm}
         requests={requests}
+        unifyCalendars={unifyCalendars}
         isSubmitting={isSubmitting}
         onWeddingSubmit={handleWeddingSubmit}
       />
       {message && <div className="floating-message">{message}</div>}
-      <div className="nav-badge-floating">{notificationCount}</div>
     </>
   );
 }
