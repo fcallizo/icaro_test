@@ -1,0 +1,934 @@
+:root {
+  --gold: #d4af37;
+  --gold-soft: #bfa02c;
+  --bg-dark: #191a1b;
+  --bg-panel: #222324;
+  --bg-panel-raised: #292a2b;
+  --bg-light: #faf9f6;
+  --text-light: #ffffff;
+  --text-dark: #111111;
+  --muted: #8b8b8b;
+  --border: rgba(255,255,255,0.12);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-light);
+  min-height: 100vh;
+}
+
+a {
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.page-shell {
+  position: relative;
+  min-height: 100vh;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.045), transparent 55%), var(--bg-dark);
+  overflow-x: clip;
+}
+
+.page-shell-bodas {
+  background: var(--bg-light);
+  color: var(--text-dark);
+}
+
+.grain-layer {
+  position: fixed;
+  inset: -50%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page-shell:not(.page-shell-bodas) .grain-layer {
+  opacity: 0.075;
+  mix-blend-mode: soft-light;
+}
+
+.cursor-dot {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.9);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 30;
+}
+
+.intro-screen {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, #252627 0%, var(--bg-dark) 72%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  transition: opacity 0.8s ease;
+  animation: introFade 1.6s ease forwards;
+}
+
+@keyframes introFade {
+  0% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+.intro-inner {
+  display: grid;
+  place-items: center;
+  gap: 1rem;
+}
+
+.intro-logo {
+  width: 180px;
+  height: auto;
+  filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
+}
+
+.flicker-anim {
+  animation: flicker 2s ease-in-out infinite alternate;
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  40% { opacity: 0.85; }
+  60% { opacity: 1; }
+  80% { opacity: 0.9; }
+}
+
+.intro-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  letter-spacing: 0.5rem;
+  font-size: clamp(1.6rem, 3vw, 2.8rem);
+  color: white;
+}
+
+.intro-progress {
+  width: 220px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), rgba(255,255,255,0.2));
+  animation: loadingLine 1.5s ease forwards;
+}
+
+@keyframes loadingLine {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(25, 26, 27, 0.84);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.page-shell-bodas .topbar {
+  background: rgba(250, 249, 246, 0.9);
+  border-bottom: 1px solid rgba(17, 17, 17, 0.12);
+}
+
+.nav-container {
+  width: min(1450px, 92%);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  cursor: pointer;
+}
+
+.brand-logo {
+  height: 45px;
+}
+
+.brand-name {
+  font-family: Georgia, 'Times New Roman', serif;
+  letter-spacing: 0.2rem;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.brand-selected {
+  color: var(--gold-soft) !important;
+}
+
+.brand-accent {
+  color: var(--gold);
+}
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.3rem;
+  flex-wrap: wrap;
+}
+
+.main-nav a {
+  color: #b5b5b5;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12rem;
+  font-weight: 600;
+}
+
+.page-shell-bodas .main-nav a {
+  color: #444;
+}
+
+.nav-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  border-left: 1px solid rgba(255,255,255,0.12);
+  border-right: 1px solid rgba(255,255,255,0.12);
+  padding: 0 1rem;
+  color: #d7d7d7;
+  font-size: 0.68rem;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.page-shell-bodas .nav-contact {
+  color: #333;
+}
+
+.nav-admin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  padding: 0.6rem 0.8rem;
+  color: var(--gold);
+}
+
+.nav-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.2rem;
+  height: 1.2rem;
+  padding: 0 0.28rem;
+  border-radius: 999px;
+  background: #ff4d4d;
+  color: white;
+  font-size: 0.62rem;
+}
+
+.selector-screen {
+  position: relative;
+  z-index: 1;
+  min-height: calc(100vh - 76px);
+}
+
+.selector-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-height: calc(100vh - 76px);
+}
+
+.selector-panel {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  min-height: 520px;
+}
+
+.panel-cine {
+  background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1605501492805-f5699f0718d5?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') center/cover no-repeat;
+}
+
+.panel-weddings {
+  background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+}
+
+.panel-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.44);
+}
+
+.panel-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 560px;
+  padding: 2rem;
+}
+
+.panel-content h2 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.4rem, 2vw, 2.3rem);
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
+}
+
+.divider {
+  width: 60px;
+  height: 2px;
+  background: var(--gold);
+  margin: 1.4rem auto;
+}
+
+.panel-content p {
+  color: rgba(255,255,255,0.8);
+  font-size: 0.9rem;
+  letter-spacing: 0.06rem;
+  text-transform: uppercase;
+}
+
+.cta {
+  display: inline-block;
+  margin-top: 1.5rem;
+  border: 1px solid rgba(212,175,55,0.5);
+  background: rgba(212,175,55,0.08);
+  color: var(--gold);
+  padding: 0.9rem 1.3rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15rem;
+}
+
+.content-section {
+  position: relative;
+  z-index: 1;
+  width: min(1350px, 92%);
+  margin: 0 auto;
+  padding: 3rem 0 5rem;
+}
+
+.hero-block {
+  text-align: center;
+  max-width: 850px;
+  margin: 0 auto 2.5rem;
+}
+
+.hero-block h2 {
+  margin-top: 0.8rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2rem, 3vw, 3rem);
+  color: var(--gold);
+}
+
+.hero-block p {
+  margin-top: 1rem;
+  color: #8b8b8b;
+  line-height: 1.8;
+}
+
+.hero-block.light h2,
+.hero-block.light p {
+  color: var(--text-dark);
+}
+
+.eyebrow {
+  display: inline-block;
+  color: var(--gold);
+  font-size: 0.7rem;
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+
+.tab {
+  border: 0;
+  background: transparent;
+  color: #707070;
+  border-bottom: 2px solid transparent;
+  padding: 0.9rem 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tab.active {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+.tab-panel {
+  display: block;
+}
+
+.claqueta-box {
+  max-width: 440px;
+  margin: 0 auto 2rem;
+}
+
+.claqueta-body {
+  background: linear-gradient(145deg, rgba(255,255,255,0.035), transparent 60%), var(--bg-panel);
+  border: 2px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.claqueta-strip {
+  height: 24px;
+  background: repeating-linear-gradient(45deg, #000 0 15px, #fff 15px 30px);
+  margin-bottom: 1rem;
+}
+
+.claqueta-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: #63f08d;
+  font-family: 'SFMono-Regular', monospace;
+  font-size: 0.72rem;
+}
+
+.wide-frame {
+  position: relative;
+  width: 100%;
+  min-height: 480px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: radial-gradient(circle at 50% 35%, #303132 0%, #202122 62%, #191a1b 100%);
+  display: grid;
+  place-items: center;
+}
+
+.play-box {
+  width: 72px;
+  height: 72px;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.play-icon {
+  width: 0;
+  height: 0;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+  border-left: 18px solid var(--gold);
+  margin-left: 6px;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.3rem;
+}
+
+.gallery-card {
+  aspect-ratio: 3 / 2;
+  border: 1px solid rgba(255,255,255,0.12);
+  background-size: cover;
+  background-position: center;
+}
+
+.card-one { background-image: url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1000&q=80'); }
+.card-two { background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1000&q=80'); }
+.card-three { background-image: url('https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
+
+.card-one-wedding { background-image: url('https://images.unsplash.com/photo-1672758748153-1f13fd8d2eed?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
+.card-two-wedding { background-image: url('https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
+.card-three-wedding { background-image: url('https://images.unsplash.com/photo-1460978812857-470ed1c77af0?q=80&w=1295&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
+
+
+.tech-header {
+  display: grid;
+  grid-template-columns: 1.3fr 0.7fr;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.tech-header h3 {
+  margin-top: 0.75rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.7rem, 2vw, 2.3rem);
+}
+
+.tech-header p {
+  margin-top: 0.8rem;
+  color: #8b8b8b;
+  line-height: 1.8;
+}
+
+.stats-box {
+  display: grid;
+  gap: 1rem;
+}
+
+.stat-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.035), transparent 60%), var(--bg-panel);
+  border: 1px solid rgba(212,175,55,0.2);
+  border-radius: 12px;
+  padding: 1.15rem;
+}
+
+.stat-card strong {
+  display: block;
+  color: var(--gold);
+  font-size: 1.5rem;
+}
+
+.stat-card span {
+  color: #bdbdbd;
+  font-size: 0.75rem;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.info-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.03), transparent 60%), var(--bg-panel);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 1.4rem;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.8rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.price-row strong {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.price-row span {
+  display: block;
+  font-size: 0.76rem;
+  color: #8b8b8b;
+  line-height: 1.5;
+}
+
+.no-border {
+  border-bottom: 0;
+}
+
+.tech-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.tech-item {
+  background: #111;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  padding: 0.9rem;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.tech-item:hover {
+  transform: translateY(-2px);
+  border-color: var(--gold);
+}
+
+.tech-item strong {
+  display: block;
+  color: var(--gold);
+  margin-bottom: 0.4rem;
+}
+
+.tech-item p {
+  font-size: 0.78rem;
+  color: #b7b7b7;
+  line-height: 1.6;
+}
+
+.legal-box {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.legal-line {
+  background: #101010;
+  border-left: 3px solid var(--gold);
+  border-radius: 6px;
+  padding: 0.85rem 1rem;
+}
+
+.legal-line span {
+  display: block;
+  margin-top: 0.3rem;
+  color: #8d8d8d;
+}
+
+.reservation-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.calendar-block,
+.booking-form {
+  background: linear-gradient(145deg, rgba(255,255,255,0.03), transparent 60%), var(--bg-panel);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.calendar-block {
+  align-self: start;
+}
+
+.calendar-block h3,
+.booking-form h4 {
+  margin-bottom: 1rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.5rem;
+}
+
+.calendar-box {
+  border-radius: 10px;
+  background: linear-gradient(145deg, rgba(255,255,255,0.025), transparent 60%), var(--bg-dark);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 1rem;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.calendar-header button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: transparent;
+  color: var(--gold);
+  cursor: pointer;
+}
+
+.weekday-row,
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.weekday-row {
+  color: #8b8b8b;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  margin-bottom: 0.85rem;
+  text-align: center;
+}
+
+.days-grid {
+  text-align: center;
+}
+
+.day {
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  min-height: 42px;
+  font-size: 0.78rem;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.day.empty {
+  border: 0;
+  background: transparent;
+}
+
+.day.free {
+  background: rgba(82, 194, 116, 0.15);
+  color: #66d98c;
+}
+
+.day.busy {
+  background: rgba(255, 82, 82, 0.12);
+  color: #ff8a8a;
+}
+
+.field-group {
+  margin-bottom: 1rem;
+}
+
+.field-group label {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--gold);
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.08rem;
+}
+
+.field-group input,
+.field-group textarea {
+  width: 100%;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: #111;
+  color: white;
+  border-radius: 8px;
+  padding: 0.82rem 0.9rem;
+}
+
+.international-phone-input {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.international-phone-input .PhoneInputCountry {
+  margin-right: 0;
+  padding: 0 0.65rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  background: #111;
+}
+
+.international-phone-input .PhoneInputInput {
+  min-width: 0;
+  flex: 1;
+}
+
+.international-phone-input .PhoneInputInput:focus {
+  border-color: var(--gold);
+  outline: 1px solid var(--gold);
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.submit-btn {
+  width: 100%;
+  background: var(--gold);
+  color: #000;
+  border: 0;
+  border-radius: 8px;
+  padding: 0.9rem 1.1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08rem;
+  cursor: pointer;
+}
+
+.weddings-mode {
+  color: var(--text-dark);
+}
+
+.weddings-mode .hero-block h2,
+.weddings-mode .hero-block p,
+.weddings-mode .field-group label,
+.weddings-mode .booking-form h4 {
+  color: var(--text-dark);
+}
+
+.weddings-mode .wedding-calendar {
+  background: #fff;
+  border-color: rgba(0,0,0,0.08);
+  color: var(--text-dark);
+}
+
+.weddings-mode .wedding-calendar h3 {
+  color: var(--text-dark);
+}
+
+.weddings-mode .wedding-calendar .calendar-box {
+  background: #fbf9f5;
+  border-color: rgba(0,0,0,0.08);
+}
+
+.weddings-mode .wedding-calendar .calendar-header {
+  border-color: rgba(0,0,0,0.08);
+}
+
+.weddings-mode .wedding-calendar .calendar-header button {
+  border-color: rgba(0,0,0,0.12);
+}
+
+.weddings-mode .wedding-calendar .weekday-row {
+  color: #777;
+}
+
+.weddings-mode .wedding-calendar .day {
+  border-color: rgba(0,0,0,0.08);
+}
+
+.calendar-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  color: #555;
+  font-size: 0.8rem;
+}
+
+.calendar-legend-dark {
+  color: #b5b5b5;
+}
+
+.legend-free,
+.legend-busy {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+}
+
+.legend-free {
+  background: #52c274;
+}
+
+.legend-busy {
+  margin-left: 0.75rem;
+  background: #ff5252;
+}
+
+.video-showcase {
+  width: min(1100px, 100%);
+  margin: 0 auto 2rem;
+}
+
+.video-card {
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, #e9e4d7, #d7d3c7);
+  border: 1px solid rgba(0,0,0,0.08);
+  display: grid;
+  place-items: center;
+}
+
+.play-button {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.7);
+  position: relative;
+}
+
+.play-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-30%, -50%);
+  width: 0;
+  height: 0;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+  border-left: 18px solid rgba(0,0,0,0.8);
+}
+
+.wedding-panel {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  color: var(--text-dark);
+  max-width: 840px;
+  margin: 0 auto 2rem;
+}
+
+.wedding-panel .field-group input,
+.wedding-panel .field-group textarea {
+  background: #f5f5f5;
+  border-color: rgba(0,0,0,0.08);
+  color: var(--text-dark);
+}
+
+.wedding-panel .international-phone-input .PhoneInputCountry {
+  background: #f5f5f5;
+  border-color: rgba(0,0,0,0.08);
+}
+
+.floating-message {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 1.2rem;
+  background: rgba(34,35,36,0.94);
+  color: white;
+  border: 1px solid rgba(212,175,55,0.3);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  z-index: 40;
+}
+
+@media (max-width: 900px) {
+  .selector-grid,
+  .reservation-layout,
+  .tech-header,
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .main-nav {
+    justify-content: flex-start;
+    padding-top: 0.8rem;
+  }
+
+  .nav-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+}
