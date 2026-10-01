@@ -2,6 +2,8 @@ import { Dispatch, FormEvent, SetStateAction, useState } from 'react';
 import { InternationalPhoneInput } from '@/components/common/InternationalPhoneInput';
 import { AvailabilityCalendar, CalendarRequest } from '@/components/common/AvailabilityCalendar';
 import { PageHeader } from '@/components/common/PageHeader';
+import { PrivacyFormNotice } from '@/components/common/PrivacyFormNotice';
+import { PublicLegalFooter } from '@/components/common/PublicLegalFooter';
 
 type WeddingTab = 'video' | 'foto' | 'reserva';
 
@@ -176,6 +178,7 @@ export function WeddingScreen({
                     <label>Cuéntanos más detalles de vuestro día</label>
                     <textarea rows={3} value={weddingForm.detalles} onChange={(e) => setWeddingForm((current) => ({ ...current, detalles: e.target.value }))} placeholder="Ideas clave para el tráiler, estilo del evento..." />
                   </div>
+                  <PrivacyFormNotice />
                   <button type="submit" className="submit-btn" disabled={isSubmitting}>{isSubmitting ? 'Enviando...' : 'Solicitar fecha de rodaje'}</button>
                 </form>
               </div>
@@ -184,6 +187,7 @@ export function WeddingScreen({
           </div>
         )}
       </main>
+      <PublicLegalFooter />
     </div>
   );
 }

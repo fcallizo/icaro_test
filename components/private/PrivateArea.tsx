@@ -362,13 +362,13 @@ export function PrivateArea() {
             <section className="private-workspace" aria-label="Gestión de solicitudes">
               <div className="private-tabs" role="tablist" aria-label="Gestión privada">
                 <button type="button" role="tab" aria-selected={activeTab === 'notifications'} className={activeTab === 'notifications' ? 'active' : ''} onClick={() => setActiveTab('notifications')}>
-                  Notificaciones <span>{pendingCount}</span>
+                  🔔 Notificaciones <span>{pendingCount}</span>
                 </button>
                 <button type="button" role="tab" aria-selected={activeTab === 'confirmed'} className={activeTab === 'confirmed' ? 'active' : ''} onClick={() => setActiveTab('confirmed')}>
-                  Confirmados <span>{confirmedCount}</span>
+                  📁 Confirmados <span>{confirmedCount}</span>
                 </button>
                 <button type="button" role="tab" aria-selected={activeTab === 'materials'} className={activeTab === 'materials' ? 'active' : ''} onClick={() => setActiveTab('materials')}>
-                  Materiales <span>{materials.filter((material) => material.active).length}</span>
+                  📸 Materiales <span>{materials.filter((material) => material.active).length}</span>
                 </button>
               </div>
 

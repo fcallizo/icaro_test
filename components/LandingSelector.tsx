@@ -1,4 +1,5 @@
 import { PageHeader } from '@/components/common/PageHeader';
+import { PublicLegalFooter } from '@/components/common/PublicLegalFooter';
 
 type View = 'selector' | 'cinema' | 'wedding';
 
@@ -8,7 +9,7 @@ type LandingSelectorProps = {
 
 export function LandingSelector({ onSelect }: LandingSelectorProps) {
   return (
-    <div className="page-shell">
+    <div className="page-shell home-page">
       <div className="grain-layer" />
       <div className="cursor-dot" />
 
@@ -51,6 +52,7 @@ export function LandingSelector({ onSelect }: LandingSelectorProps) {
           </div>
         </div>
       </section>
+      <PublicLegalFooter />
     </div>
   );
 }

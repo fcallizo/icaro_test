@@ -2,6 +2,8 @@ import { Dispatch, FormEvent, SetStateAction } from 'react';
 import { InternationalPhoneInput } from '@/components/common/InternationalPhoneInput';
 import { AvailabilityCalendar, CalendarRequest } from '@/components/common/AvailabilityCalendar';
 import { PageHeader } from '@/components/common/PageHeader';
+import { PrivacyFormNotice } from '@/components/common/PrivacyFormNotice';
+import { PublicLegalFooter } from '@/components/common/PublicLegalFooter';
 
 type TabMode = 'video' | 'foto' | 'produccion';
 
@@ -175,6 +177,7 @@ export function CinemaScreen({
                     <label>Idea principal</label>
                     <textarea rows={4} value={productionForm.descripcion} onChange={(e) => setProductionForm((current) => ({ ...current, descripcion: e.target.value }))} placeholder="Explícanos brevemente tu idea para el rodaje..." />
                   </div>
+                  <PrivacyFormNotice />
                   <button type="submit" className="submit-btn" disabled={isSubmitting}>{isSubmitting ? 'Enviando...' : 'Enviar solicitud técnica'}</button>
                 </form>
               </div>
@@ -182,6 +185,7 @@ export function CinemaScreen({
           </div>
         )}
       </main>
+      <PublicLegalFooter />
     </div>
   );
 }
