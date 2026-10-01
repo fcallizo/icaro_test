@@ -1,14 +1,13 @@
 import { RequestCard } from '@/components/private/RequestCard';
-import { PrivateRequest, RequestAction } from '@/components/private/private-types';
+import { PrivateRequest } from '@/components/private/private-types';
 
 type NotificationsTabProps = {
   requests: PrivateRequest[];
   selectedDate: string | null;
-  busyId: string;
-  onAction: (request: PrivateRequest, action: RequestAction) => void;
+  onView: (request: PrivateRequest) => void;
 };
 
-export function NotificationsTab({ requests, selectedDate, busyId, onAction }: NotificationsTabProps) {
+export function NotificationsTab({ requests, selectedDate, onView }: NotificationsTabProps) {
   const pendingRequests = requests.filter((request) => request.status === 'pending' && (!selectedDate || request.fecha === selectedDate));
   const pendingWeddings = pendingRequests.filter((request) => request.type === 'wedding');
   const pendingProductions = pendingRequests.filter((request) => request.type === 'production');
@@ -36,7 +35,7 @@ export function NotificationsTab({ requests, selectedDate, busyId, onAction }: N
         {pendingWeddings.length ? (
           <div className="private-notification-grid">
             {pendingWeddings.map((request) => (
-              <RequestCard key={request.id} request={request} busy={busyId === request.id} dateConflict={getDateConflict(request)} onAction={(action) => onAction(request, action)} />
+              <RequestCard key={request.id} request={request} dateConflict={getDateConflict(request)} onView={() => onView(request)} />
             ))}
           </div>
         ) : <p className="private-empty-state">No hay solicitudes de boda pendientes.</p>}
@@ -46,7 +45,7 @@ export function NotificationsTab({ requests, selectedDate, busyId, onAction }: N
         {pendingProductions.length ? (
           <div className="private-notification-grid">
             {pendingProductions.map((request) => (
-              <RequestCard key={request.id} request={request} busy={busyId === request.id} dateConflict={getDateConflict(request)} onAction={(action) => onAction(request, action)} />
+              <RequestCard key={request.id} request={request} dateConflict={getDateConflict(request)} onView={() => onView(request)} />
             ))}
           </div>
         ) : <p className="private-empty-state">No hay solicitudes de cine pendientes.</p>}

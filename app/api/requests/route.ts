@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { ensureTables, sql } from '@/lib/db';
 import { sendRequestNotification } from '@/lib/request-notifications';
@@ -9,13 +10,14 @@ export async function GET() {
 
   await ensureTables();
 
-  const weddingRows = await sql`SELECT id, fecha, status, 'wedding' AS type FROM wedding_requests WHERE status = 'confirmed' ORDER BY created_at DESC LIMIT 100;`;
-  const productionRows = await sql`SELECT id, fecha, status, 'production' AS type FROM production_requests WHERE status = 'confirmed' ORDER BY created_at DESC LIMIT 100;`;
+  const eventRows = await sql`SELECT id, fecha, status, tipo AS type FROM eventos WHERE status = 'confirmed' ORDER BY created_at DESC LIMIT 100;`;
   const [calendarSetting] = await sql`SELECT boolean_value FROM app_settings WHERE setting_key = 'unify_calendars' LIMIT 1;`;
 
-  const requests = [...weddingRows, ...productionRows];
-
-  return NextResponse.json({ requests, unifyCalendars: Boolean(calendarSetting?.boolean_value), dbConfigured: true }, { status: 200 });
+  return NextResponse.json({
+    requests: eventRows,
+    unifyCalendars: Boolean(calendarSetting?.boolean_value),
+    dbConfigured: true,
+  }, { status: 200 });
 }
 
 export async function POST(request: NextRequest) {
@@ -45,11 +47,25 @@ export async function POST(request: NextRequest) {
 
   if (type === 'wedding') {
     const { nombre, telNovio, telNovia, fecha, lugar, novia, novio, ceremonia, cronograma, detalles } = payload;
+    const eventId = randomUUID();
 
     const result = await sql`
-      INSERT INTO wedding_requests (nombre, email, tel_novio, tel_novia, fecha, lugar, novia, novio, ceremonia, cronograma, detalles)
-      VALUES (${nombre || ''}, ${email || ''}, ${telNovio || ''}, ${telNovia || ''}, ${fecha || ''}, ${lugar || ''}, ${novia || ''}, ${novio || ''}, ${ceremonia || ''}, ${cronograma || ''}, ${detalles || ''})
-      RETURNING id, nombre, email, tel_novio as "telNovio", tel_novia as "telNovia", fecha, lugar, novia, novio, ceremonia, cronograma, detalles, status, created_at;
+      WITH new_event AS (
+        INSERT INTO eventos (id, tipo, fecha, status)
+        VALUES (${eventId}, 'wedding', ${fecha || ''}, 'pending')
+        RETURNING id
+      ), new_details AS (
+        INSERT INTO wedding_requests (evento_id, nombre, email, tel_novio, tel_novia, lugar, novia, novio, ceremonia, cronograma, detalles)
+        SELECT id, ${nombre || ''}, ${email}, ${telNovio || ''}, ${telNovia || ''}, ${lugar || ''}, ${novia || ''}, ${novio || ''}, ${ceremonia || ''}, ${cronograma || ''}, ${detalles || ''}
+        FROM new_event
+        RETURNING evento_id
+      )
+      SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
+        w.nombre, w.email, w.tel_novio AS "telNovio", w.tel_novia AS "telNovia",
+        w.lugar, w.novia, w.novio, w.ceremonia, w.cronograma, w.detalles
+      FROM new_details d
+      JOIN eventos e ON e.id = d.evento_id
+      JOIN wedding_requests w ON w.evento_id = e.id;
     `;
 
     await sendRequestNotification({ type: 'wedding', nombre, fecha });
@@ -57,11 +73,24 @@ export async function POST(request: NextRequest) {
   }
 
   const { nombre, telefono, fecha, tipo, presupuesto, descripcion } = payload;
+  const eventId = randomUUID();
 
   const result = await sql`
-    INSERT INTO production_requests (nombre, email, telefono, fecha, tipo, presupuesto, descripcion)
-    VALUES (${nombre || ''}, ${email || ''}, ${telefono || ''}, ${fecha || ''}, ${tipo || ''}, ${presupuesto || ''}, ${descripcion || ''})
-    RETURNING id, nombre, email, telefono, fecha, tipo, presupuesto, descripcion, status, created_at;
+    WITH new_event AS (
+      INSERT INTO eventos (id, tipo, fecha, status)
+      VALUES (${eventId}, 'production', ${fecha || ''}, 'pending')
+      RETURNING id
+    ), new_details AS (
+      INSERT INTO production_requests (evento_id, nombre, email, telefono, tipo, presupuesto, descripcion)
+      SELECT id, ${nombre || ''}, ${email}, ${telefono || ''}, ${tipo || ''}, ${presupuesto || ''}, ${descripcion || ''}
+      FROM new_event
+      RETURNING evento_id
+    )
+    SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
+      p.nombre, p.email, p.telefono, p.tipo, p.presupuesto, p.descripcion
+    FROM new_details d
+    JOIN eventos e ON e.id = d.evento_id
+    JOIN production_requests p ON p.evento_id = e.id;
   `;
 
   await sendRequestNotification({ type: 'production', nombre, fecha });

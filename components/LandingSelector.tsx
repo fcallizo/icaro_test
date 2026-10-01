@@ -1,3 +1,5 @@
+import { PageHeader } from '@/components/common/PageHeader';
+
 type View = 'selector' | 'cinema' | 'wedding';
 
 type LandingSelectorProps = {
@@ -18,25 +20,13 @@ export function LandingSelector({ onSelect }: LandingSelectorProps) {
         </div>
       </div>
 
-      <header className="topbar">
-        <div className="nav-container">
-          <div className="brand" onClick={() => onSelect('selector')}>
-            <img src="/logo_transparente.png" alt="Ícaro Logo" className="brand-logo" />
-            <span className="brand-name">ÍCARO <span className="brand-accent">STUDIO</span></span>
-          </div>
-
-          <nav className="main-nav">
-            <a href="#" onClick={() => onSelect('cinema')}>Cinematografía</a>
-            <a href="#" onClick={() => onSelect('wedding')}>Bodas</a>
-            <a href="https://www.instagram.com/icarostudio_/" target="_blank" rel="noreferrer">📸 Instagram</a>
-            <div className="nav-contact">
-              <span>📞 +34 633 716 171</span>
-              <span>✉️ icarostudio33@gmail.com</span>
-            </div>
-            <a href="/private" className="nav-admin-btn">🔑 Panel</a>
-          </nav>
-        </div>
-      </header>
+      <PageHeader
+        view="selector"
+        theme="dark"
+        onHome={() => onSelect('selector')}
+        onCinema={() => onSelect('cinema')}
+        onWedding={() => onSelect('wedding')}
+      />
 
       <section className="selector-screen">
         <div className="selector-grid">

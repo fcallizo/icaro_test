@@ -1,6 +1,6 @@
 export type RequestType = 'wedding' | 'production';
-export type RequestStatus = 'pending' | 'confirmed';
-export type RequestAction = 'confirm' | 'discard';
+export type RequestStatus = 'pending' | 'confirmed' | 'rejected';
+export type RequestAction = 'confirm' | 'reject';
 
 export type PrivateRequest = {
   id: string;

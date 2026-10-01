@@ -5,8 +5,19 @@ export const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : n
 export async function ensureTables() {
   if (!sql) return;
 
+  await sql`CREATE TABLE IF NOT EXISTS eventos (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tipo TEXT NOT NULL CHECK (tipo IN ('wedding', 'production')),
+    fecha TEXT,
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'rejected')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    decided_at TIMESTAMPTZ
+  );`;
+
   await sql`CREATE TABLE IF NOT EXISTS wedding_requests (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    evento_id UUID NOT NULL UNIQUE REFERENCES eventos(id) ON DELETE CASCADE,
     nombre TEXT,
     email TEXT,
     tel_novio TEXT,
@@ -18,12 +29,12 @@ export async function ensureTables() {
     ceremonia TEXT,
     cronograma TEXT,
     detalles TEXT,
-    status TEXT NOT NULL DEFAULT 'pending',
     created_at TIMESTAMPTZ DEFAULT NOW()
   );`;
 
   await sql`CREATE TABLE IF NOT EXISTS production_requests (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    evento_id UUID NOT NULL UNIQUE REFERENCES eventos(id) ON DELETE CASCADE,
     nombre TEXT,
     email TEXT,
     telefono TEXT,
@@ -31,14 +42,73 @@ export async function ensureTables() {
     tipo TEXT,
     presupuesto TEXT,
     descripcion TEXT,
-    status TEXT NOT NULL DEFAULT 'pending',
     created_at TIMESTAMPTZ DEFAULT NOW()
   );`;
 
-  await sql`ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'pending';`;
-  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'pending';`;
   await sql`ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS email TEXT;`;
   await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS email TEXT;`;
+  await sql`ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS evento_id UUID;`;
+  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS evento_id UUID;`;
+
+  await sql`UPDATE wedding_requests SET evento_id = gen_random_uuid() WHERE evento_id IS NULL;`;
+  await sql`UPDATE production_requests SET evento_id = gen_random_uuid() WHERE evento_id IS NULL;`;
+
+  const legacyColumns = await sql`
+    SELECT table_name, column_name
+    FROM information_schema.columns
+    WHERE table_schema = current_schema()
+      AND table_name IN ('wedding_requests', 'production_requests')
+      AND column_name IN ('fecha', 'status');
+  `;
+  const hasLegacyWeddingFields = legacyColumns.some((column: any) => column.table_name === 'wedding_requests');
+  const hasLegacyProductionFields = legacyColumns.some((column: any) => column.table_name === 'production_requests');
+
+  if (hasLegacyWeddingFields) {
+    await sql`
+      INSERT INTO eventos (id, tipo, fecha, status, created_at, updated_at, decided_at)
+      SELECT evento_id, 'wedding', fecha,
+        CASE WHEN status IN ('confirmed', 'rejected') THEN status ELSE 'pending' END,
+        COALESCE(created_at, NOW()), COALESCE(created_at, NOW()),
+        CASE WHEN status = 'pending' THEN NULL ELSE COALESCE(created_at, NOW()) END
+      FROM wedding_requests
+      ON CONFLICT (id) DO NOTHING;
+    `;
+  }
+  if (hasLegacyProductionFields) {
+    await sql`
+      INSERT INTO eventos (id, tipo, fecha, status, created_at, updated_at, decided_at)
+      SELECT evento_id, 'production', fecha,
+        CASE WHEN status IN ('confirmed', 'rejected') THEN status ELSE 'pending' END,
+        COALESCE(created_at, NOW()), COALESCE(created_at, NOW()),
+        CASE WHEN status = 'pending' THEN NULL ELSE COALESCE(created_at, NOW()) END
+      FROM production_requests
+      ON CONFLICT (id) DO NOTHING;
+    `;
+  }
+
+  await sql`CREATE UNIQUE INDEX IF NOT EXISTS wedding_requests_evento_id_key ON wedding_requests (evento_id);`;
+  await sql`CREATE UNIQUE INDEX IF NOT EXISTS production_requests_evento_id_key ON production_requests (evento_id);`;
+  await sql`CREATE INDEX IF NOT EXISTS eventos_fecha_status_idx ON eventos (fecha, status);`;
+  if (hasLegacyWeddingFields) {
+    await sql`ALTER TABLE wedding_requests ALTER COLUMN evento_id SET NOT NULL;`;
+    await sql`DO $$ BEGIN
+      ALTER TABLE wedding_requests ADD CONSTRAINT wedding_requests_evento_id_fkey
+        FOREIGN KEY (evento_id) REFERENCES eventos(id) ON DELETE CASCADE;
+    EXCEPTION WHEN duplicate_object THEN NULL;
+    END $$;`;
+    await sql`ALTER TABLE wedding_requests DROP COLUMN IF EXISTS fecha;`;
+    await sql`ALTER TABLE wedding_requests DROP COLUMN IF EXISTS status;`;
+  }
+  if (hasLegacyProductionFields) {
+    await sql`ALTER TABLE production_requests ALTER COLUMN evento_id SET NOT NULL;`;
+    await sql`DO $$ BEGIN
+      ALTER TABLE production_requests ADD CONSTRAINT production_requests_evento_id_fkey
+        FOREIGN KEY (evento_id) REFERENCES eventos(id) ON DELETE CASCADE;
+    EXCEPTION WHEN duplicate_object THEN NULL;
+    END $$;`;
+    await sql`ALTER TABLE production_requests DROP COLUMN IF EXISTS fecha;`;
+    await sql`ALTER TABLE production_requests DROP COLUMN IF EXISTS status;`;
+  }
 
   await sql`CREATE TABLE IF NOT EXISTS usuarios (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

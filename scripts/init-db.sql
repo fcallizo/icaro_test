@@ -1,7 +1,18 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
+CREATE TABLE IF NOT EXISTS eventos (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tipo TEXT NOT NULL CHECK (tipo IN ('wedding', 'production')),
+  fecha TEXT,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'rejected')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  decided_at TIMESTAMPTZ
+);
+
 CREATE TABLE IF NOT EXISTS wedding_requests (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  evento_id UUID NOT NULL UNIQUE REFERENCES eventos(id) ON DELETE CASCADE,
   nombre TEXT,
   email TEXT,
   tel_novio TEXT,
@@ -13,12 +24,12 @@ CREATE TABLE IF NOT EXISTS wedding_requests (
   ceremonia TEXT,
   cronograma TEXT,
   detalles TEXT,
-  status TEXT NOT NULL DEFAULT 'pending',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS production_requests (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  evento_id UUID NOT NULL UNIQUE REFERENCES eventos(id) ON DELETE CASCADE,
   nombre TEXT,
   email TEXT,
   telefono TEXT,
@@ -26,14 +37,75 @@ CREATE TABLE IF NOT EXISTS production_requests (
   tipo TEXT,
   presupuesto TEXT,
   descripcion TEXT,
-  status TEXT NOT NULL DEFAULT 'pending',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'pending';
-ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'pending';
 ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS email TEXT;
 ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS evento_id UUID;
+ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS evento_id UUID;
+
+UPDATE wedding_requests SET evento_id = gen_random_uuid() WHERE evento_id IS NULL;
+UPDATE production_requests SET evento_id = gen_random_uuid() WHERE evento_id IS NULL;
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = current_schema() AND table_name = 'wedding_requests' AND column_name = 'fecha'
+  ) AND EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = current_schema() AND table_name = 'wedding_requests' AND column_name = 'status'
+  ) THEN
+    INSERT INTO eventos (id, tipo, fecha, status, created_at, updated_at, decided_at)
+    SELECT evento_id, 'wedding', fecha,
+      CASE WHEN status IN ('confirmed', 'rejected') THEN status ELSE 'pending' END,
+      COALESCE(created_at, NOW()), COALESCE(created_at, NOW()),
+      CASE WHEN status = 'pending' THEN NULL ELSE COALESCE(created_at, NOW()) END
+    FROM wedding_requests
+    ON CONFLICT (id) DO NOTHING;
+  END IF;
+
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = current_schema() AND table_name = 'production_requests' AND column_name = 'fecha'
+  ) AND EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = current_schema() AND table_name = 'production_requests' AND column_name = 'status'
+  ) THEN
+    INSERT INTO eventos (id, tipo, fecha, status, created_at, updated_at, decided_at)
+    SELECT evento_id, 'production', fecha,
+      CASE WHEN status IN ('confirmed', 'rejected') THEN status ELSE 'pending' END,
+      COALESCE(created_at, NOW()), COALESCE(created_at, NOW()),
+      CASE WHEN status = 'pending' THEN NULL ELSE COALESCE(created_at, NOW()) END
+    FROM production_requests
+    ON CONFLICT (id) DO NOTHING;
+  END IF;
+END $$;
+
+CREATE UNIQUE INDEX IF NOT EXISTS wedding_requests_evento_id_key ON wedding_requests (evento_id);
+CREATE UNIQUE INDEX IF NOT EXISTS production_requests_evento_id_key ON production_requests (evento_id);
+CREATE INDEX IF NOT EXISTS eventos_fecha_status_idx ON eventos (fecha, status);
+
+ALTER TABLE wedding_requests ALTER COLUMN evento_id SET NOT NULL;
+ALTER TABLE production_requests ALTER COLUMN evento_id SET NOT NULL;
+
+DO $$ BEGIN
+  ALTER TABLE wedding_requests ADD CONSTRAINT wedding_requests_evento_id_fkey
+    FOREIGN KEY (evento_id) REFERENCES eventos(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  ALTER TABLE production_requests ADD CONSTRAINT production_requests_evento_id_fkey
+    FOREIGN KEY (evento_id) REFERENCES eventos(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+ALTER TABLE wedding_requests DROP COLUMN IF EXISTS fecha;
+ALTER TABLE wedding_requests DROP COLUMN IF EXISTS status;
+ALTER TABLE production_requests DROP COLUMN IF EXISTS fecha;
+ALTER TABLE production_requests DROP COLUMN IF EXISTS status;
 
 CREATE TABLE IF NOT EXISTS usuarios (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

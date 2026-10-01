@@ -19,15 +19,21 @@ export async function GET(request: NextRequest) {
 
   await ensureTables();
   const weddings = await sql`
-    SELECT id, nombre, email, tel_novio AS "telNovio", tel_novia AS "telNovia", fecha,
-      lugar, novia, novio, ceremonia, cronograma, detalles, status, created_at,
-      'wedding' AS type
-    FROM wedding_requests ORDER BY created_at DESC LIMIT 500;
+    SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
+      w.nombre, w.email, w.tel_novio AS "telNovio", w.tel_novia AS "telNovia",
+      w.lugar, w.novia, w.novio, w.ceremonia, w.cronograma, w.detalles
+    FROM eventos e
+    JOIN wedding_requests w ON w.evento_id = e.id
+    WHERE e.tipo = 'wedding' AND e.status IN ('pending', 'confirmed')
+    ORDER BY e.created_at DESC LIMIT 500;
   `;
   const productions = await sql`
-    SELECT id, nombre, email, telefono, fecha, tipo, presupuesto, descripcion, status,
-      created_at, 'production' AS type
-    FROM production_requests ORDER BY created_at DESC LIMIT 500;
+    SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
+      p.nombre, p.email, p.telefono, p.tipo, p.presupuesto, p.descripcion
+    FROM eventos e
+    JOIN production_requests p ON p.evento_id = e.id
+    WHERE e.tipo = 'production' AND e.status IN ('pending', 'confirmed')
+    ORDER BY e.created_at DESC LIMIT 500;
   `;
 
   return NextResponse.json({ requests: [...weddings, ...productions] });
@@ -43,7 +49,7 @@ export async function PATCH(request: NextRequest) {
 
   const payload = await request.json().catch(() => ({}));
   const { id, type, action } = payload;
-  if (typeof id !== 'string' || !/^[0-9a-f-]{36}$/i.test(id) || !['wedding', 'production'].includes(type) || !['confirm', 'discard'].includes(action)) {
+  if (typeof id !== 'string' || !/^[0-9a-f-]{36}$/i.test(id) || !['wedding', 'production'].includes(type) || !['confirm', 'reject'].includes(action)) {
     return NextResponse.json({ error: 'Acción o solicitud no válida.' }, { status: 400 });
   }
 
@@ -53,13 +59,27 @@ export async function PATCH(request: NextRequest) {
   let result: Array<Record<string, unknown>>;
 
   if (requestType === 'wedding') {
-    result = isConfirming
-      ? await sql`UPDATE wedding_requests SET status = 'confirmed' WHERE id = ${id} AND status = 'pending' RETURNING email, nombre, fecha;`
-      : await sql`DELETE FROM wedding_requests WHERE id = ${id} AND status = 'pending' RETURNING email, nombre, fecha;`;
+    const nextStatus = isConfirming ? 'confirmed' : 'rejected';
+    result = await sql`
+      WITH decision AS (
+        UPDATE eventos SET status = ${nextStatus}, updated_at = NOW(), decided_at = NOW()
+        WHERE id = ${id} AND tipo = 'wedding' AND status = 'pending'
+        RETURNING id, fecha
+      )
+      SELECT decision.fecha, w.email, w.nombre
+      FROM decision JOIN wedding_requests w ON w.evento_id = decision.id;
+    `;
   } else {
-    result = isConfirming
-      ? await sql`UPDATE production_requests SET status = 'confirmed' WHERE id = ${id} AND status = 'pending' RETURNING email, nombre, fecha;`
-      : await sql`DELETE FROM production_requests WHERE id = ${id} AND status = 'pending' RETURNING email, nombre, fecha;`;
+    const nextStatus = isConfirming ? 'confirmed' : 'rejected';
+    result = await sql`
+      WITH decision AS (
+        UPDATE eventos SET status = ${nextStatus}, updated_at = NOW(), decided_at = NOW()
+        WHERE id = ${id} AND tipo = 'production' AND status = 'pending'
+        RETURNING id, fecha
+      )
+      SELECT decision.fecha, p.email, p.nombre
+      FROM decision JOIN production_requests p ON p.evento_id = decision.id;
+    `;
   }
 
   if (result.length === 0) {

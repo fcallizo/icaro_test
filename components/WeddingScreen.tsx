@@ -1,6 +1,7 @@
 import { Dispatch, FormEvent, SetStateAction, useState } from 'react';
 import { InternationalPhoneInput } from '@/components/common/InternationalPhoneInput';
 import { AvailabilityCalendar, CalendarRequest } from '@/components/common/AvailabilityCalendar';
+import { PageHeader } from '@/components/common/PageHeader';
 
 type WeddingTab = 'video' | 'foto' | 'reserva';
 
@@ -50,26 +51,13 @@ export function WeddingScreen({
       <div className="grain-layer" />
       <div className="cursor-dot" />
 
-      <header className="topbar">
-        <div className="nav-container">
-          <div className="brand" onClick={onBackToHome}>
-            <img src="/logo_transparente.png" alt="Ícaro Logo" className="brand-logo" />
-            <span className="brand-name">ÍCARO <span className="brand-accent">STUDIO</span></span>
-          </div>
-
-          <nav className="main-nav">
-            <a href="#" onClick={onBackToHome}>Inicio</a>
-            <a href="#" onClick={onShowCinema}>Cinematografía</a>
-            <a href="#" className="brand-selected" onClick={() => setActiveTab('video')}>Bodas</a>
-            <a href="https://www.instagram.com/icarostudio_/" target="_blank" rel="noreferrer">📸 Instagram</a>
-            <div className="nav-contact">
-              <span>📞 +34 633 716 171</span>
-              <span>✉️ icarostudio33@gmail.com</span>
-            </div>
-            <a href="/private" className="nav-admin-btn">🔑 Panel</a>
-          </nav>
-        </div>
-      </header>
+      <PageHeader
+        view="wedding"
+        theme="light"
+        onHome={onBackToHome}
+        onCinema={onShowCinema}
+        onWedding={() => setActiveTab('video')}
+      />
 
       <main className="content-section weddings-mode">
         <div className="hero-block light">

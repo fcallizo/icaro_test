@@ -6,6 +6,7 @@ import { NotificationsTab } from '@/components/private/tabs/NotificationsTab';
 import { ConfirmedTab } from '@/components/private/tabs/ConfirmedTab';
 import { PrivateRequest, RequestAction } from '@/components/private/private-types';
 import { AvailabilityCalendar } from '@/components/common/AvailabilityCalendar';
+import { RequestDetailsModal } from '@/components/private/RequestDetailsModal';
 
 async function getPrivateRequests() {
   const response = await fetch('/api/private/requests', { cache: 'no-store' });
@@ -33,6 +34,7 @@ export function PrivateArea() {
   const [unifyCalendars, setUnifyCalendars] = useState(false);
   const [isSavingCalendarSetting, setIsSavingCalendarSetting] = useState(false);
   const [requests, setRequests] = useState<PrivateRequest[]>([]);
+  const [selectedRequest, setSelectedRequest] = useState<PrivateRequest | null>(null);
   const [busyId, setBusyId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
@@ -97,7 +99,7 @@ export function PrivateArea() {
   };
 
   const handleRequestAction = async (request: PrivateRequest, action: RequestAction) => {
-    if (action === 'discard' && !window.confirm('¿Descartar esta solicitud permanentemente?')) return;
+    if (action === 'reject' && !window.confirm('¿Rechazar esta solicitud? Se conservará en el historial.')) return;
 
     setBusyId(request.id);
     setMessage('');
@@ -111,6 +113,7 @@ export function PrivateArea() {
       if (!response.ok) throw new Error(data.error || 'No se pudo actualizar la solicitud.');
 
       setRequests(await getPrivateRequests());
+      setSelectedRequest(null);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'No se pudo actualizar la solicitud.');
     } finally {
@@ -245,12 +248,20 @@ export function PrivateArea() {
 
               {message && <p className="private-error-message" role="alert">{message}</p>}
               {activeTab === 'notifications' ? (
-                <NotificationsTab requests={requests} selectedDate={selectedDate} busyId={busyId} onAction={(request, action) => void handleRequestAction(request, action)} />
-              ) : <ConfirmedTab requests={requests} selectedDate={selectedDate} />}
+                <NotificationsTab requests={requests} selectedDate={selectedDate} onView={setSelectedRequest} />
+              ) : <ConfirmedTab requests={requests} selectedDate={selectedDate} onView={setSelectedRequest} />}
             </section>
           </>
         )}
       </div>
+      {selectedRequest && (
+        <RequestDetailsModal
+          request={selectedRequest}
+          busy={busyId === selectedRequest.id}
+          onClose={() => setSelectedRequest(null)}
+          onAction={(action) => void handleRequestAction(selectedRequest, action)}
+        />
+      )}
     </main>
   );
 }

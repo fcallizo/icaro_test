@@ -1,7 +1,7 @@
 import { RequestCard } from '@/components/private/RequestCard';
 import { PrivateRequest } from '@/components/private/private-types';
 
-export function ConfirmedTab({ requests, selectedDate }: { requests: PrivateRequest[]; selectedDate: string | null }) {
+export function ConfirmedTab({ requests, selectedDate, onView }: { requests: PrivateRequest[]; selectedDate: string | null; onView: (request: PrivateRequest) => void }) {
   const confirmedRequests = requests.filter((request) => request.status === 'confirmed' && (!selectedDate || request.fecha === selectedDate));
 
   return (
@@ -10,7 +10,7 @@ export function ConfirmedTab({ requests, selectedDate }: { requests: PrivateRequ
         <h3>Eventos confirmados</h3>
         {confirmedRequests.length ? (
           <div className="private-confirmed-grid">
-            {confirmedRequests.map((request) => <RequestCard key={request.id} request={request} busy={false} />)}
+            {confirmedRequests.map((request) => <RequestCard key={request.id} request={request} onView={() => onView(request)} />)}
           </div>
         ) : <p className="private-empty-state">Todavía no hay eventos confirmados.</p>}
       </section>
