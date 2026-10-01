@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { LandingSelector } from '@/components/LandingSelector';
 import { CinemaScreen } from '@/components/CinemaScreen';
 import { WeddingScreen } from '@/components/WeddingScreen';
+import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
 
 type View = 'selector' | 'cinema' | 'wedding';
 type TabMode = 'video' | 'foto' | 'produccion';
@@ -60,7 +61,7 @@ export default function HomePage() {
   const [productionForm, setProductionForm] = useState(initialProductionForm);
   const [requests, setRequests] = useState<RequestItem[]>([]);
   const [unifyCalendars, setUnifyCalendars] = useState(false);
-  const [message, setMessage] = useState('');
+  const [toast, setToast] = useState<{ message: string; tone: StatusToastTone; surface?: 'dark' | 'light' } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -83,7 +84,7 @@ export default function HomePage() {
   const handleWeddingSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setIsSubmitting(true);
-    setMessage('');
+    setToast(null);
 
     try {
       const response = await fetch('/api/requests', {
@@ -109,9 +110,9 @@ export default function HomePage() {
 
       setRequests((current) => [data.request, ...current]);
       setWeddingForm(initialWeddingForm);
-      setMessage('¡Solicitud de boda enviada correctamente!');
+      setToast({ message: '¡Solicitud de boda enviada correctamente!', tone: 'success', surface: 'light' });
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No se pudo enviar.');
+      setToast({ message: error instanceof Error ? error.message : 'No se pudo enviar.', tone: 'error', surface: 'light' });
     } finally {
       setIsSubmitting(false);
     }
@@ -120,7 +121,7 @@ export default function HomePage() {
   const handleProductionSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setIsSubmitting(true);
-    setMessage('');
+    setToast(null);
 
     try {
       const response = await fetch('/api/requests', {
@@ -136,9 +137,9 @@ export default function HomePage() {
 
       setRequests((current) => [data.request, ...current]);
       setProductionForm(initialProductionForm);
-      setMessage('¡Solicitud de producción enviada correctamente!');
+      setToast({ message: '¡Solicitud de producción enviada correctamente!', tone: 'success' });
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No se pudo enviar.');
+      setToast({ message: error instanceof Error ? error.message : 'No se pudo enviar.', tone: 'error' });
     } finally {
       setIsSubmitting(false);
     }
@@ -163,7 +164,7 @@ export default function HomePage() {
           isSubmitting={isSubmitting}
           onProductionSubmit={handleProductionSubmit}
         />
-        {message && <div className="floating-message">{message}</div>}
+        <StatusToast message={toast?.message || ''} tone={toast?.tone || 'success'} surface={toast?.surface} onDismiss={() => setToast(null)} />
       </>
     );
   }
@@ -180,7 +181,7 @@ export default function HomePage() {
         isSubmitting={isSubmitting}
         onWeddingSubmit={handleWeddingSubmit}
       />
-      {message && <div className="floating-message">{message}</div>}
+      <StatusToast message={toast?.message || ''} tone={toast?.tone || 'success'} surface={toast?.surface} onDismiss={() => setToast(null)} />
     </>
   );
 }

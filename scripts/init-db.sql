@@ -37,11 +37,41 @@ CREATE TABLE IF NOT EXISTS production_requests (
   tipo TEXT,
   presupuesto TEXT,
   descripcion TEXT,
+  camera_setup TEXT,
+  camera_price NUMERIC(12, 2),
+  drone_setup TEXT,
+  drone_price NUMERIC(12, 2),
+  lighting_setup TEXT,
+  lighting_price NUMERIC(12, 2),
+  sound_setup TEXT,
+  sound_price NUMERIC(12, 2),
+  delivery_format TEXT,
+  format_price NUMERIC(12, 2),
+  extra_crew TEXT,
+  extra_crew_price NUMERIC(12, 2),
+  logistics TEXT,
+  logistics_price NUMERIC(12, 2),
+  tax_percent SMALLINT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS email TEXT;
 ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS camera_setup TEXT;
+ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS camera_price NUMERIC(12, 2);
+ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS drone_setup TEXT;
+ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS drone_price NUMERIC(12, 2);
+ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS lighting_setup TEXT;
+ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS lighting_price NUMERIC(12, 2);
+ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS sound_setup TEXT;
+ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS sound_price NUMERIC(12, 2);
+ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS delivery_format TEXT;
+ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS format_price NUMERIC(12, 2);
+ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS extra_crew TEXT;
+ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS extra_crew_price NUMERIC(12, 2);
+ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS logistics TEXT;
+ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS logistics_price NUMERIC(12, 2);
+ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS tax_percent SMALLINT;
 ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS evento_id UUID;
 ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS evento_id UUID;
 

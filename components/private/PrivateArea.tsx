@@ -4,8 +4,9 @@ import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { NotificationsTab } from '@/components/private/tabs/NotificationsTab';
 import { ConfirmedTab } from '@/components/private/tabs/ConfirmedTab';
-import { PrivateRequest, RequestAction } from '@/components/private/private-types';
+import { PrivateRequest, PrivateRequestUpdate, RequestAction } from '@/components/private/private-types';
 import { AvailabilityCalendar } from '@/components/common/AvailabilityCalendar';
+import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
 import { RequestDetailsModal } from '@/components/private/RequestDetailsModal';
 
 async function getPrivateRequests() {
@@ -38,6 +39,7 @@ export function PrivateArea() {
   const [busyId, setBusyId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
+  const [toast, setToast] = useState<{ message: string; tone: StatusToastTone } | null>(null);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -98,12 +100,22 @@ export function PrivateArea() {
     }
   };
 
-  const handleRequestAction = async (request: PrivateRequest, action: RequestAction) => {
+  const handleRequestAction = async (request: PrivateRequest, action: RequestAction, values?: PrivateRequestUpdate) => {
     if (action === 'reject' && !window.confirm('¿Rechazar esta solicitud? Se conservará en el historial.')) return;
 
     setBusyId(request.id);
     setMessage('');
     try {
+      if (action === 'confirm' && values) {
+        const saveResponse = await fetch('/api/private/requests', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: request.id, type: request.type, action: 'update', values }),
+        });
+        const saveData = await saveResponse.json();
+        if (!saveResponse.ok) throw new Error(saveData.error || 'No se pudieron guardar los datos antes de confirmar.');
+      }
+
       const response = await fetch('/api/private/requests', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -119,6 +131,33 @@ export function PrivateArea() {
     } finally {
       setBusyId('');
     }
+  };
+
+  const handleRequestUpdate = async (request: PrivateRequest, values: PrivateRequestUpdate) => {
+    setBusyId(request.id);
+    setMessage('');
+    try {
+      const response = await fetch('/api/private/requests', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: request.id, type: request.type, action: 'update', values }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'No se pudieron guardar los cambios.');
+
+      setRequests(await getPrivateRequests());
+      setSelectedRequest(null);
+      setToast({ message: 'Cambios guardados correctamente.', tone: 'success' });
+    } catch (error) {
+      setToast({ message: error instanceof Error ? error.message : 'No se pudieron guardar los cambios.', tone: 'error' });
+    } finally {
+      setBusyId('');
+    }
+  };
+
+  const handleViewRequest = (request: PrivateRequest) => {
+    setMessage('');
+    setSelectedRequest(request);
   };
 
   const handleLogout = async () => {
@@ -248,20 +287,24 @@ export function PrivateArea() {
 
               {message && <p className="private-error-message" role="alert">{message}</p>}
               {activeTab === 'notifications' ? (
-                <NotificationsTab requests={requests} selectedDate={selectedDate} onView={setSelectedRequest} />
-              ) : <ConfirmedTab requests={requests} selectedDate={selectedDate} onView={setSelectedRequest} />}
+                <NotificationsTab requests={requests} selectedDate={selectedDate} onView={handleViewRequest} />
+              ) : <ConfirmedTab requests={requests} selectedDate={selectedDate} onView={handleViewRequest} />}
             </section>
           </>
         )}
       </div>
       {selectedRequest && (
         <RequestDetailsModal
+          key={selectedRequest.id}
           request={selectedRequest}
           busy={busyId === selectedRequest.id}
+          error={message}
           onClose={() => setSelectedRequest(null)}
-          onAction={(action) => void handleRequestAction(selectedRequest, action)}
+          onAction={(action, values) => void handleRequestAction(selectedRequest, action, values)}
+          onSave={(values) => void handleRequestUpdate(selectedRequest, values)}
         />
       )}
+      <StatusToast message={toast?.message || ''} tone={toast?.tone || 'success'} onDismiss={() => setToast(null)} />
     </main>
   );
 }
