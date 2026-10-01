@@ -4,7 +4,8 @@ import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { NotificationsTab } from '@/components/private/tabs/NotificationsTab';
 import { ConfirmedTab } from '@/components/private/tabs/ConfirmedTab';
-import { PrivateRequest, PrivateRequestUpdate, RequestAction } from '@/components/private/private-types';
+import { ProductionMaterialsTab } from '@/components/private/tabs/ProductionMaterialsTab';
+import { ProductionMaterial, ProductionMaterialCategory, PrivateRequest, PrivateRequestUpdate, RequestAction } from '@/components/private/private-types';
 import { AvailabilityCalendar } from '@/components/common/AvailabilityCalendar';
 import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
 import { RequestDetailsModal } from '@/components/private/RequestDetailsModal';
@@ -23,6 +24,16 @@ async function getCalendarSettings() {
   return Boolean(data.unifyCalendars);
 }
 
+async function getProductionMaterials() {
+  const response = await fetch('/api/private/materials', { cache: 'no-store' });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || 'No se pudo cargar el catálogo de materiales.');
+  return (data.materials as ProductionMaterial[]).map((material) => ({
+    ...material,
+    basePrice: material.basePrice === null ? null : String(material.basePrice),
+  }));
+}
+
 export function PrivateArea() {
   const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -30,11 +41,14 @@ export function PrivateArea() {
   const [sessionReady, setSessionReady] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [activeTab, setActiveTab] = useState<'notifications' | 'confirmed'>('notifications');
+  const [activeTab, setActiveTab] = useState<'notifications' | 'confirmed' | 'materials'>('notifications');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [unifyCalendars, setUnifyCalendars] = useState(false);
   const [isSavingCalendarSetting, setIsSavingCalendarSetting] = useState(false);
   const [requests, setRequests] = useState<PrivateRequest[]>([]);
+  const [materials, setMaterials] = useState<ProductionMaterial[]>([]);
+  const [busyMaterialId, setBusyMaterialId] = useState('');
+  const [isCreatingMaterial, setIsCreatingMaterial] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<PrivateRequest | null>(null);
   const [busyId, setBusyId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,12 +67,14 @@ export function PrivateArea() {
         setIsAuthenticated(Boolean(data.authenticated));
         setUsername(data.username || '');
         if (data.authenticated) {
-          const [privateRequests, shouldUnifyCalendars] = await Promise.all([
+          const [privateRequests, shouldUnifyCalendars, productionMaterials] = await Promise.all([
             getPrivateRequests(),
             getCalendarSettings(),
+            getProductionMaterials(),
           ]);
           setRequests(privateRequests);
           setUnifyCalendars(shouldUnifyCalendars);
+          setMaterials(productionMaterials);
         }
       } catch (error) {
         setMessage(error instanceof Error ? error.message : 'No se pudo comprobar el acceso.');
@@ -87,12 +103,14 @@ export function PrivateArea() {
       setUsername(data.username);
       setPassword('');
       setIsAuthenticated(true);
-      const [privateRequests, shouldUnifyCalendars] = await Promise.all([
+      const [privateRequests, shouldUnifyCalendars, productionMaterials] = await Promise.all([
         getPrivateRequests(),
         getCalendarSettings(),
+        getProductionMaterials(),
       ]);
       setRequests(privateRequests);
       setUnifyCalendars(shouldUnifyCalendars);
+      setMaterials(productionMaterials);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'No se pudo iniciar sesión.');
     } finally {
@@ -155,6 +173,71 @@ export function PrivateArea() {
     }
   };
 
+  const handleCreateMaterial = async (category: ProductionMaterialCategory, name: string, basePrice: string) => {
+    setIsCreatingMaterial(true);
+    setMessage('');
+    try {
+      const response = await fetch('/api/private/materials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category, name, basePrice }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'No se pudo añadir el material.');
+
+      setMaterials(await getProductionMaterials());
+      setToast({ message: 'Material añadido correctamente.', tone: 'success' });
+      return true;
+    } catch (error) {
+      setToast({ message: error instanceof Error ? error.message : 'No se pudo añadir el material.', tone: 'error' });
+      return false;
+    } finally {
+      setIsCreatingMaterial(false);
+    }
+  };
+
+  const handleUpdateMaterial = async (id: string, name: string, basePrice: string) => {
+    setBusyMaterialId(id);
+    try {
+      const response = await fetch('/api/private/materials', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, name, basePrice }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'No se pudo guardar el material.');
+
+      setMaterials(await getProductionMaterials());
+      setToast({ message: 'Material actualizado correctamente.', tone: 'success' });
+      return true;
+    } catch (error) {
+      setToast({ message: error instanceof Error ? error.message : 'No se pudo guardar el material.', tone: 'error' });
+      return false;
+    } finally {
+      setBusyMaterialId('');
+    }
+  };
+
+  const handleSetMaterialActive = async (id: string, active: boolean) => {
+    setBusyMaterialId(id);
+    try {
+      const response = await fetch('/api/private/materials', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, active }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'No se pudo actualizar el material.');
+
+      setMaterials(await getProductionMaterials());
+      setToast({ message: active ? 'Material reactivado.' : 'Material retirado del catálogo.', tone: 'success' });
+    } catch (error) {
+      setToast({ message: error instanceof Error ? error.message : 'No se pudo actualizar el material.', tone: 'error' });
+    } finally {
+      setBusyMaterialId('');
+    }
+  };
+
   const handleViewRequest = (request: PrivateRequest) => {
     setMessage('');
     setSelectedRequest(request);
@@ -164,6 +247,7 @@ export function PrivateArea() {
     await fetch('/api/private/logout', { method: 'POST' });
     setIsAuthenticated(false);
     setRequests([]);
+    setMaterials([]);
     setActiveTab('notifications');
     setSelectedDate(null);
     setMessage('');
@@ -283,12 +367,26 @@ export function PrivateArea() {
                 <button type="button" role="tab" aria-selected={activeTab === 'confirmed'} className={activeTab === 'confirmed' ? 'active' : ''} onClick={() => setActiveTab('confirmed')}>
                   Confirmados <span>{confirmedCount}</span>
                 </button>
+                <button type="button" role="tab" aria-selected={activeTab === 'materials'} className={activeTab === 'materials' ? 'active' : ''} onClick={() => setActiveTab('materials')}>
+                  Materiales <span>{materials.filter((material) => material.active).length}</span>
+                </button>
               </div>
 
               {message && <p className="private-error-message" role="alert">{message}</p>}
               {activeTab === 'notifications' ? (
                 <NotificationsTab requests={requests} selectedDate={selectedDate} onView={handleViewRequest} />
-              ) : <ConfirmedTab requests={requests} selectedDate={selectedDate} onView={handleViewRequest} />}
+              ) : activeTab === 'confirmed' ? (
+                <ConfirmedTab requests={requests} selectedDate={selectedDate} onView={handleViewRequest} />
+              ) : (
+                <ProductionMaterialsTab
+                  materials={materials}
+                  busyId={busyMaterialId}
+                  isCreating={isCreatingMaterial}
+                  onCreate={handleCreateMaterial}
+                  onUpdate={handleUpdateMaterial}
+                  onSetActive={(id, active) => void handleSetMaterialActive(id, active)}
+                />
+              )}
             </section>
           </>
         )}
@@ -297,6 +395,7 @@ export function PrivateArea() {
         <RequestDetailsModal
           key={selectedRequest.id}
           request={selectedRequest}
+          materials={selectedRequest.type === 'production' ? materials : undefined}
           busy={busyId === selectedRequest.id}
           error={message}
           onClose={() => setSelectedRequest(null)}

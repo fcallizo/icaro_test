@@ -137,7 +137,7 @@ export function CinemaScreen({
 
             <div className="reservation-layout">
               <AvailabilityCalendar
-                title="🎬 Calendario de Producción"
+                title="Calendario de Producción"
                 requests={requests}
                 requestTypes={unifyCalendars ? undefined : ['production']}
               />

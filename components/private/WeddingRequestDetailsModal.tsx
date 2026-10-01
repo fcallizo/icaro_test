@@ -82,7 +82,7 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
       title={title}
       values={values}
       onSubmit={(event: FormEvent<HTMLFormElement>) => { event.preventDefault(); onSave(values); }}
-      primaryAction={request.status !== 'pending' ? (
+      rightAction={request.status !== 'pending' ? (
         <button type="button" className="private-download-button" disabled={props.busy} onClick={() => downloadWeddingSheet(request, values)}>
           Descargar ficha de rodaje
         </button>

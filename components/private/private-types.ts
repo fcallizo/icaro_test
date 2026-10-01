@@ -1,6 +1,16 @@
 export type RequestType = 'wedding' | 'production';
 export type RequestStatus = 'pending' | 'confirmed' | 'rejected';
 export type RequestAction = 'confirm' | 'reject';
+export type ProductionMaterialCategory = 'camera' | 'drone' | 'lighting' | 'sound' | 'format';
+
+export type ProductionMaterial = {
+  id: string;
+  category: ProductionMaterialCategory;
+  name: string;
+  basePrice: string | null;
+  active: boolean;
+  sortOrder: number;
+};
 
 export type PrivateRequestUpdate = {
   nombre: string;
@@ -37,6 +47,7 @@ export type PrivateRequestUpdate = {
 
 export type RequestDetailsModalProps = {
   request: PrivateRequest;
+  materials?: ProductionMaterial[];
   busy: boolean;
   error?: string;
   onClose: () => void;

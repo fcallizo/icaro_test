@@ -77,6 +77,39 @@ export async function ensureTables() {
   await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS logistics TEXT;`;
   await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS logistics_price NUMERIC(12, 2);`;
   await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS tax_percent SMALLINT;`;
+  await sql`CREATE TABLE IF NOT EXISTS production_materials (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    category TEXT NOT NULL CHECK (category IN ('camera', 'drone', 'lighting', 'sound', 'format')),
+    name TEXT NOT NULL,
+    base_price NUMERIC(12, 2) CHECK (base_price IS NULL OR base_price >= 0),
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (category, name)
+  );`;
+  await sql`
+    INSERT INTO production_materials (category, name, sort_order)
+    VALUES
+      ('camera', 'Sony Alpha 7 V', 0),
+      ('camera', 'Sony FX3 II', 1),
+      ('drone', 'Sin dron', 0),
+      ('drone', 'DJI Mini 5 Pro', 1),
+      ('drone', 'DJI Mini 4 Pro', 2),
+      ('drone', 'DJI Mavic 3 Cine', 3),
+      ('drone', 'DJI Inspire 3', 4),
+      ('lighting', 'Sin iluminación', 0),
+      ('lighting', 'Iluminación básica (Paneles LED)', 1),
+      ('lighting', 'Iluminación cinematográfica (Aputure/Nanlite)', 2),
+      ('sound', 'Sin sonido', 0),
+      ('sound', 'Sonido directo a cámara', 1),
+      ('sound', 'Sonido profesional (Pértiga y Lavaliers)', 2),
+      ('format', 'Solo brutos', 0),
+      ('format', 'Spot Comercial', 1),
+      ('format', 'Vídeo corporativo largo', 2),
+      ('format', 'Paquete Completo (Largo + Reels)', 3)
+    ON CONFLICT (category, name) DO NOTHING;
+  `;
   await sql`ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS evento_id UUID;`;
   await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS evento_id UUID;`;
 

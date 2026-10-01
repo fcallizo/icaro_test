@@ -1,5 +1,5 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
-import { PrivateRequestUpdate, RequestDetailsModalProps } from './private-types';
+import { PrivateRequestUpdate, ProductionMaterialCategory, RequestDetailsModalProps } from './private-types';
 import { RequestDetailsModalFrame } from './RequestDetailsModalFrame';
 
 const productionItems = [
@@ -70,6 +70,7 @@ function printProductionContract(
 
 export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
   const { request, onSave } = props;
+  const materials = props.materials || [];
   const [values, setValues] = useState<PrivateRequestUpdate>(() => ({
     nombre: request.nombre || '',
     email: request.email || '',
@@ -86,7 +87,7 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
     tipo: request.tipo || '',
     presupuesto: request.presupuesto || '',
     descripcion: request.descripcion || '',
-    cameraSetup: request.cameraSetup || 'Sony Alpha 7 V',
+    cameraSetup: request.cameraSetup || '',
     cameraPrice: String(request.cameraPrice ?? ''),
     droneSetup: request.droneSetup || '',
     dronePrice: String(request.dronePrice ?? ''),
@@ -131,6 +132,38 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
       </select>
     </div>
   );
+  const materialSelect = (
+    category: ProductionMaterialCategory,
+    field: keyof PrivateRequestUpdate,
+    priceField: keyof PrivateRequestUpdate,
+    label: string,
+  ) => {
+    const options = materials.filter((material) => material.category === category && material.active);
+    const currentValue = values[field];
+    const hasCurrentOption = options.some((material) => material.name === currentValue);
+
+    return (
+      <div className="field-group" key={field}>
+        <label htmlFor={`request-${field}`}>{label}</label>
+        <select
+          id={`request-${field}`}
+          value={currentValue}
+          onChange={(event) => {
+            const material = options.find((option) => option.name === event.target.value);
+            setValues((current) => ({
+              ...current,
+              [field]: event.target.value,
+              [priceField]: material?.basePrice ?? '',
+            }));
+          }}
+        >
+          <option value="">Seleccionar material...</option>
+          {currentValue && !hasCurrentOption && <option value={currentValue}>{currentValue} (retirado)</option>}
+          {options.map((material) => <option key={material.id} value={material.name}>{material.name}</option>)}
+        </select>
+      </div>
+    );
+  };
 
   const subtotal = productionItems.reduce((total, item) => total + (Number(values[item.price]) || 0), 0);
   const taxRate = Number(values.taxPercent) || 0;
@@ -150,7 +183,7 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
       values={values}
       canConfirm={hasCompleteBreakdown}
       onSubmit={(event: FormEvent<HTMLFormElement>) => { event.preventDefault(); onSave(values); }}
-      primaryAction={hasCompleteBreakdown ? (
+      rightAction={hasCompleteBreakdown ? (
         <button type="button" className="private-download-button" disabled={props.busy} onClick={() => printProductionContract(values, subtotal, taxAmount, contractTotal)}>
           Generar contrato PDF
         </button>
@@ -169,15 +202,15 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
           <span>Se completa antes de confirmar</span>
         </header>
         <div className="production-contract-grid">
-          {input('cameraSetup', 'Cámara principal', 'text')}
+          {materialSelect('camera', 'cameraSetup', 'cameraPrice', 'Cámara principal')}
           {input('cameraPrice', 'Precio cámara (€)', 'number')}
-          {select('droneSetup', 'Unidad de vuelo', ['Sin dron', 'DJI Mini 5 Pro', 'DJI Mini 4 Pro', 'DJI Mavic 3 Cine', 'DJI Inspire 3'])}
+          {materialSelect('drone', 'droneSetup', 'dronePrice', 'Unidad de vuelo')}
           {input('dronePrice', 'Precio dron (€)', 'number')}
-          {select('lightingSetup', 'Set de iluminación', ['Sin iluminación', 'Iluminación básica (Paneles LED)', 'Iluminación cinematográfica (Aputure/Nanlite)'])}
+          {materialSelect('lighting', 'lightingSetup', 'lightingPrice', 'Set de iluminación')}
           {input('lightingPrice', 'Precio iluminación (€)', 'number')}
-          {select('soundSetup', 'Tratamiento de sonido', ['Sin sonido', 'Sonido directo a cámara', 'Sonido profesional (Pértiga y Lavaliers)'])}
+          {materialSelect('sound', 'soundSetup', 'soundPrice', 'Tratamiento de sonido')}
           {input('soundPrice', 'Precio sonido (€)', 'number')}
-          {select('deliveryFormat', 'Formato de entrega', ['Solo brutos', 'Spot Comercial', 'Vídeo corporativo largo', 'Paquete Completo (Largo + Reels)'])}
+          {materialSelect('format', 'deliveryFormat', 'formatPrice', 'Formato de entrega')}
           {input('formatPrice', 'Precio formato (€)', 'number')}
           {input('extraCrew', 'Personal técnico extra', 'text')}
           {input('extraCrewPrice', 'Precio equipo extra (€)', 'number')}

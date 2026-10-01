@@ -6,7 +6,7 @@ type RequestDetailsModalFrameProps = Omit<RequestDetailsModalProps, 'onSave'> & 
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   values: PrivateRequestUpdate;
   canConfirm?: boolean;
-  primaryAction?: ReactNode;
+  rightAction?: ReactNode;
   children: ReactNode;
 };
 
@@ -20,7 +20,7 @@ export function RequestDetailsModalFrame({
   onSubmit,
   values,
   canConfirm = true,
-  primaryAction,
+  rightAction,
   children,
 }: RequestDetailsModalFrameProps) {
   const isWedding = request.type === 'wedding';
@@ -43,19 +43,23 @@ export function RequestDetailsModalFrame({
 
           <footer className="request-details-actions">
             <div className="request-details-primary-actions">
-              {primaryAction}
               <button type="submit" className="private-save-button" disabled={busy}>
                 {busy ? 'Guardando...' : 'Guardar cambios'}
               </button>
             </div>
-            {isPending && (
+            {(rightAction || isPending) && (
               <div className="request-details-decision-actions">
-                <button type="button" className="private-confirm-button" disabled={busy || !canConfirm} onClick={() => onAction('confirm', values)}>
-                  Confirmar
-                </button>
-                <button type="button" className="private-discard-button" disabled={busy} onClick={() => onAction('reject')}>
-                  Rechazar
-                </button>
+                {rightAction}
+                {isPending && (
+                  <>
+                    <button type="button" className="private-confirm-button" disabled={busy || !canConfirm} onClick={() => onAction('confirm', values)}>
+                      Confirmar
+                    </button>
+                    <button type="button" className="private-discard-button" disabled={busy} onClick={() => onAction('reject')}>
+                      Rechazar
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </footer>

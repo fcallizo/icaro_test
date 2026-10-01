@@ -96,7 +96,7 @@ export function WeddingScreen({
           <div className="tab-panel" role="tabpanel">
             <div className="reservation-layout">
               <AvailabilityCalendar
-                title="📅 Calendario de Disponibilidad"
+                title="Calendario de Disponibilidad"
                 requests={requests}
                 requestTypes={unifyCalendars ? undefined : ['wedding']}
                 variant="light"
