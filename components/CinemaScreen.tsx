@@ -46,7 +46,7 @@ export function CinemaScreen({
   onProductionSubmit,
 }: CinemaScreenProps) {
   return (
-    <div className="page-shell">
+    <div className="page-shell page-shell-tabs">
       <div className="grain-layer" />
       <div className="cursor-dot" />
 
@@ -58,21 +58,19 @@ export function CinemaScreen({
         onWedding={onShowWedding}
       />
 
-      <main className="content-section">
-        <div className="hero-block">
-          <span className="eyebrow">CINEMATOGRAPHY & COMMERCIALS</span>
-          <h2>CREACIÓN AUDIOVISUAL DE ALTO IMPACTO</h2>
-          <p>Especialistas en la creación de piezas visuales con identidad propia. Flujos de trabajo avanzados y un tratamiento de color cinematográfico orientado a potenciar el mensaje.</p>
-        </div>
-
+      <main className="content-section content-section-tabs">
         <div className="tabs">
           <button className={tab === 'video' ? 'tab active' : 'tab'} onClick={() => setTab('video')}>Showreel & Trabajos</button>
-          <button className={tab === 'foto' ? 'tab active' : 'tab'} onClick={() => setTab('foto')}>Dirección de Fotografía</button>
-          <button className={tab === 'produccion' ? 'tab active' : 'tab'} onClick={() => setTab('produccion')}>Área Técnica, Contratos y Tarifas</button>
+          <button className={tab === 'foto' ? 'tab active' : 'tab'} onClick={() => setTab('foto')}>Área Técnica, Contratos y Tarifas</button>
+          <button className={tab === 'produccion' ? 'tab active' : 'tab'} onClick={() => setTab('produccion')}>Comienza tu proyecto</button>
         </div>
 
         {tab === 'video' && (
           <div className="tab-panel">
+            <div className="hero-block">
+              <h2>CREACIÓN AUDIOVISUAL DE ALTO IMPACTO</h2>
+              <p>Especialistas en la creación de piezas visuales con identidad propia. Flujos de trabajo avanzados y un tratamiento de color cinematográfico orientado a potenciar el mensaje.</p>
+            </div>
             <div className="claqueta-box">
               <div className="claqueta-body">
                 <div className="claqueta-strip" />
@@ -87,16 +85,7 @@ export function CinemaScreen({
 
         {tab === 'foto' && (
           <div className="tab-panel">
-            <div className="gallery-grid">
-              <div className="gallery-card card-one" />
-              <div className="gallery-card card-two" />
-              <div className="gallery-card card-three" />
-            </div>
-          </div>
-        )}
-
-        {tab === 'produccion' && (
-          <div className="tab-panel">
+            
             <div className="tech-header">
               <div>
                 <span className="eyebrow">PRODUCCIÓN • LOGÍSTICA • PRESUPUESTOS</span>
@@ -139,14 +128,40 @@ export function CinemaScreen({
                 </div>
               </div>
             </div>
+            <br/>
+            <div className="gallery-grid">
+              <div className="gallery-card card-one" />
+              <div className="gallery-card card-two" />
+              <div className="gallery-card card-three" />
+            </div>
+          </div>
+        )}
 
+        {tab === 'produccion' && (
+          <div className="tab-panel">
             <div className="reservation-layout">
-              <AvailabilityCalendar
-                title="Calendario de Producción"
-                requests={requests}
-                manualBlockedRanges={blockedRanges}
-                requestTypes={unifyCalendars ? undefined : ['production']}
-              />
+              <div>
+                <AvailabilityCalendar
+                  title="Calendario de Producción"
+                  requests={requests}
+                  manualBlockedRanges={blockedRanges}
+                  requestTypes={unifyCalendars ? undefined : ['production']}
+                />
+
+                <div className="booking-form contact-panel">
+                  <h4>Contacta con nosotros</h4>
+                  <p>📞 +34 633 716 171</p>
+                  <p nav-link>
+                      <img src="/gmail.png" alt="" className="nav-icon" />
+                      <span className="nav-label">icarostudio33@gmail.com</span>
+                  </p>
+                  <p nav-link>
+                      <img src="/instagram.png" alt="" className="nav-icon" />
+                      <span className="nav-label">icarostudio_</span>
+                  </p>
+                  <p>📍 C/ Marqués de la ensenada, 10, 30007 Murcia</p>
+                </div>
+              </div>
 
               <div className="booking-form card-dark">
                 <form onSubmit={onProductionSubmit}>

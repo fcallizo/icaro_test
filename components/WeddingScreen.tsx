@@ -52,7 +52,7 @@ export function WeddingScreen({
   const [activeTab, setActiveTab] = useState<WeddingTab>('video');
 
   return (
-    <div className="page-shell page-shell-bodas">
+    <div className="page-shell page-shell-tabs page-shell-bodas">
       <div className="grain-layer" />
       <div className="cursor-dot" />
 
@@ -64,21 +64,19 @@ export function WeddingScreen({
         onWedding={() => setActiveTab('video')}
       />
 
-      <main className="content-section weddings-mode">
-        <div className="hero-block light">
-          <span className="eyebrow">WEDDING FILMS</span>
-          <h2>HISTORIAS QUE SE VUELVEN RECUERDO</h2>
-          <p>Un enfoque documental, elegante y cercano para cada detalle de tu día más importante.</p>
-        </div>
-
+      <main className="content-section content-section-tabs weddings-mode">
         <div className="tabs" role="tablist" aria-label="Servicios de bodas">
-          <button type="button" role="tab" aria-selected={activeTab === 'video'} className={activeTab === 'video' ? 'tab active' : 'tab'} onClick={() => setActiveTab('video')}>Películas Documentales</button>
-          <button type="button" role="tab" aria-selected={activeTab === 'foto'} className={activeTab === 'foto' ? 'tab active' : 'tab'} onClick={() => setActiveTab('foto')}>Reportaje Fotográfico</button>
-          <button type="button" role="tab" aria-selected={activeTab === 'reserva'} className={activeTab === 'reserva' ? 'tab active' : 'tab'} onClick={() => setActiveTab('reserva')}>Prepara tu gran día</button>
+          <button type="button" role="tab" aria-selected={activeTab === 'video'} className={activeTab === 'video' ? 'tab active' : 'tab'} onClick={() => setActiveTab('video')}>Mira lo que creamos</button>
+          <button type="button" role="tab" aria-selected={activeTab === 'foto'} className={activeTab === 'foto' ? 'tab active' : 'tab'} onClick={() => setActiveTab('foto')}>Así hacemos realidad tu sueño</button>
+          <button type="button" role="tab" aria-selected={activeTab === 'reserva'} className={activeTab === 'reserva' ? 'tab active' : 'tab'} onClick={() => setActiveTab('reserva')}>Hablemos de vuestra boda</button>
         </div>
 
         {activeTab === 'video' && (
           <div className="tab-panel" role="tabpanel">
+            <div className="hero-block light">
+              <h2>Historias que se vuelven recuerdo</h2>
+              <p>Un enfoque documental, elegante y cercano para cada detalle de tu día más importante.</p>
+            </div>
             <div className="video-showcase">
               <div className="video-card">
                 <div className="play-button light" />
@@ -87,61 +85,103 @@ export function WeddingScreen({
           </div>
         )}
 
+
         {activeTab === 'foto' && (
           <div className="tab-panel" role="tabpanel">
-            <div className="gallery-grid">
-              <div className="gallery-card card-one-wedding" />
-              <div className="gallery-card card-two-wedding" />
-              <div className="gallery-card card-three-wedding" />
+            <section className="wedding-planning" aria-labelledby="wedding-planning-title">
+              <div className="hero-block light">
+                {/* <span className="eyebrow">VUESTRA HISTORIA, A VUESTRO RITMO</span> */}
+                <h2>Cada detalle merece su momento</h2>
+                <p>Empezamos por lo que hace único vuestro día. Conocemos los lugares, los momentos importantes y el estilo que imagináis para dar forma a una cobertura natural y personal.</p>
+              </div>
+
+              <div className="wedding-story-list">
+                <div className="wedding-story-row">
+                  <div className="wedding-story-image card-three-wedding" role="img" aria-label="Pareja celebrando su boda" />
+                  <article>
+                  <h4>Vuestra historia</h4>
+                  <p>Compartid las personas, gestos y momentos que queréis volver a sentir cada vez que veáis vuestro recuerdo.</p>
+                  </article>
+                </div>
+                <div className="wedding-story-row">
+                  <article>
+                  <h4>Imagen a vuestra medida</h4>
+                  <p>Podemos orientar la cobertura hacia película documental, reportaje fotográfico o una combinación de ambos.</p>
+                  </article>
+                  <div className="wedding-story-image card-four-wedding" role="img" aria-label="Novios durante su celebración" />
+                </div>
+                <div className="wedding-story-row">
+                  <div className="wedding-story-image card-two-wedding" role="img" aria-label="Celebración al aire libre" />
+                  <article>
+                  <h4>Un día sin prisas</h4>
+                  <p>Coordinamos los horarios para estar presentes y capturar cada momento desde el principio hasta el final de su día especial.</p>
+                  </article>
+                </div>
+              </div>
+            </section>
+
+            <div className="hero-block light">
+              <h2>Nuestras Tarifas</h2>
+            </div>
+            <div className="cards-grid ">
+              <div className="info-card booking-form wedding-panel">
+                <div className="card-title">Pre Boda</div>
+                <div className="price-row"><div><strong>Spot Comercial</strong><span>Publicidad, branding y contenido premium.</span></div><b>Desde 250€</b></div>
+                <div className="price-row"><div><strong>Videoclip Cinematográfico</strong><span>Dirección visual y edición avanzada.</span></div><b>Desde 150€</b></div>
+                <div className="price-row no-border"><div><strong>Producción Completa</strong><span>Equipo técnico y planificación avanzada.</span></div><b>A medida</b></div>
+              </div>
+
+              <div className="info-card booking-form wedding-panel">
+                <div className="card-title">Boda</div>
+                <div className="price-row"><div><strong>Spot Comercial</strong><span>Publicidad, branding y contenido premium.</span></div><b>Desde 250€</b></div>
+                <div className="price-row"><div><strong>Videoclip Cinematográfico</strong><span>Dirección visual y edición avanzada.</span></div><b>Desde 150€</b></div>
+                <div className="price-row no-border"><div><strong>Producción Completa</strong><span>Equipo técnico y planificación avanzada.</span></div><b>A medida</b></div>
+              </div>
+
+              <div className="info-card booking-form wedding-panel">
+                <div className="card-title">Post Boda</div>
+                <div className="price-row"><div><strong>Spot Comercial</strong><span>Publicidad, branding y contenido premium.</span></div><b>Desde 250€</b></div>
+                <div className="price-row"><div><strong>Videoclip Cinematográfico</strong><span>Dirección visual y edición avanzada.</span></div><b>Desde 150€</b></div>
+                <div className="price-row no-border"><div><strong>Producción Completa</strong><span>Equipo técnico y planificación avanzada.</span></div><b>A medida</b></div>
+              </div>
             </div>
           </div>
         )}
 
+
         {activeTab === 'reserva' && (
           <div className="tab-panel" role="tabpanel">
-            <section className="wedding-planning" aria-labelledby="wedding-planning-title">
-              <div className="wedding-planning-intro">
-                <span className="eyebrow">VUESTRA HISTORIA, A VUESTRO RITMO</span>
-                <h3 id="wedding-planning-title">Cada detalle merece su recuerdo</h3>
-                <p>Empezamos por lo que hace único vuestro día. Conocemos los lugares, los momentos importantes y el estilo que imagináis para dar forma a una cobertura natural y personal.</p>
+            <div className="hero-block light">
+                <h2>Empecemos a planificar</h2>
+                <p>Cuéntanos la fecha, los lugares y lo que os gustaría conservar de vuestro día.</p>
               </div>
-              <div className="wedding-planning-grid">
-                <article>
-                  <span className="wedding-planning-number">01</span>
-                  <h4>Vuestra historia</h4>
-                  <p>Compartid las personas, gestos y momentos que queréis volver a sentir cada vez que veáis vuestro recuerdo.</p>
-                </article>
-                <article>
-                  <span className="wedding-planning-number">02</span>
-                  <h4>Preparativos y lugares</h4>
-                  <p>Organizamos las casas, la ceremonia y la celebración para entender el recorrido del día y llegar a cada lugar a tiempo.</p>
-                </article>
-                <article>
-                  <span className="wedding-planning-number">03</span>
-                  <h4>Un día sin prisas</h4>
-                  <p>Coordinamos los horarios de preparativos, ceremonia, cóctel y celebración para acompañar el ritmo real de vuestra boda.</p>
-                </article>
-                <article>
-                  <span className="wedding-planning-number">04</span>
-                  <h4>Imagen a vuestra medida</h4>
-                  <p>Podemos orientar la cobertura hacia película documental, reportaje fotográfico o una combinación de ambos.</p>
-                </article>
-              </div>
-            </section>
-
             <div className="reservation-layout">
-              <AvailabilityCalendar
-                title="Calendario de Disponibilidad"
-                requests={requests}
-                manualBlockedRanges={blockedRanges}
-                requestTypes={unifyCalendars ? undefined : ['wedding']}
-                variant="light"
-              />
+              <div>
+                <AvailabilityCalendar
+                  title="Calendario de Disponibilidad"
+                  requests={requests}
+                  manualBlockedRanges={blockedRanges}
+                  requestTypes={unifyCalendars ? undefined : ['wedding']}
+                  variant="light"
+                />
 
+                <div className="booking-form wedding-panel contact-panel">
+                  <h4>Contacta con nosotros</h4>
+                  <p>📞 +34 633 716 171</p>
+                  <p nav-link>
+                      <img src="/gmail.png" alt="" className="nav-icon" />
+                      <span className="nav-label">icarostudio33@gmail.com</span>
+                  </p>
+                  <p nav-link>
+                      <img src="/instagram.png" alt="" className="nav-icon" />
+                      <span className="nav-label">icarostudio_</span>
+                  </p>
+                  <p>📍 C/ Marqués de la ensenada, 10, 30007 Murcia</p>
+                </div>
+              </div>
               <div className="booking-form wedding-panel">
+     
                 <form onSubmit={onWeddingSubmit}>
-                  <h4>Empecemos a planificar</h4>
-                  <p className="sub-form-texto">Cuéntanos la fecha, los lugares y lo que os gustaría conservar de vuestro día.</p>
                   <div className="field-group">
                     <label>Nombre completo de los novios</label>
                     <input type="text" value={weddingForm.nombre} onChange={(e) => setWeddingForm((current) => ({ ...current, nombre: e.target.value }))} placeholder="Ej: Paola Gómez & David Alfaro" required />
