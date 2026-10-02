@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { CalendarBlockRange } from '@/components/private/private-types';
 
 export type CalendarRequest = {
   type: 'wedding' | 'production';
@@ -11,6 +12,7 @@ export type CalendarRequest = {
 type AvailabilityCalendarProps = {
   title: string;
   requests: CalendarRequest[];
+  manualBlockedRanges?: CalendarBlockRange[];
   requestTypes?: CalendarRequest['type'][];
   variant?: 'dark' | 'light';
   showPending?: boolean;
@@ -21,6 +23,7 @@ type AvailabilityCalendarProps = {
 export function AvailabilityCalendar({
   title,
   requests,
+  manualBlockedRanges = [],
   requestTypes,
   variant = 'dark',
   showPending = false,
@@ -63,11 +66,16 @@ export function AvailabilityCalendar({
           {Array.from({ length: daysInMonth }, (_, index) => {
             const day = index + 1;
             const date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            const isBooked = bookedDates.has(date);
+            const isManuallyBlocked = manualBlockedRanges.some((range) => {
+              const startDate = range.startDate.slice(0, 10);
+              const endDate = range.endDate.slice(0, 10);
+              return date >= startDate && date <= endDate;
+            });
+            const isBooked = bookedDates.has(date) || isManuallyBlocked;
             const isPending = !isBooked && pendingDates.has(date);
 
             const dayClass = isBooked ? 'day busy' : isPending ? 'day pending' : 'day free';
-            const dayTitle = isBooked ? 'Fecha ocupada' : isPending ? 'Solicitud pendiente' : 'Fecha disponible';
+            const dayTitle = isBooked ? (isManuallyBlocked && !bookedDates.has(date) ? 'Fecha no disponible' : 'Fecha ocupada') : isPending ? 'Solicitud pendiente' : 'Fecha disponible';
             const isSelected = selectedDate === date;
             const selectedClass = isSelected ? ' selected' : '';
 

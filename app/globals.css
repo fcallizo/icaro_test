@@ -1035,6 +1035,68 @@ textarea {
   color: var(--text-dark);
 }
 
+.wedding-planning {
+  margin: 0 auto 2.5rem;
+}
+
+.wedding-planning-intro {
+  max-width: 760px;
+  margin: 0 auto 1.25rem;
+  text-align: center;
+}
+
+.wedding-planning-intro .eyebrow {
+  color: #806719;
+}
+
+.wedding-planning-intro h3 {
+  margin-top: 0.55rem;
+  color: #171717;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.45rem, 2.4vw, 2rem);
+}
+
+.wedding-planning-intro p {
+  margin-top: 0.6rem;
+  color: #555;
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.wedding-planning-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.wedding-planning-grid article {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid rgba(17,17,17,0.1);
+  border-top: 2px solid #bfa02c;
+  background: rgba(255,255,255,0.72);
+}
+
+.wedding-planning-number {
+  color: #806719;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.wedding-planning-grid h4 {
+  margin-top: 0.55rem;
+  color: #171717;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1rem;
+}
+
+.wedding-planning-grid p {
+  margin-top: 0.45rem;
+  color: #555;
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
 .weddings-mode .hero-block h2,
 .weddings-mode .hero-block p,
 .weddings-mode .field-group label,
@@ -1669,6 +1731,70 @@ textarea {
   color: #aaa;
 }
 
+.calendar-blocks-intro {
+  margin: -0.25rem 0 1rem;
+  color: #aaa;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.calendar-block-form {
+  display: grid;
+  grid-template-columns: minmax(145px, 0.7fr) minmax(145px, 0.7fr) minmax(220px, 1.5fr) auto;
+  align-items: end;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: #151617;
+}
+
+.calendar-block-form label {
+  display: grid;
+  gap: 0.4rem;
+  color: #bbb;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+
+.calendar-block-form input {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: #101112;
+  color: #fff;
+  font-size: 0.8rem;
+}
+
+.calendar-block-list {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.calendar-block-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-left: 3px solid #ff6262;
+  background: #151617;
+}
+
+.calendar-block-row strong {
+  color: #eee;
+  font-size: 0.82rem;
+}
+
+.calendar-block-row p {
+  margin-top: 0.25rem;
+  color: #999;
+  font-size: 0.75rem;
+}
+
 .private-notification-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
@@ -2066,6 +2192,14 @@ textarea {
     grid-column: 1 / -1;
     padding: 0;
   }
+
+  .calendar-block-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wedding-planning-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 600px) {
@@ -2108,8 +2242,14 @@ textarea {
   }
 
   .production-material-add-form,
-  .production-material-row {
+  .production-material-row,
+  .calendar-block-form {
     grid-template-columns: 1fr;
+  }
+
+  .calendar-block-row {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .production-material-state {
@@ -2117,6 +2257,10 @@ textarea {
   }
 
   .private-request-details {
+    grid-template-columns: 1fr;
+  }
+
+  .wedding-planning-grid {
     grid-template-columns: 1fr;
   }
 

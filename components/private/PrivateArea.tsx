@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { NotificationsTab } from '@/components/private/tabs/NotificationsTab';
 import { ConfirmedTab } from '@/components/private/tabs/ConfirmedTab';
 import { ProductionMaterialsTab } from '@/components/private/tabs/ProductionMaterialsTab';
-import { ProductionMaterial, ProductionMaterialCategory, PrivateRequest, PrivateRequestUpdate, RequestAction } from '@/components/private/private-types';
+import { CalendarBlocksTab } from '@/components/private/tabs/CalendarBlocksTab';
+import { CalendarBlock, ProductionMaterial, ProductionMaterialCategory, PrivateRequest, PrivateRequestUpdate, RequestAction } from '@/components/private/private-types';
 import { AvailabilityCalendar } from '@/components/common/AvailabilityCalendar';
 import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
 import { RequestDetailsModal } from '@/components/private/RequestDetailsModal';
@@ -34,6 +35,17 @@ async function getProductionMaterials() {
   }));
 }
 
+async function getCalendarBlocks() {
+  const response = await fetch('/api/private/calendar-blocks', { cache: 'no-store' });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || 'No se pudieron cargar los bloqueos del calendario.');
+  return (data.blocks as CalendarBlock[]).map((block) => ({
+    ...block,
+    startDate: String(block.startDate).slice(0, 10),
+    endDate: String(block.endDate).slice(0, 10),
+  }));
+}
+
 export function PrivateArea() {
   const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -41,11 +53,14 @@ export function PrivateArea() {
   const [sessionReady, setSessionReady] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [activeTab, setActiveTab] = useState<'notifications' | 'confirmed' | 'materials'>('notifications');
+  const [activeTab, setActiveTab] = useState<'notifications' | 'confirmed' | 'materials' | 'blocks'>('notifications');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [unifyCalendars, setUnifyCalendars] = useState(false);
   const [isSavingCalendarSetting, setIsSavingCalendarSetting] = useState(false);
   const [requests, setRequests] = useState<PrivateRequest[]>([]);
+  const [calendarBlocks, setCalendarBlocks] = useState<CalendarBlock[]>([]);
+  const [busyBlockId, setBusyBlockId] = useState('');
+  const [isCreatingBlock, setIsCreatingBlock] = useState(false);
   const [materials, setMaterials] = useState<ProductionMaterial[]>([]);
   const [busyMaterialId, setBusyMaterialId] = useState('');
   const [isCreatingMaterial, setIsCreatingMaterial] = useState(false);
@@ -67,14 +82,16 @@ export function PrivateArea() {
         setIsAuthenticated(Boolean(data.authenticated));
         setUsername(data.username || '');
         if (data.authenticated) {
-          const [privateRequests, shouldUnifyCalendars, productionMaterials] = await Promise.all([
+          const [privateRequests, shouldUnifyCalendars, productionMaterials, privateCalendarBlocks] = await Promise.all([
             getPrivateRequests(),
             getCalendarSettings(),
             getProductionMaterials(),
+            getCalendarBlocks(),
           ]);
           setRequests(privateRequests);
           setUnifyCalendars(shouldUnifyCalendars);
           setMaterials(productionMaterials);
+          setCalendarBlocks(privateCalendarBlocks);
         }
       } catch (error) {
         setMessage(error instanceof Error ? error.message : 'No se pudo comprobar el acceso.');
@@ -103,14 +120,16 @@ export function PrivateArea() {
       setUsername(data.username);
       setPassword('');
       setIsAuthenticated(true);
-      const [privateRequests, shouldUnifyCalendars, productionMaterials] = await Promise.all([
+      const [privateRequests, shouldUnifyCalendars, productionMaterials, privateCalendarBlocks] = await Promise.all([
         getPrivateRequests(),
         getCalendarSettings(),
         getProductionMaterials(),
+        getCalendarBlocks(),
       ]);
       setRequests(privateRequests);
       setUnifyCalendars(shouldUnifyCalendars);
       setMaterials(productionMaterials);
+      setCalendarBlocks(privateCalendarBlocks);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'No se pudo iniciar sesión.');
     } finally {
@@ -170,6 +189,50 @@ export function PrivateArea() {
       setToast({ message: error instanceof Error ? error.message : 'No se pudieron guardar los cambios.', tone: 'error' });
     } finally {
       setBusyId('');
+    }
+  };
+
+  const handleCreateCalendarBlock = async (startDate: string, endDate: string, reason: string) => {
+    setIsCreatingBlock(true);
+    try {
+      const response = await fetch('/api/private/calendar-blocks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ startDate, endDate, reason }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'No se pudo bloquear el intervalo.');
+
+      setCalendarBlocks(await getCalendarBlocks());
+      setToast({ message: 'Fechas bloqueadas correctamente.', tone: 'success' });
+      return true;
+    } catch (error) {
+      setToast({ message: error instanceof Error ? error.message : 'No se pudo bloquear el intervalo.', tone: 'error' });
+      return false;
+    } finally {
+      setIsCreatingBlock(false);
+    }
+  };
+
+  const handleDeleteCalendarBlock = async (id: string) => {
+    if (!window.confirm('¿Quieres desbloquear estas fechas?')) return;
+
+    setBusyBlockId(id);
+    try {
+      const response = await fetch('/api/private/calendar-blocks', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'No se pudo retirar el bloqueo.');
+
+      setCalendarBlocks(await getCalendarBlocks());
+      setToast({ message: 'Fechas desbloqueadas.', tone: 'success' });
+    } catch (error) {
+      setToast({ message: error instanceof Error ? error.message : 'No se pudo retirar el bloqueo.', tone: 'error' });
+    } finally {
+      setBusyBlockId('');
     }
   };
 
@@ -248,6 +311,7 @@ export function PrivateArea() {
     setIsAuthenticated(false);
     setRequests([]);
     setMaterials([]);
+    setCalendarBlocks([]);
     setActiveTab('notifications');
     setSelectedDate(null);
     setMessage('');
@@ -348,6 +412,7 @@ export function PrivateArea() {
               <AvailabilityCalendar
                 title="📅 Calendario de eventos confirmados"
                 requests={requests}
+                manualBlockedRanges={calendarBlocks}
                 showPending
                 selectedDate={selectedDate}
                 onDateSelect={setSelectedDate}
@@ -367,6 +432,9 @@ export function PrivateArea() {
                 <button type="button" role="tab" aria-selected={activeTab === 'confirmed'} className={activeTab === 'confirmed' ? 'active' : ''} onClick={() => setActiveTab('confirmed')}>
                   📁 Confirmados <span>{confirmedCount}</span>
                 </button>
+                <button type="button" role="tab" aria-selected={activeTab === 'blocks'} className={activeTab === 'blocks' ? 'active' : ''} onClick={() => setActiveTab('blocks')}>
+                  🚫 Asuntos propios <span>{calendarBlocks.length}</span>
+                </button>
                 <button type="button" role="tab" aria-selected={activeTab === 'materials'} className={activeTab === 'materials' ? 'active' : ''} onClick={() => setActiveTab('materials')}>
                   📸 Materiales <span>{materials.filter((material) => material.active).length}</span>
                 </button>
@@ -377,7 +445,7 @@ export function PrivateArea() {
                 <NotificationsTab requests={requests} selectedDate={selectedDate} onView={handleViewRequest} />
               ) : activeTab === 'confirmed' ? (
                 <ConfirmedTab requests={requests} selectedDate={selectedDate} onView={handleViewRequest} />
-              ) : (
+              ) : activeTab === 'materials' ? (
                 <ProductionMaterialsTab
                   materials={materials}
                   busyId={busyMaterialId}
@@ -385,6 +453,14 @@ export function PrivateArea() {
                   onCreate={handleCreateMaterial}
                   onUpdate={handleUpdateMaterial}
                   onSetActive={(id, active) => void handleSetMaterialActive(id, active)}
+                />
+              ) : (
+                <CalendarBlocksTab
+                  blocks={calendarBlocks}
+                  busyId={busyBlockId}
+                  isCreating={isCreatingBlock}
+                  onCreate={handleCreateCalendarBlock}
+                  onDelete={(id) => void handleDeleteCalendarBlock(id)}
                 />
               )}
             </section>

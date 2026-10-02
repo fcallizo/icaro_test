@@ -5,16 +5,22 @@ import { sendRequestNotification } from '@/lib/request-notifications';
 
 export async function GET() {
   if (!sql) {
-    return NextResponse.json({ requests: [], unifyCalendars: false, dbConfigured: false }, { status: 200 });
+    return NextResponse.json({ requests: [], blockedRanges: [], unifyCalendars: false, dbConfigured: false }, { status: 200 });
   }
 
   await ensureTables();
 
   const eventRows = await sql`SELECT id, fecha, status, tipo AS type FROM eventos WHERE status = 'confirmed' ORDER BY created_at DESC LIMIT 100;`;
+  const blockedRanges = await sql`
+    SELECT to_char(start_date, 'YYYY-MM-DD') AS "startDate",
+      to_char(end_date, 'YYYY-MM-DD') AS "endDate"
+    FROM calendar_blocks ORDER BY start_date;
+  `;
   const [calendarSetting] = await sql`SELECT boolean_value FROM app_settings WHERE setting_key = 'unify_calendars' LIMIT 1;`;
 
   return NextResponse.json({
     requests: eventRows,
+    blockedRanges,
     unifyCalendars: Boolean(calendarSetting?.boolean_value),
     dbConfigured: true,
   }, { status: 200 });
@@ -44,6 +50,17 @@ export async function POST(request: NextRequest) {
   }
 
   await ensureTables();
+  const requestedDate = typeof payload.fecha === 'string' ? payload.fecha : '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(requestedDate)) {
+    const [blockedDate] = await sql`
+      SELECT id FROM calendar_blocks
+      WHERE start_date <= ${requestedDate}::date AND end_date >= ${requestedDate}::date
+      LIMIT 1;
+    `;
+    if (blockedDate) {
+      return NextResponse.json({ error: 'Esa fecha no está disponible. Elige otra para tu solicitud.' }, { status: 409 });
+    }
+  }
 
   if (type === 'wedding') {
     const { nombre, telNovio, telNovia, fecha, lugar, novia, novio, ceremonia, cronograma, detalles } = payload;

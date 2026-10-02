@@ -4,6 +4,7 @@ import { AvailabilityCalendar, CalendarRequest } from '@/components/common/Avail
 import { PageHeader } from '@/components/common/PageHeader';
 import { PrivacyFormNotice } from '@/components/common/PrivacyFormNotice';
 import { PublicLegalFooter } from '@/components/common/PublicLegalFooter';
+import { CalendarBlockRange } from '@/components/private/private-types';
 
 type TabMode = 'video' | 'foto' | 'produccion';
 
@@ -25,6 +26,7 @@ type CinemaScreenProps = {
   productionForm: ProductionForm;
   setProductionForm: Dispatch<SetStateAction<ProductionForm>>;
   requests: CalendarRequest[];
+  blockedRanges: CalendarBlockRange[];
   unifyCalendars: boolean;
   isSubmitting: boolean;
   onProductionSubmit: (event: FormEvent<HTMLFormElement>) => void;
@@ -38,6 +40,7 @@ export function CinemaScreen({
   productionForm,
   setProductionForm,
   requests,
+  blockedRanges,
   unifyCalendars,
   isSubmitting,
   onProductionSubmit,
@@ -141,6 +144,7 @@ export function CinemaScreen({
               <AvailabilityCalendar
                 title="Calendario de Producción"
                 requests={requests}
+                manualBlockedRanges={blockedRanges}
                 requestTypes={unifyCalendars ? undefined : ['production']}
               />
 

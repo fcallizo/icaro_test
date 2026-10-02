@@ -1,6 +1,16 @@
 export type RequestType = 'wedding' | 'production';
 export type RequestStatus = 'pending' | 'confirmed' | 'rejected';
 export type RequestAction = 'confirm' | 'reject';
+export type CalendarBlockRange = {
+  startDate: string;
+  endDate: string;
+};
+
+export type CalendarBlock = CalendarBlockRange & {
+  id: string;
+  reason: string | null;
+  createdAt: string;
+};
 export type ProductionMaterialCategory = 'camera' | 'drone' | 'lighting' | 'sound' | 'format';
 
 export type ProductionMaterial = {

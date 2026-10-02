@@ -4,6 +4,7 @@ import { AvailabilityCalendar, CalendarRequest } from '@/components/common/Avail
 import { PageHeader } from '@/components/common/PageHeader';
 import { PrivacyFormNotice } from '@/components/common/PrivacyFormNotice';
 import { PublicLegalFooter } from '@/components/common/PublicLegalFooter';
+import { CalendarBlockRange } from '@/components/private/private-types';
 
 type WeddingTab = 'video' | 'foto' | 'reserva';
 
@@ -31,6 +32,7 @@ type WeddingScreenProps = {
   weddingForm: WeddingForm;
   setWeddingForm: Dispatch<SetStateAction<WeddingForm>>;
   requests: CalendarRequest[];
+  blockedRanges: CalendarBlockRange[];
   unifyCalendars: boolean;
   isSubmitting: boolean;
   onWeddingSubmit: (event: FormEvent<HTMLFormElement>) => void;
@@ -42,6 +44,7 @@ export function WeddingScreen({
   weddingForm,
   setWeddingForm,
   requests,
+  blockedRanges,
   unifyCalendars,
   isSubmitting,
   onWeddingSubmit,
@@ -71,7 +74,7 @@ export function WeddingScreen({
         <div className="tabs" role="tablist" aria-label="Servicios de bodas">
           <button type="button" role="tab" aria-selected={activeTab === 'video'} className={activeTab === 'video' ? 'tab active' : 'tab'} onClick={() => setActiveTab('video')}>Películas Documentales</button>
           <button type="button" role="tab" aria-selected={activeTab === 'foto'} className={activeTab === 'foto' ? 'tab active' : 'tab'} onClick={() => setActiveTab('foto')}>Reportaje Fotográfico</button>
-          <button type="button" role="tab" aria-selected={activeTab === 'reserva'} className={activeTab === 'reserva' ? 'tab active' : 'tab'} onClick={() => setActiveTab('reserva')}>Consultar Calendario</button>
+          <button type="button" role="tab" aria-selected={activeTab === 'reserva'} className={activeTab === 'reserva' ? 'tab active' : 'tab'} onClick={() => setActiveTab('reserva')}>Prepara tu gran día</button>
         </div>
 
         {activeTab === 'video' && (
@@ -96,18 +99,49 @@ export function WeddingScreen({
 
         {activeTab === 'reserva' && (
           <div className="tab-panel" role="tabpanel">
+            <section className="wedding-planning" aria-labelledby="wedding-planning-title">
+              <div className="wedding-planning-intro">
+                <span className="eyebrow">VUESTRA HISTORIA, A VUESTRO RITMO</span>
+                <h3 id="wedding-planning-title">Cada detalle merece su recuerdo</h3>
+                <p>Empezamos por lo que hace único vuestro día. Conocemos los lugares, los momentos importantes y el estilo que imagináis para dar forma a una cobertura natural y personal.</p>
+              </div>
+              <div className="wedding-planning-grid">
+                <article>
+                  <span className="wedding-planning-number">01</span>
+                  <h4>Vuestra historia</h4>
+                  <p>Compartid las personas, gestos y momentos que queréis volver a sentir cada vez que veáis vuestro recuerdo.</p>
+                </article>
+                <article>
+                  <span className="wedding-planning-number">02</span>
+                  <h4>Preparativos y lugares</h4>
+                  <p>Organizamos las casas, la ceremonia y la celebración para entender el recorrido del día y llegar a cada lugar a tiempo.</p>
+                </article>
+                <article>
+                  <span className="wedding-planning-number">03</span>
+                  <h4>Un día sin prisas</h4>
+                  <p>Coordinamos los horarios de preparativos, ceremonia, cóctel y celebración para acompañar el ritmo real de vuestra boda.</p>
+                </article>
+                <article>
+                  <span className="wedding-planning-number">04</span>
+                  <h4>Imagen a vuestra medida</h4>
+                  <p>Podemos orientar la cobertura hacia película documental, reportaje fotográfico o una combinación de ambos.</p>
+                </article>
+              </div>
+            </section>
+
             <div className="reservation-layout">
               <AvailabilityCalendar
                 title="Calendario de Disponibilidad"
                 requests={requests}
+                manualBlockedRanges={blockedRanges}
                 requestTypes={unifyCalendars ? undefined : ['wedding']}
                 variant="light"
               />
 
               <div className="booking-form wedding-panel">
                 <form onSubmit={onWeddingSubmit}>
-                  <h4>Comprobar disponibilidad / Reservar</h4>
-                  <p className="sub-form-texto">Completa los detalles de vuestro enlace para verificar la viabilidad técnica.</p>
+                  <h4>Empecemos a planificar</h4>
+                  <p className="sub-form-texto">Cuéntanos la fecha, los lugares y lo que os gustaría conservar de vuestro día.</p>
                   <div className="field-group">
                     <label>Nombre completo de los novios</label>
                     <input type="text" value={weddingForm.nombre} onChange={(e) => setWeddingForm((current) => ({ ...current, nombre: e.target.value }))} placeholder="Ej: Paola Gómez & David Alfaro" required />
@@ -179,7 +213,7 @@ export function WeddingScreen({
                     <textarea rows={3} value={weddingForm.detalles} onChange={(e) => setWeddingForm((current) => ({ ...current, detalles: e.target.value }))} placeholder="Ideas clave para el tráiler, estilo del evento..." />
                   </div>
                   <PrivacyFormNotice />
-                  <button type="submit" className="submit-btn" disabled={isSubmitting}>{isSubmitting ? 'Enviando...' : 'Solicitar fecha de rodaje'}</button>
+                  <button type="submit" className="submit-btn" disabled={isSubmitting}>{isSubmitting ? 'Enviando...' : 'Enviar solicitud de boda'}</button>
                 </form>
               </div>
             </div>

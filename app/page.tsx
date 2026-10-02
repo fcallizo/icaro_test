@@ -5,6 +5,7 @@ import { LandingSelector } from '@/components/LandingSelector';
 import { CinemaScreen } from '@/components/CinemaScreen';
 import { WeddingScreen } from '@/components/WeddingScreen';
 import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
+import { CalendarBlockRange } from '@/components/private/private-types';
 
 type View = 'selector' | 'cinema' | 'wedding';
 type TabMode = 'video' | 'foto' | 'produccion';
@@ -60,6 +61,7 @@ export default function HomePage() {
   const [weddingForm, setWeddingForm] = useState(initialWeddingForm);
   const [productionForm, setProductionForm] = useState(initialProductionForm);
   const [requests, setRequests] = useState<RequestItem[]>([]);
+  const [blockedRanges, setBlockedRanges] = useState<CalendarBlockRange[]>([]);
   const [unifyCalendars, setUnifyCalendars] = useState(false);
   const [toast, setToast] = useState<{ message: string; tone: StatusToastTone; surface?: 'dark' | 'light' } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -71,6 +73,9 @@ export default function HomePage() {
         const data = await response.json();
         if (Array.isArray(data.requests)) {
           setRequests(data.requests);
+        }
+        if (Array.isArray(data.blockedRanges)) {
+          setBlockedRanges(data.blockedRanges as CalendarBlockRange[]);
         }
         setUnifyCalendars(Boolean(data.unifyCalendars));
       } catch (error) {
@@ -160,6 +165,7 @@ export default function HomePage() {
           productionForm={productionForm}
           setProductionForm={setProductionForm}
           requests={requests}
+          blockedRanges={blockedRanges}
           unifyCalendars={unifyCalendars}
           isSubmitting={isSubmitting}
           onProductionSubmit={handleProductionSubmit}
@@ -177,6 +183,7 @@ export default function HomePage() {
         weddingForm={weddingForm}
         setWeddingForm={setWeddingForm}
         requests={requests}
+        blockedRanges={blockedRanges}
         unifyCalendars={unifyCalendars}
         isSubmitting={isSubmitting}
         onWeddingSubmit={handleWeddingSubmit}

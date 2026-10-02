@@ -10,6 +10,16 @@ CREATE TABLE IF NOT EXISTS eventos (
   decided_at TIMESTAMPTZ
 );
 
+CREATE TABLE IF NOT EXISTS calendar_blocks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  reason TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CHECK (end_date >= start_date)
+);
+CREATE INDEX IF NOT EXISTS calendar_blocks_dates_idx ON calendar_blocks (start_date, end_date);
+
 CREATE TABLE IF NOT EXISTS wedding_requests (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   evento_id UUID NOT NULL UNIQUE REFERENCES eventos(id) ON DELETE CASCADE,

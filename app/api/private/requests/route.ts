@@ -63,6 +63,24 @@ export async function PATCH(request: NextRequest) {
   await ensureTables();
   const requestType = type as RequestType;
 
+  if (action === 'confirm') {
+    const [pendingEvent] = await sql`
+      SELECT fecha FROM eventos
+      WHERE id = ${id} AND tipo = ${requestType} AND status = 'pending'
+      LIMIT 1;
+    `;
+    if (typeof pendingEvent?.fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(pendingEvent.fecha)) {
+      const [manualBlock] = await sql`
+        SELECT id FROM calendar_blocks
+        WHERE start_date <= ${pendingEvent.fecha}::date AND end_date >= ${pendingEvent.fecha}::date
+        LIMIT 1;
+      `;
+      if (manualBlock) {
+        return NextResponse.json({ error: 'No se puede confirmar: la fecha está bloqueada como no disponible.' }, { status: 409 });
+      }
+    }
+  }
+
   if (action === 'update') {
     const values = payload.values;
     const editableFields = [
