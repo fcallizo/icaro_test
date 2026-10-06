@@ -19,9 +19,6 @@ export function PageHeader({ view, theme, onHome, onCinema, onWedding }: PageHea
         </div>
 
         <nav className="main-nav">
-          {view !== 'selector' && (
-            <a href="#" className="nav-link nav-home-link" onClick={(event) => { event.preventDefault(); onHome(); }}>Inicio</a>
-          )}
           <a href="#" className={view === 'cinema' ? 'brand-selected' : 'nav-link'} onClick={(event) => { event.preventDefault(); onCinema(); }}>
             Cinematografía
           </a>

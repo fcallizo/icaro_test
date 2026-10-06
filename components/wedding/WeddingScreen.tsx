@@ -61,7 +61,7 @@ export function WeddingScreen({
         )}
 
         {activeTab === 'info' && (
-          <WeddingInfoTab />
+          <WeddingInfoTab onReserve={() => setActiveTab('reserva')}/>
         )}
 
         {activeTab === 'reserva' && (

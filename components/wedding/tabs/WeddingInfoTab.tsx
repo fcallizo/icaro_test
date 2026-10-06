@@ -1,4 +1,8 @@
-export function WeddingInfoTab({}) {
+type WeddingInfoTabProps = {
+  onReserve: () => void;
+};
+
+export function WeddingInfoTab({onReserve}: WeddingInfoTabProps) {
 
   const weddingPrices = {
     photo: 250,
@@ -15,7 +19,7 @@ export function WeddingInfoTab({}) {
   const duoPercentage = 5;
   const trioPercentage = 15;
 
-  function descuentedPrice(originalPrice: number, discountPercentage: number): number {
+  function discountedPrice(originalPrice: number, discountPercentage: number): number {
     const discountAmount = (originalPrice * discountPercentage) / 100;
     return originalPrice - discountAmount;
   }
@@ -39,7 +43,7 @@ export function WeddingInfoTab({}) {
           <div className="divider-title" >
             <h2>Aportamos nuestro granito de arena</h2>
           </div>
-          <p>  Que podemos ofrecerte para ese día tan especial</p>
+          <p>Esto es lo que podemos hacer por vosotros en ese día tan especial</p>
         </div>
 
         <div className="wedding-story-list">
@@ -72,7 +76,7 @@ export function WeddingInfoTab({}) {
           <div className="divider-title" >
             <h2>Nuestras Tarifas</h2>
           </div>
-          <p> Precios por servicio. ¡Combínalos y ahorra! </p>
+          <p> Precios por servicio. ¡Combinadlos y ahorrad! </p>
         </div>
 
         <div className="cards-grid">
@@ -87,7 +91,7 @@ export function WeddingInfoTab({}) {
               <b className="single-price">{complementaryPrices.video} €</b>
             </div>
             <div className="price-row no-border">
-              <div><strong>Pack Completa</strong><span>Sesión Fotográfica + Película.</span></div>
+              <div><strong>Pack Completo</strong><span>Sesión Fotográfica + Película.</span></div>
               <b className="package-price">{complementaryPrices.complete} €</b>
             </div>
           </div>
@@ -103,7 +107,7 @@ export function WeddingInfoTab({}) {
               <b className="single-price">{weddingPrices.video} €</b>
             </div>
             <div className="price-row no-border">
-              <div><strong>Pack Completa</strong><span>Sesión Fotográfica + Película.</span></div>
+              <div><strong>Pack Completo</strong><span>Sesión Fotográfica + Película.</span></div>
               <b className="package-price">{weddingPrices.complete} €</b>
             </div>
           </div>
@@ -111,7 +115,7 @@ export function WeddingInfoTab({}) {
           <div className="booking-form combo-card wedding-panel">
             <div className="card-title">Post-boda</div>
             <div className="price-row">
-              <div><strong>Sesión Fotográfica</strong><span>Una sesión después de la boda, a tu elección.</span></div>
+              <div><strong>Sesión Fotográfica</strong><span>Una sesión después de la boda, a vuestra elección.</span></div>
               <b className="single-price" >{complementaryPrices.photo} €</b>
             </div>
             <div className="price-row">
@@ -119,7 +123,7 @@ export function WeddingInfoTab({}) {
               <b className="single-price">{complementaryPrices.video} €</b>
             </div>
             <div className="price-row no-border">
-              <div><strong>Pack Completa</strong><span>Sesión Fotográfica + Película.</span></div>
+              <div><strong>Pack Completo</strong><span>Sesión Fotográfica + Película.</span></div>
               <b className="package-price">{complementaryPrices.complete} €</b>
             </div>
           </div>
@@ -132,10 +136,10 @@ export function WeddingInfoTab({}) {
             <div className="info-card combo-card wedding-panel centred-card">
               <span className="discount-badge">{duoPercentage}% dto.</span>
               <div className="card-title">Dúo · Boda + Pre-boda o Post-boda</div>
-              <p className="combo-desc">Combina tu boda con uno de los complementos y consigue un {duoPercentage}% de descuento.</p>
+              <p className="combo-desc">Combinad vuestra boda con uno de los complementos y consegid un {duoPercentage}% de descuento.</p>
               <div className="combo-price">
                 <span className="old-price">{complementaryPrices.complete + weddingPrices.complete} €</span>
-                <span className="new-price">{descuentedPrice(complementaryPrices.complete + weddingPrices.complete, duoPercentage)} €</span>
+                <span className="new-price">{discountedPrice(complementaryPrices.complete + weddingPrices.complete, duoPercentage)} €</span>
               </div>
             </div>
 
@@ -146,12 +150,20 @@ export function WeddingInfoTab({}) {
               <p className="combo-desc">Pre-boda + Boda + Post-boda. Todo con un {trioPercentage}% de descuento.</p>
               <div className="combo-price">
                 <span className="old-price">{2 * complementaryPrices.complete + weddingPrices.complete} €</span>
-                <span className="new-price">{descuentedPrice(2 * complementaryPrices.complete + weddingPrices.complete, trioPercentage)} €</span>
+                <span className="new-price">{discountedPrice(2 * complementaryPrices.complete + weddingPrices.complete, trioPercentage)} €</span>
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      <div className="divider-block light">
+          <div className="divider-title" >
+            <h2>¿Hablamos de vuestra boda?</h2>
+          </div>
+          <p> Contadnos la fecha y el lugar y os respondemos en menos de 24 h con una propuesta sin compromiso. </p>
+          <button className="submit-btn" onClick={() => onReserve()}>Consultar Disponibilidad</button>
+        </div>
     </div>
   );
 }

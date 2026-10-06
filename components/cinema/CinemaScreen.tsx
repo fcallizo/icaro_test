@@ -63,7 +63,7 @@ export function CinemaScreen({
         )}
 
         {tab === 'info' && (
-          <CinemaInfoTab />
+          <CinemaInfoTab onReserve={() => setTab('reserva')}/>
         )}
 
         {tab === 'reserva' && (

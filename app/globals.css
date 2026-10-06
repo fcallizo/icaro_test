@@ -663,12 +663,18 @@ textarea {
 }
 
 .divider-block{
-  margin: 4rem auto 2rem;
+  margin: 6rem auto 2rem;
   border-top: solid 1px lightgray;
   text-align: center;
   position: relative;
   width: 850px;
   padding-top: 2rem;
+
+  .submit-btn{
+    margin-top: 2rem;
+    width: 330px;
+    
+  }
 
   .divider-title {
     position: absolute;
@@ -802,15 +808,10 @@ textarea {
   background-position: center;
 }
 
-.card-one { background-image: url('https://images.unsplash.com/photo-1741969494307-55394e3e4071?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
-.card-two { background-image: url('https://images.unsplash.com/photo-1661693758705-4fa65572bced?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
-.card-three { background-image: url('https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
-
 .card-one-wedding { background-image: url('https://images.unsplash.com/photo-1672758748153-1f13fd8d2eed?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
 .card-two-wedding { background-image: url('https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
 .card-three-wedding { background-image: url('https://images.unsplash.com/photo-1460978812857-470ed1c77af0?q=80&w=1295&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
 .card-four-wedding { background-image: url('https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
-
 
 .tech-header {
   display: grid;
@@ -855,6 +856,54 @@ textarea {
   font-size: 0.75rem;
 }
 
+.gestion-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.img-card-div {
+  padding: 5px 10px;
+}
+
+.img-card{
+  max-height: 340px;
+    aspect-ratio: 7 / 4;
+}
+
+.process-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin: 32px 0;
+}
+.process-step { padding: 16px 0; border-top: 1px solid var(--gold); }
+.process-num { color: var(--gold); font-size: 0.8rem; letter-spacing: 0.1em; }
+.process-step strong { display: block; margin: 6px 0 4px; }
+.process-step p { margin: 0; font-size: 0.9rem; opacity: 0.8; }
+
+.cinema-div {
+  margin: 3rem auto 2rem;
+  max-width: 950px;
+  align-items: center;
+  text-align: center;
+  h3 {
+    margin-bottom: 0.8rem;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.7rem, 2vw, 2.3rem);
+  }
+  p {
+    margin-bottom: 1.5rem;
+    color: #8b8b8b;
+    line-height: 1.8;
+  }
+
+  .submit-btn {
+    width: 300px;
+    margin-bottom: 5rem
+  }
+}
+
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -878,7 +927,6 @@ textarea {
     border-bottom: 1px solid rgb(125 125 125 / 22%);
     font-weight: 700;
     color: var(--gold);
-    /* font-family: 'Allura', 'Segoe Script', cursive; */
     font-size: 30px;
 }
 
@@ -2489,6 +2537,34 @@ textarea {
   margin-top: 1rem;
 }
 
+.carousel { position: relative; max-width: 900px; margin: 0 auto; }
+.slide {
+  position: relative;
+  width: 100%;
+  height: 60vh;
+  max-height: 520px;
+  overflow: hidden;
+  border-radius: 16px;
+}
+.slide-img { object-fit: cover; object-position: center; }
+
+.nav {
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  z-index: 2;
+  width: 44px; height: 44px;
+  border: none; border-radius: 50%;
+  background: rgba(255,255,255,.85);
+  color: var(--gold); font-size: 1.5rem; cursor: pointer;
+}
+.nav.prev { left: -50px; }
+.nav.next { right: -50px; }
+
+.dots { display: flex; justify-content: center; gap: .5rem; margin-top: 1rem; }
+.dot { width: 10px; height: 10px; border-radius: 50%; border: none; background: #d9ccd1; cursor: pointer; }
+.dot.active { background: var(--gold); }
+
+
 @media (max-width: 900px) {
   .nav-container {
     width: 96%;
@@ -2582,13 +2658,22 @@ textarea {
   }
 
   .divider-block{
-  width: 100%;
-
-  .divider-title {
-    left: 0%;
     width: 100%;
+
+    .divider-title {
+      left: 0%;
+      width: 100%;
+    }
   }
-}
+  .gestion-card {
+    display: inline;
+  }
+
+  .img-card{
+    max-height: 100%;
+  }
+
+  .process-strip { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 600px) {
