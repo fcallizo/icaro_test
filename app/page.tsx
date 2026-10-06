@@ -2,8 +2,8 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import { LandingSelector } from '@/components/LandingSelector';
-import { CinemaScreen } from '@/components/CinemaScreen';
-import { WeddingScreen } from '@/components/WeddingScreen';
+import { CinemaScreen } from '@/components/cinema/CinemaScreen';
+import { WeddingScreen } from '@/components/wedding/WeddingScreen';
 import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
 import { CalendarBlockRange } from '@/components/private/private-types';
 

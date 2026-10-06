@@ -214,6 +214,37 @@ textarea {
   color: #876d19;
 }
 
+.icon-mask {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-color: currentColor;
+  -webkit-mask: var(--icon-image) center / contain no-repeat;
+  mask: var(--icon-image) center / contain no-repeat;
+  color: var(--gold);
+}
+
+.icon-key {
+  --icon-image: url("/llave.svg");
+}
+
+.icon-phone {
+  --icon-image: url("/telefono.svg");
+}
+
+.icon-mail {
+  --icon-image: url("/correo.svg");
+}
+
+.icon-pin {
+  --icon-image: url("/alfiler.svg");
+}
+
+.icon-instagram {
+  --icon-image: url("/instagram.svg");
+}
+
+
 .legal-page {
   display: flex;
   flex-direction: column;
@@ -453,6 +484,7 @@ textarea {
   display: inline-flex;
   align-items: center;
   text-decoration: none;
+  gap: 4px;
 }
 
 .brand-selected,
@@ -610,6 +642,7 @@ textarea {
   margin: 0 auto 2.5rem;
 }
 
+.hero-block h1,
 .hero-block h2 {
   margin-top: 0.8rem;
   font-family: Georgia, 'Times New Roman', serif;
@@ -623,9 +656,37 @@ textarea {
   line-height: 1.8;
 }
 
+.hero-block.light h1,
 .hero-block.light h2,
 .hero-block.light p {
   color: var(--text-dark);
+}
+
+.divider-block{
+  margin: 4rem auto 2rem;
+  border-top: solid 1px lightgray;
+  text-align: center;
+  position: relative;
+  width: 850px;
+  padding-top: 2rem;
+
+  .divider-title {
+    position: absolute;
+    top: -25px;
+    left: 16%;
+    width: 600px;
+    text-align: center;
+    align-items: center;
+
+    h2 {
+      background: var(--bg-light);
+      font-size: 2.8rem;
+      line-height: 1.1;
+      padding: 0 15px;
+      width: fit-content;
+      margin: 0 auto;
+    }
+  }
 }
 
 .eyebrow {
@@ -809,14 +870,16 @@ textarea {
 }
 
 .card-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding-bottom: 0.8rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  font-weight: 700;
-  color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgb(125 125 125 / 22%);
+    font-weight: 700;
+    color: var(--gold);
+    /* font-family: 'Allura', 'Segoe Script', cursive; */
+    font-size: 30px;
 }
 
 .price-row {
@@ -907,6 +970,13 @@ textarea {
     margin-bottom: 12px;  
   }
 
+}
+
+.contact-info {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  gap: 6px;
 }
 
 .calendar-block,
@@ -1119,6 +1189,7 @@ textarea {
   font-size: 1.05rem;
 }
 
+.weddings-mode h1,
 .weddings-mode h2,
 .weddings-mode h3,
 .weddings-mode h4 {
@@ -1128,9 +1199,14 @@ textarea {
   text-transform: none;
 }
 
-.weddings-mode .hero-block h2 {
+.weddings-mode .hero-block h1 {
   font-size: 3.6rem;
   line-height: 1;
+}
+
+.weddings-mode .hero-block h2 {
+  font-size: 2.8rem;
+  line-height: 1.1;
 }
 
 .weddings-mode .tabs .tab {
@@ -1159,15 +1235,23 @@ textarea {
   line-height: 1.1;
 }
 
-.wedding-planning {
-  margin: 0 auto 2.5rem;
+.hero-crop {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 500px;
+  min-height: 220px;
+  overflow: hidden;
 }
 
-.wedding-story-list {
-  --wedding-photo-height: 400px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+.hero-img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .wedding-story-row {
@@ -1177,13 +1261,20 @@ textarea {
   gap: 1rem;
 }
 
+.weddings-mode .wedding-story-row:nth-child(2) {
+  margin-block: 50px;
+}
+
 .wedding-story-image {
-  height: var(--wedding-photo-height);
-  border: 0;
-  background-color: transparent;
+  height: 400px;
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
+}
+
+.weddings-mode .wedding-story-row:nth-child(2) .card-four-wedding {
+  height: 500px;
+  margin-block: -50px;
 }
 
 .wedding-story-row article {
@@ -1272,6 +1363,7 @@ textarea {
   line-height: 1.55;
 }
 
+.weddings-mode .hero-block h1,
 .weddings-mode .hero-block h2,
 .weddings-mode .hero-block p,
 .weddings-mode .field-group label,
@@ -1384,7 +1476,6 @@ textarea {
   border: 1px solid rgba(0,0,0,0.08);
   color: var(--text-dark);
   max-width: 840px;
-  margin: 0 auto 2rem;
 }
 
 .wedding-panel .field-group input,
@@ -1397,6 +1488,76 @@ textarea {
 .wedding-panel .international-phone-input .PhoneInputCountry {
   background: #f5f5f5;
   border-color: rgba(0,0,0,0.08);
+}
+
+/* Bloque combinado */
+.combo-block { margin-top: 3.5rem; }
+.combo-heading {
+  text-align: center;
+  font-family: Georgia, serif;
+  font-size: 2.4rem;
+  color: #2d2a32;
+  margin-bottom: 1.5rem;
+}
+.combo-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+
+.combo-card {
+  position: relative;
+  border: 2px solid #e0ce92;
+}
+.combo-card.featured {
+  border-color: var(--gold);
+  box-shadow: 0 14px 34px rgba(176, 118, 137, .22);
+  transform: scale(1.03);
+}
+.combo-desc { 
+  color: #8a897f;
+  font-size: .9rem;
+  margin: .5rem 0 1rem;
+}
+
+.combo-price { display: flex; justify-content: center; align-items: baseline; gap: .75rem; }
+.old-price { color: #b9aeb4; text-decoration: line-through; font-size: 1.4rem; }
+.new-price { color: var(--gold); font-size: 2rem; font-weight: 700; }
+
+.single-price { 
+  font-size: 1.4rem;
+}
+
+.package-price { 
+  color: var(--gold-soft);
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.discount-badge {
+  position: absolute;
+  top: -14px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--gold);
+  color: #fff;
+  padding: .3rem .9rem;
+  border-radius: 999px;
+  font-size: .9rem;
+  font-weight: 600;
+  letter-spacing: .5px;
+}
+.popular-tag {
+  display: inline-block;
+  background: #f3f0e3;
+  color: var(--gold);
+  padding: .2rem .7rem;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 600;
+  margin-top: .75rem;
+  margin-bottom: .75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.centred-card {
+  text-align: center;
 }
 
 .sub-form-texto {
@@ -2419,6 +2580,15 @@ textarea {
   .wedding-planning-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .divider-block{
+  width: 100%;
+
+  .divider-title {
+    left: 0%;
+    width: 100%;
+  }
+}
 }
 
 @media (max-width: 600px) {
@@ -2514,8 +2684,13 @@ textarea {
     grid-template-columns: 1fr;
   }
 
-  .wedding-story-list {
-    --wedding-photo-height: 220px;
+  .weddings-mode .wedding-story-row:nth-child(2) {
+    margin-block: 0;
+  }
+
+  .weddings-mode .wedding-story-row:nth-child(2) .card-four-wedding {
+    height: 400px;
+    margin-block: 0;
   }
 
   .legal-details-list > div {

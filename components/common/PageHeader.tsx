@@ -29,15 +29,21 @@ export function PageHeader({ view, theme, onHome, onCinema, onWedding }: PageHea
             Bodas
           </a>
           <a className="nav-link nav-instagram-link" href="https://www.instagram.com/icarostudio_/" target="_blank" rel="noreferrer" aria-label="Instagram" title="Instagram">
-           <img src="/instagram.png" alt="" className="nav-icon" />
+           <span className="icon-mask icon-instagram" aria-hidden="true" />
            <span className="nav-label">Instagram</span>
           </a>
           <div className="nav-contact">
-            <span>📞 +34 633 716 171</span>
-            <span>✉️ icarostudio33@gmail.com</span>
+            <p className="contact-info">
+                <span className="icon-mask icon-phone" aria-hidden="true" />
+                <span className="nav-label">+34 633 716 171</span>
+            </p>
+            <p className="contact-info">
+                <span className="icon-mask icon-mail" aria-hidden="true" />
+                <span className="nav-label">icarostudio33@gmail.com</span>
+            </p>
           </div>
-          <a href="/private" className="nav-admin-btn" aria-label="Panel privado" title="Panel privado">
-            <span aria-hidden="true">🔑</span>
+          <a href="/private" className="nav-link" aria-label="Panel privado" title="Panel privado">
+            <span className="icon-mask icon-key" aria-hidden="true" />
             <span className="nav-label">Panel</span>
           </a>
         </nav>
