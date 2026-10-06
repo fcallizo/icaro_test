@@ -52,7 +52,7 @@ export function WeddingScreen({
       <main className="content-section content-section-tabs weddings-mode">
         <div className="tabs" role="tablist" aria-label="Servicios de bodas">
           <button type="button" role="tab" aria-selected={activeTab === 'video'} className={activeTab === 'video' ? 'tab active' : 'tab'} onClick={() => setActiveTab('video')}>Mira lo que creamos</button>
-          <button type="button" role="tab" aria-selected={activeTab === 'info'} className={activeTab === 'info' ? 'tab active' : 'tab'} onClick={() => setActiveTab('info')}>Así hacemos realidad tu sueño</button>
+          <button type="button" role="tab" aria-selected={activeTab === 'info'} className={activeTab === 'info' ? 'tab active' : 'tab'} onClick={() => setActiveTab('info')}>Hacemos realidad vuestoros sueños</button>
           <button type="button" role="tab" aria-selected={activeTab === 'reserva'} className={activeTab === 'reserva' ? 'tab active' : 'tab'} onClick={() => setActiveTab('reserva')}>Hablemos de vuestra boda</button>
         </div>
 

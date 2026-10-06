@@ -18,6 +18,8 @@ export function WeddingInfoTab({onReserve}: WeddingInfoTabProps) {
 
   const duoPercentage = 5;
   const trioPercentage = 15;
+  const duoBasePrice = complementaryPrices.complete + weddingPrices.complete;
+  const trioBasePrice = 2 * complementaryPrices.complete + weddingPrices.complete;
 
   function discountedPrice(originalPrice: number, discountPercentage: number): number {
     const discountAmount = (originalPrice * discountPercentage) / 100;
@@ -81,79 +83,82 @@ export function WeddingInfoTab({onReserve}: WeddingInfoTabProps) {
 
         <div className="cards-grid">
           <div className="booking-form combo-card wedding-panel">
-            <div className="card-title">Pre-boda</div>
+            <div className="card-title">Pre-boda <span className="popular-tag complement-tag">Complemento</span></div>
             <div className="price-row">
-              <div><strong>Sesión Fotográfica</strong><span>Conócenos antes del gran día, sesión relajada.</span></div>
-              <b className="single-price">{complementaryPrices.photo} €</b>
+              <div><strong>Sesión fotográfica</strong><span>Una sesión relajada antes del gran día. Hasta 1 h y 30 fotos editadas.</span></div>
+              <b className="single-price"><span className="price-start">Desde</span>{complementaryPrices.photo} €</b>
             </div>
             <div className="price-row">
-              <div><strong>Película documental</strong><span>Grabación y edición del evento.</span></div>
-              <b className="single-price">{complementaryPrices.video} €</b>
+              <div><strong>Película documental</strong><span>Una pieza breve de 2–3 min, grabada durante la sesión.</span></div>
+              <b className="single-price"><span className="price-start">Desde</span>{complementaryPrices.video} €</b>
             </div>
             <div className="price-row no-border">
-              <div><strong>Pack Completo</strong><span>Sesión Fotográfica + Película.</span></div>
-              <b className="package-price">{complementaryPrices.complete} €</b>
+              <div><strong>Pack completo</strong><span>Sesión fotográfica + película documental.</span></div>
+              <b className="package-price"><span className="price-start">Desde</span>{complementaryPrices.complete} €</b>
             </div>
           </div>
 
           <div className="booking-form combo-card featured wedding-panel">
             <div className="card-title">Boda</div>
             <div className="price-row">
-              <div><strong>Sesión Fotográfica</strong><span>Cobertura completa de ceremonia y fiesta.</span></div>
-              <b className="single-price">{weddingPrices.photo} €</b>
+              <div><strong>Reportaje fotográfico</strong><span>Hasta 6 h de cobertura y un mínimo de 250 fotos editadas.</span></div>
+              <b className="single-price"><span className="price-start">Desde</span>{weddingPrices.photo} €</b>
             </div>
             <div className="price-row">
-              <div><strong>Película documental</strong><span>Grabación y edición del evento.</span></div>
-              <b className="single-price">{weddingPrices.video} €</b>
+              <div><strong>Película documental</strong><span>Hasta 6 h de cobertura y una película de 5–8 min.</span></div>
+              <b className="single-price"><span className="price-start">Desde</span>{weddingPrices.video} €</b>
             </div>
             <div className="price-row no-border">
-              <div><strong>Pack Completo</strong><span>Sesión Fotográfica + Película.</span></div>
-              <b className="package-price">{weddingPrices.complete} €</b>
+              <div><strong>Pack completo</strong><span>Reportaje fotográfico + película documental.</span></div>
+              <b className="package-price"><span className="price-start">Desde</span>{weddingPrices.complete} €</b>
             </div>
           </div>
 
           <div className="booking-form combo-card wedding-panel">
-            <div className="card-title">Post-boda</div>
+            <div className="card-title">Post-boda <span className="popular-tag complement-tag">Complemento</span></div>
             <div className="price-row">
-              <div><strong>Sesión Fotográfica</strong><span>Una sesión después de la boda, a vuestra elección.</span></div>
-              <b className="single-price" >{complementaryPrices.photo} €</b>
+              <div><strong>Sesión fotográfica</strong><span>Una sesión después de la boda, donde elijáis. Hasta 1 h y 30 fotos editadas.</span></div>
+              <b className="single-price"><span className="price-start">Desde</span>{complementaryPrices.photo} €</b>
             </div>
             <div className="price-row">
-              <div><strong>Película documental</strong><span>Grabación y edición del evento.</span></div>
-              <b className="single-price">{complementaryPrices.video} €</b>
+              <div><strong>Película documental</strong><span>Una pieza breve de 2–3 min, grabada durante la sesión.</span></div>
+              <b className="single-price"><span className="price-start">Desde</span>{complementaryPrices.video} €</b>
             </div>
             <div className="price-row no-border">
-              <div><strong>Pack Completo</strong><span>Sesión Fotográfica + Película.</span></div>
-              <b className="package-price">{complementaryPrices.complete} €</b>
+              <div><strong>Pack completo</strong><span>Sesión fotográfica + película documental.</span></div>
+              <b className="package-price"><span className="price-start">Desde</span>{complementaryPrices.complete} €</b>
             </div>
           </div>
         </div>
 
-        {/* Packs combinados destacados */}
         <div className="combo-block">
           <h2 className="combo-heading">Packs combinados</h2>
           <div className="cards-grid combo-grid">
             <div className="info-card combo-card wedding-panel centred-card">
               <span className="discount-badge">{duoPercentage}% dto.</span>
-              <div className="card-title">Dúo · Boda + Pre-boda o Post-boda</div>
-              <p className="combo-desc">Combinad vuestra boda con uno de los complementos y consegid un {duoPercentage}% de descuento.</p>
+              <div className="card-title">Dúo Pack · Boda + complemento</div>
+              <p className="combo-desc">Boda + pre-boda o post-boda. Combinad vuestra boda con uno de los complementos y consegid un {duoPercentage}% de descuento.</p>
               <div className="combo-price">
-                <span className="old-price">{complementaryPrices.complete + weddingPrices.complete} €</span>
-                <span className="new-price">{discountedPrice(complementaryPrices.complete + weddingPrices.complete, duoPercentage)} €</span>
+                <span className="old-price">Desde {duoBasePrice} €</span>
+                <span className="new-price">Desde {discountedPrice(duoBasePrice, duoPercentage)} €</span>
               </div>
+              <p className="saving-label">Os ahorráis {duoBasePrice - discountedPrice(duoBasePrice, duoPercentage)} €</p>
             </div>
 
             <div className="info-card combo-card featured wedding-panel centred-card">
               <span className="discount-badge">{trioPercentage}% dto.</span>
               <span className="popular-tag">Más elegido</span>
-              <div className="card-title">Trío · Experiencia Completa</div>
-              <p className="combo-desc">Pre-boda + Boda + Post-boda. Todo con un {trioPercentage}% de descuento.</p>
+              <div className="card-title">Trío Pack · Experiencia Completa</div>
+              <p className="combo-desc">Pack Pre-boda + boda + post-boda. Todo con un {trioPercentage}% de descuento.</p>
               <div className="combo-price">
-                <span className="old-price">{2 * complementaryPrices.complete + weddingPrices.complete} €</span>
-                <span className="new-price">{discountedPrice(2 * complementaryPrices.complete + weddingPrices.complete, trioPercentage)} €</span>
+                <span className="old-price">Desde {trioBasePrice} €</span>
+                <span className="new-price">Desde {discountedPrice(trioBasePrice, trioPercentage)} €</span>
               </div>
+              <p className="saving-label">Os ahorráis {trioBasePrice - discountedPrice(trioBasePrice, trioPercentage)} €</p>
             </div>
           </div>
+          <p className="pricing-note">Descuento aplicado sobre el precio de los packs completos de cada servicio. No acumulable con otras promociones.</p>
+          <p className="pricing-note">Los precios son orientativos: las horas adicionales, el desplazamiento y las necesidades de cada pareja pueden modificar el presupuesto final. Consultadnos para una propuesta personalizada.</p>
         </div>
       </section>
 
