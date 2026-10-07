@@ -8,7 +8,7 @@ import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
 import { CalendarBlockRange } from '@/components/private/private-types';
 
 type View = 'selector' | 'cinema' | 'wedding';
-type TabMode = 'video' | 'foto' | 'produccion';
+type TabMode = 'video' | 'info' | 'reserva';
 
 type RequestItem = {
   id: string;

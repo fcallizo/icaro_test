@@ -5,8 +5,6 @@ import { PrivacyFormNotice } from '@/components/common/PrivacyFormNotice';
 import { CalendarBlockRange } from '@/components/private/private-types';
 import { ContactPanel } from '@/components/common/ContactPanel';
 
-type TabMode = 'video' | 'foto' | 'produccion';
-
 type ProductionForm = {
   nombre: string;
   email: string;
