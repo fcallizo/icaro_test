@@ -1,5 +1,5 @@
 import { FormEvent, ReactNode } from 'react';
-import { PrivateRequestUpdate, RequestDetailsModalProps } from './private-types';
+import { PrivateRequestUpdate, RequestDetailsModalProps } from '../private-types';
 
 type RequestDetailsModalFrameProps = Omit<RequestDetailsModalProps, 'onSave'> & {
   title: string;

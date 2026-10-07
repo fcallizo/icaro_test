@@ -7,13 +7,28 @@ export async function ensureTables() {
 
   await sql`CREATE TABLE IF NOT EXISTS eventos (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    tipo TEXT NOT NULL CHECK (tipo IN ('wedding', 'production')),
+    tipo TEXT NOT NULL CHECK (tipo IN ('wedding', 'production', 'prewedding', 'postwedding')),
     fecha TEXT,
     status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'rejected')),
+    parent_event_id UUID REFERENCES eventos(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     decided_at TIMESTAMPTZ
   );`;
+  await sql`DO $$ BEGIN
+    IF NOT EXISTS (
+      SELECT 1 FROM pg_constraint
+      WHERE conrelid = 'eventos'::regclass
+        AND conname = 'eventos_tipo_check'
+        AND pg_get_constraintdef(oid) LIKE '%prewedding%'
+        AND pg_get_constraintdef(oid) LIKE '%postwedding%'
+    ) THEN
+      ALTER TABLE eventos DROP CONSTRAINT IF EXISTS eventos_tipo_check;
+      ALTER TABLE eventos ADD CONSTRAINT eventos_tipo_check
+        CHECK (tipo IN ('wedding', 'production', 'prewedding', 'postwedding'));
+    END IF;
+  END $$;`;
+  await sql`ALTER TABLE eventos ADD COLUMN IF NOT EXISTS parent_event_id UUID REFERENCES eventos(id) ON DELETE CASCADE;`;
 
   await sql`CREATE TABLE IF NOT EXISTS calendar_blocks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -32,7 +47,6 @@ export async function ensureTables() {
     email TEXT,
     tel_novio TEXT,
     tel_novia TEXT,
-    fecha TEXT,
     lugar TEXT,
     novia TEXT,
     novio TEXT,
@@ -40,10 +54,8 @@ export async function ensureTables() {
     cronograma TEXT,
     detalles TEXT,
     tipo_pack TEXT,
-    fecha_preboda TEXT,
     lugar_preboda TEXT,
     detalles_preboda TEXT,
-    fecha_postboda TEXT,
     lugar_postboda TEXT,
     detalles_postboda TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
@@ -55,7 +67,6 @@ export async function ensureTables() {
     nombre TEXT,
     email TEXT,
     telefono TEXT,
-    fecha TEXT,
     tipo TEXT,
     presupuesto TEXT,
     descripcion TEXT,
@@ -140,8 +151,19 @@ export async function ensureTables() {
       AND table_name IN ('wedding_requests', 'production_requests')
       AND column_name IN ('fecha', 'status');
   `;
-  const hasLegacyWeddingFields = legacyColumns.some((column: any) => column.table_name === 'wedding_requests');
-  const hasLegacyProductionFields = legacyColumns.some((column: any) => column.table_name === 'production_requests');
+  const hasLegacyWeddingFields = ['fecha', 'status'].every((field) => legacyColumns.some(
+    (column: any) => column.table_name === 'wedding_requests' && column.column_name === field,
+  ));
+  const hasLegacyProductionFields = ['fecha', 'status'].every((field) => legacyColumns.some(
+    (column: any) => column.table_name === 'production_requests' && column.column_name === field,
+  ));
+  const legacySecondaryDateColumns = await sql`
+    SELECT column_name
+    FROM information_schema.columns
+    WHERE table_schema = current_schema()
+      AND table_name = 'wedding_requests'
+      AND column_name IN ('fecha_preboda', 'fecha_postboda');
+  `;
 
   if (hasLegacyWeddingFields) {
     await sql`
@@ -165,6 +187,35 @@ export async function ensureTables() {
       ON CONFLICT (id) DO NOTHING;
     `;
   }
+
+  await sql`CREATE UNIQUE INDEX IF NOT EXISTS eventos_parent_tipo_key
+    ON eventos (parent_event_id, tipo) WHERE parent_event_id IS NOT NULL;`;
+  if (legacySecondaryDateColumns.some((column: any) => column.column_name === 'fecha_preboda')) {
+    await sql`
+      INSERT INTO eventos (tipo, fecha, status, parent_event_id, decided_at)
+      SELECT 'prewedding', NULLIF(BTRIM(w.fecha_preboda), ''), e.status, e.id, e.decided_at
+      FROM wedding_requests w
+      JOIN eventos e ON e.id = w.evento_id AND e.tipo = 'wedding'
+      WHERE NULLIF(BTRIM(w.fecha_preboda), '') IS NOT NULL
+      ON CONFLICT (parent_event_id, tipo) WHERE parent_event_id IS NOT NULL
+      DO UPDATE SET fecha = EXCLUDED.fecha, status = EXCLUDED.status,
+        decided_at = EXCLUDED.decided_at, updated_at = NOW();
+    `;
+  }
+  if (legacySecondaryDateColumns.some((column: any) => column.column_name === 'fecha_postboda')) {
+    await sql`
+      INSERT INTO eventos (tipo, fecha, status, parent_event_id, decided_at)
+      SELECT 'postwedding', NULLIF(BTRIM(w.fecha_postboda), ''), e.status, e.id, e.decided_at
+      FROM wedding_requests w
+      JOIN eventos e ON e.id = w.evento_id AND e.tipo = 'wedding'
+      WHERE NULLIF(BTRIM(w.fecha_postboda), '') IS NOT NULL
+      ON CONFLICT (parent_event_id, tipo) WHERE parent_event_id IS NOT NULL
+      DO UPDATE SET fecha = EXCLUDED.fecha, status = EXCLUDED.status,
+        decided_at = EXCLUDED.decided_at, updated_at = NOW();
+    `;
+  }
+  await sql`ALTER TABLE wedding_requests DROP COLUMN IF EXISTS fecha_preboda;`;
+  await sql`ALTER TABLE wedding_requests DROP COLUMN IF EXISTS fecha_postboda;`;
 
   await sql`CREATE UNIQUE INDEX IF NOT EXISTS wedding_requests_evento_id_key ON wedding_requests (evento_id);`;
   await sql`CREATE UNIQUE INDEX IF NOT EXISTS production_requests_evento_id_key ON production_requests (evento_id);`;

@@ -1,5 +1,5 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
-import { PrivateRequestUpdate, RequestDetailsModalProps } from './private-types';
+import { PrivateRequestUpdate, RequestDetailsModalProps } from '../private-types';
 import { RequestDetailsModalFrame } from './RequestDetailsModalFrame';
 
 function downloadWeddingSheet(request: RequestDetailsModalProps['request'], values: PrivateRequestUpdate) {
@@ -96,11 +96,21 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
     </div>
   );
 
+
+  const hasPreWeddingFilled = values.fechaPreboda.trim() !== '' && values.lugarPreboda.trim() !== '' && values.detallesPreboda.trim() !== '';
+  const hasPostWeddingFilled = values.fechaPostboda.trim() !== '' && values.lugarPostboda.trim() !== '' && values.detallesPostboda.trim() !== '';
+  const hasCompleteBreakdown = values.tipoPack === 'Indeciso' || values.tipoPack === 'boda' ||
+    (values.tipoPack === 'duo-pre' && hasPreWeddingFilled) ||
+    (values.tipoPack === 'duo-post' && hasPostWeddingFilled) ||
+    (values.tipoPack === 'trio' && hasPreWeddingFilled && hasPostWeddingFilled)
+  ;
+
   return (
     <RequestDetailsModalFrame
       {...props}
       title={title}
       values={values}
+      canConfirm={hasCompleteBreakdown}
       onSubmit={(event: FormEvent<HTMLFormElement>) => { event.preventDefault(); onSave(values); }}
       rightAction={request.status !== 'pending' ? (
         <button type="button" className="private-download-button" disabled={props.busy} onClick={() => downloadWeddingSheet(request, values)}>

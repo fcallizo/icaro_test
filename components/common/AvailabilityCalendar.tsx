@@ -4,8 +4,10 @@ import { useState } from 'react';
 import { CalendarBlockRange } from '@/components/private/private-types';
 
 export type CalendarRequest = {
-  type: 'wedding' | 'production';
+  type: 'wedding' | 'production' | 'prewedding' | 'postwedding';
   fecha?: string;
+  fechaPreboda?: string | null;
+  fechaPostboda?: string | null;
   status?: string;
 };
 
@@ -36,16 +38,23 @@ export function AvailabilityCalendar({
   const firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7;
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const monthLabel = displayedMonth.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+  const isIncludedRequest = (request: CalendarRequest) => !requestTypes
+    || requestTypes.includes(request.type)
+    || (['prewedding', 'postwedding'].includes(request.type) && requestTypes.includes('wedding'));
+  const getRequestDates = (request: CalendarRequest) => [
+    request.fecha,
+    ...(request.type === 'wedding' ? [request.fechaPreboda, request.fechaPostboda] : []),
+  ].filter((date): date is string => Boolean(date));
   const bookedDates = new Set(
     requests
-      .filter((request) => request.fecha && request.status === 'confirmed' && (!requestTypes || requestTypes.includes(request.type)))
-      .map((request) => request.fecha),
+      .filter((request) => request.status === 'confirmed' && isIncludedRequest(request))
+      .flatMap(getRequestDates),
   );
   const pendingDates = new Set(
     showPending
       ? requests
-          .filter((request) => request.fecha && request.status === 'pending' && (!requestTypes || requestTypes.includes(request.type)))
-          .map((request) => request.fecha)
+          .filter((request) => request.status === 'pending' && isIncludedRequest(request))
+          .flatMap(getRequestDates)
       : [],
   );
   const calendarClass = variant === 'light' ? 'calendar-block wedding-calendar' : 'calendar-block';

@@ -12,7 +12,7 @@ type TabMode = 'video' | 'info' | 'reserva';
 
 type RequestItem = {
   id: string;
-  type: 'wedding' | 'production';
+  type: 'wedding' | 'production' | 'prewedding' | 'postwedding';
   nombre?: string;
   nombre_cliente?: string;
   nombre_empresa?: string;

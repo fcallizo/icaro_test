@@ -2,13 +2,18 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE IF NOT EXISTS eventos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tipo TEXT NOT NULL CHECK (tipo IN ('wedding', 'production')),
+  tipo TEXT NOT NULL CHECK (tipo IN ('wedding', 'production', 'prewedding', 'postwedding')),
   fecha TEXT,
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'rejected')),
+  parent_event_id UUID REFERENCES eventos(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   decided_at TIMESTAMPTZ
 );
+ALTER TABLE eventos DROP CONSTRAINT IF EXISTS eventos_tipo_check;
+ALTER TABLE eventos ADD CONSTRAINT eventos_tipo_check
+  CHECK (tipo IN ('wedding', 'production', 'prewedding', 'postwedding'));
+ALTER TABLE eventos ADD COLUMN IF NOT EXISTS parent_event_id UUID REFERENCES eventos(id) ON DELETE CASCADE;
 
 CREATE TABLE IF NOT EXISTS calendar_blocks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -27,7 +32,6 @@ CREATE TABLE IF NOT EXISTS wedding_requests (
   email TEXT,
   tel_novio TEXT,
   tel_novia TEXT,
-  fecha TEXT,
   lugar TEXT,
   novia TEXT,
   novio TEXT,
@@ -35,10 +39,8 @@ CREATE TABLE IF NOT EXISTS wedding_requests (
   cronograma TEXT,
   detalles TEXT,
   tipo_pack TEXT,
-  fecha_preboda TEXT,
   lugar_preboda TEXT,
   detalles_preboda TEXT,
-  fecha_postboda TEXT,
   lugar_postboda TEXT,
   detalles_postboda TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -50,7 +52,6 @@ CREATE TABLE IF NOT EXISTS production_requests (
   nombre TEXT,
   email TEXT,
   telefono TEXT,
-  fecha TEXT,
   tipo TEXT,
   presupuesto TEXT,
   descripcion TEXT,
@@ -166,6 +167,46 @@ END $$;
 CREATE UNIQUE INDEX IF NOT EXISTS wedding_requests_evento_id_key ON wedding_requests (evento_id);
 CREATE UNIQUE INDEX IF NOT EXISTS production_requests_evento_id_key ON production_requests (evento_id);
 CREATE INDEX IF NOT EXISTS eventos_fecha_status_idx ON eventos (fecha, status);
+CREATE UNIQUE INDEX IF NOT EXISTS eventos_parent_tipo_key
+  ON eventos (parent_event_id, tipo) WHERE parent_event_id IS NOT NULL;
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = current_schema() AND table_name = 'wedding_requests' AND column_name = 'fecha_preboda'
+  ) THEN
+    EXECUTE $migration$
+      INSERT INTO eventos (tipo, fecha, status, parent_event_id, decided_at)
+      SELECT 'prewedding', NULLIF(BTRIM(w.fecha_preboda), ''), e.status, e.id, e.decided_at
+      FROM wedding_requests w
+      JOIN eventos e ON e.id = w.evento_id AND e.tipo = 'wedding'
+      WHERE NULLIF(BTRIM(w.fecha_preboda), '') IS NOT NULL
+      ON CONFLICT (parent_event_id, tipo) WHERE parent_event_id IS NOT NULL
+      DO UPDATE SET fecha = EXCLUDED.fecha, status = EXCLUDED.status,
+        decided_at = EXCLUDED.decided_at, updated_at = NOW();
+    $migration$;
+  END IF;
+
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = current_schema() AND table_name = 'wedding_requests' AND column_name = 'fecha_postboda'
+  ) THEN
+    EXECUTE $migration$
+      INSERT INTO eventos (tipo, fecha, status, parent_event_id, decided_at)
+      SELECT 'postwedding', NULLIF(BTRIM(w.fecha_postboda), ''), e.status, e.id, e.decided_at
+      FROM wedding_requests w
+      JOIN eventos e ON e.id = w.evento_id AND e.tipo = 'wedding'
+      WHERE NULLIF(BTRIM(w.fecha_postboda), '') IS NOT NULL
+      ON CONFLICT (parent_event_id, tipo) WHERE parent_event_id IS NOT NULL
+      DO UPDATE SET fecha = EXCLUDED.fecha, status = EXCLUDED.status,
+        decided_at = EXCLUDED.decided_at, updated_at = NOW();
+    $migration$;
+  END IF;
+END $$;
+
+ALTER TABLE wedding_requests DROP COLUMN IF EXISTS fecha_preboda;
+ALTER TABLE wedding_requests DROP COLUMN IF EXISTS fecha_postboda;
 
 ALTER TABLE wedding_requests ALTER COLUMN evento_id SET NOT NULL;
 ALTER TABLE production_requests ALTER COLUMN evento_id SET NOT NULL;

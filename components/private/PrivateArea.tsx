@@ -9,7 +9,7 @@ import { CalendarBlocksTab } from '@/components/private/tabs/CalendarBlocksTab';
 import { CalendarBlock, ProductionMaterial, ProductionMaterialCategory, PrivateRequest, PrivateRequestUpdate, RequestAction } from '@/components/private/private-types';
 import { AvailabilityCalendar } from '@/components/common/AvailabilityCalendar';
 import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
-import { RequestDetailsModal } from '@/components/private/RequestDetailsModal';
+import { RequestDetailsModal } from '@/components/private/requestDetailsModal/RequestDetailsModal';
 
 async function getPrivateRequests() {
   const response = await fetch('/api/private/requests', { cache: 'no-store' });
@@ -338,7 +338,9 @@ export function PrivateArea() {
     }
   };
 
-  const visibleRequests = selectedDate ? requests.filter((request) => request.fecha === selectedDate) : requests;
+  const visibleRequests = selectedDate
+    ? requests.filter((request) => [request.fecha, request.fechaPreboda, request.fechaPostboda].includes(selectedDate))
+    : requests;
   const pendingCount = visibleRequests.filter((request) => request.status === 'pending').length;
   const confirmedCount = visibleRequests.filter((request) => request.status === 'confirmed').length;
   const selectedDateLabel = selectedDate

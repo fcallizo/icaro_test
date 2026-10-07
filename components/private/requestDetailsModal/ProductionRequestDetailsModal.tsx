@@ -1,5 +1,5 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
-import { PrivateRequestUpdate, ProductionMaterialCategory, RequestDetailsModalProps } from './private-types';
+import { PrivateRequestUpdate, ProductionMaterialCategory, RequestDetailsModalProps } from '../private-types';
 import { RequestDetailsModalFrame } from './RequestDetailsModalFrame';
 
 const productionItems = [

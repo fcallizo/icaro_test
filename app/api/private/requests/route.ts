@@ -5,6 +5,12 @@ import { sendRequestDecisionNotification } from '@/lib/request-notifications';
 
 type RequestType = 'wedding' | 'production';
 
+function isValidDate(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const parsed = new Date(`${value}T00:00:00.000Z`);
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+}
+
 async function isAuthenticated(request: NextRequest) {
   return Boolean(await readPrivateSession(request.cookies.get(PRIVATE_SESSION_COOKIE)?.value));
 }
@@ -22,8 +28,10 @@ export async function GET(request: NextRequest) {
     SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
       w.nombre, w.email, w.tel_novio AS "telNovio", w.tel_novia AS "telNovia",
       w.lugar, w.novia, w.novio, w.ceremonia, w.cronograma, w.detalles, w.tipo_pack AS "tipoPack",
-      w.fecha_preboda AS "fechaPreboda", w.lugar_preboda AS "lugarPreboda", w.detalles_preboda AS "detallesPreboda",
-      w.fecha_postboda AS "fechaPostboda", w.lugar_postboda AS "lugarPostboda", w.detalles_postboda AS "detallesPostboda"
+      (SELECT pe.fecha FROM eventos pe WHERE pe.parent_event_id = e.id AND pe.tipo = 'prewedding') AS "fechaPreboda",
+      w.lugar_preboda AS "lugarPreboda", w.detalles_preboda AS "detallesPreboda",
+      (SELECT pe.fecha FROM eventos pe WHERE pe.parent_event_id = e.id AND pe.tipo = 'postwedding') AS "fechaPostboda",
+      w.lugar_postboda AS "lugarPostboda", w.detalles_postboda AS "detallesPostboda"
     FROM eventos e
     JOIN wedding_requests w ON w.evento_id = e.id
     WHERE e.tipo = 'wedding' AND e.status IN ('pending', 'confirmed')
@@ -66,20 +74,19 @@ export async function PATCH(request: NextRequest) {
   const requestType = type as RequestType;
 
   if (action === 'confirm') {
-    const [pendingEvent] = await sql`
-      SELECT fecha FROM eventos
-      WHERE id = ${id} AND tipo = ${requestType} AND status = 'pending'
+    const [manualBlock] = await sql`
+      SELECT e.id FROM eventos e
+      WHERE (e.id = ${id} OR e.parent_event_id = ${id})
+        AND e.status = 'pending'
+        AND EXISTS (
+          SELECT 1 FROM calendar_blocks b
+          WHERE e.fecha >= to_char(b.start_date, 'YYYY-MM-DD')
+            AND e.fecha <= to_char(b.end_date, 'YYYY-MM-DD')
+        )
       LIMIT 1;
     `;
-    if (typeof pendingEvent?.fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(pendingEvent.fecha)) {
-      const [manualBlock] = await sql`
-        SELECT id FROM calendar_blocks
-        WHERE start_date <= ${pendingEvent.fecha}::date AND end_date >= ${pendingEvent.fecha}::date
-        LIMIT 1;
-      `;
-      if (manualBlock) {
-        return NextResponse.json({ error: 'No se puede confirmar: la fecha está bloqueada como no disponible.' }, { status: 409 });
-      }
+    if (manualBlock) {
+      return NextResponse.json({ error: 'No se puede confirmar: una de las fechas está bloqueada como no disponible.' }, { status: 409 });
     }
   }
 
@@ -98,10 +105,15 @@ export async function PATCH(request: NextRequest) {
     }
 
     const hasValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim());
-    const hasValidDate = /^\d{4}-\d{2}-\d{2}$/.test(values.fecha)
-      && !Number.isNaN(Date.parse(`${values.fecha}T00:00:00Z`));
+    const hasValidDate = isValidDate(values.fecha);
     if (!values.nombre.trim() || !hasValidEmail || !hasValidDate) {
       return NextResponse.json({ error: 'Nombre, email y fecha son obligatorios y deben ser válidos.' }, { status: 400 });
+    }
+    const secondaryDates = requestType === 'wedding'
+      ? [values.fechaPreboda.trim(), values.fechaPostboda.trim()]
+      : [];
+    if (secondaryDates.some((date) => date !== '' && !isValidDate(date))) {
+      return NextResponse.json({ error: 'Las fechas de preboda y postboda deben ser válidas.' }, { status: 400 });
     }
 
     if (requestType === 'wedding' && (!values.telNovio.trim() || !values.telNovia.trim() || !values.lugar.trim())) {
@@ -132,7 +144,6 @@ export async function PATCH(request: NextRequest) {
           lugar = ${values.lugar.trim()}, novia = ${values.novia.trim()}, novio = ${values.novio.trim()},
           ceremonia = ${values.ceremonia.trim()}, cronograma = ${values.cronograma.trim()}, 
           detalles = ${values.detalles.trim()}, tipo_pack = ${values.tipoPack.trim()},
-          fecha_preboda = ${values.fechaPreboda.trim()}, fecha_postboda = ${values.fechaPostboda.trim()},
           lugar_preboda = ${values.lugarPreboda.trim()}, lugar_postboda = ${values.lugarPostboda.trim()},
           detalles_preboda = ${values.detallesPreboda.trim()}, detalles_postboda = ${values.detallesPostboda.trim()}
         FROM updated_event AS e
@@ -163,6 +174,34 @@ export async function PATCH(request: NextRequest) {
 
     if (result.length === 0) {
       return NextResponse.json({ error: 'No se encontró el evento para actualizar.' }, { status: 404 });
+    }
+
+    if (requestType === 'wedding') {
+      const secondaryEvents = [
+        { type: 'prewedding', date: values.fechaPreboda.trim() },
+        { type: 'postwedding', date: values.fechaPostboda.trim() },
+      ] as const;
+      for (const secondaryEvent of secondaryEvents) {
+        if (!secondaryEvent.date) {
+          await sql`DELETE FROM eventos
+            WHERE parent_event_id = ${id} AND tipo = ${secondaryEvent.type};`;
+          continue;
+        }
+
+        const savedEvent = await sql`
+          INSERT INTO eventos (tipo, fecha, status, parent_event_id, decided_at)
+          SELECT ${secondaryEvent.type}, ${secondaryEvent.date}, parent.status, parent.id,
+            CASE WHEN parent.status = 'pending' THEN NULL ELSE COALESCE(parent.decided_at, NOW()) END
+          FROM eventos parent
+          WHERE parent.id = ${id} AND parent.tipo = 'wedding'
+          ON CONFLICT (parent_event_id, tipo) WHERE parent_event_id IS NOT NULL
+          DO UPDATE SET fecha = EXCLUDED.fecha, updated_at = NOW()
+          RETURNING id;
+        `;
+        if (savedEvent.length === 0) {
+          return NextResponse.json({ error: 'No se pudo guardar la fecha del evento secundario.' }, { status: 404 });
+        }
+      }
     }
 
     return NextResponse.json({ success: true, action });
@@ -201,6 +240,11 @@ export async function PATCH(request: NextRequest) {
         UPDATE eventos SET status = ${nextStatus}, updated_at = NOW(), decided_at = NOW()
         WHERE id = ${id} AND tipo = 'wedding' AND status = 'pending'
         RETURNING id, fecha
+      ), related_decisions AS (
+        UPDATE eventos child SET status = ${nextStatus}, updated_at = NOW(), decided_at = NOW()
+        FROM decision
+        WHERE child.parent_event_id = decision.id
+        RETURNING child.id
       )
       SELECT decision.fecha, w.email, w.nombre
       FROM decision JOIN wedding_requests w ON w.evento_id = decision.id;

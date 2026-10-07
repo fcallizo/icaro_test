@@ -8,17 +8,23 @@ type NotificationsTabProps = {
 };
 
 export function NotificationsTab({ requests, selectedDate, onView }: NotificationsTabProps) {
-  const pendingRequests = requests.filter((request) => request.status === 'pending' && (!selectedDate || request.fecha === selectedDate));
+  const getDates = (request: PrivateRequest) => [
+    request.fecha,
+    request.fechaPreboda,
+    request.fechaPostboda,
+  ].filter((date): date is string => Boolean(date));
+  const pendingRequests = requests.filter((request) => request.status === 'pending'
+    && (!selectedDate || getDates(request).includes(selectedDate)));
   const pendingWeddings = pendingRequests.filter((request) => request.type === 'wedding');
   const pendingProductions = pendingRequests.filter((request) => request.type === 'production');
   const confirmedDates = new Set(
     requests
-      .filter((request) => request.status === 'confirmed' && request.fecha)
-      .map((request) => request.fecha),
+      .filter((request) => request.status === 'confirmed')
+      .flatMap(getDates),
   );
   const pendingDateCounts = new Map<string, number>();
   pendingRequests.forEach((request) => {
-    if (request.fecha) pendingDateCounts.set(request.fecha, (pendingDateCounts.get(request.fecha) || 0) + 1);
+    getDates(request).forEach((date) => pendingDateCounts.set(date, (pendingDateCounts.get(date) || 0) + 1));
   });
 
   const getDateConflict = (request: PrivateRequest) => {
