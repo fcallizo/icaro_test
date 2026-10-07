@@ -40,9 +40,16 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
     ceremonia: request.ceremonia || '',
     cronograma: request.cronograma || '',
     detalles: request.detalles || '',
+    tipoPack: request.tipoPack || '',
     tipo: request.tipo || '',
     presupuesto: request.presupuesto || '',
     descripcion: request.descripcion || '',
+    fechaPreboda: request.fechaPreboda || '',
+    lugarPreboda: request.lugarPreboda || '',
+    detallesPreboda: request.detallesPreboda || '',
+    fechaPostboda: request.fechaPostboda || '',
+    lugarPostboda: request.lugarPostboda || '',
+    detallesPostboda: request.detallesPostboda || '',
     cameraSetup: '',
     cameraPrice: '',
     droneSetup: '',
@@ -60,7 +67,7 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
     taxPercent: '',
   }));
   const title = values.nombre || 'Boda sin nombre';
-  const updateField = (field: keyof PrivateRequestUpdate) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const updateField = (field: keyof PrivateRequestUpdate) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setValues((current) => ({ ...current, [field]: event.target.value }));
   };
   const input = (field: keyof PrivateRequestUpdate, label: string, type = 'text', required = false, wide = false) => (
@@ -73,6 +80,19 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
     <div className="field-group wide" key={field}>
       <label htmlFor={`request-${field}`}>{label}</label>
       <textarea id={`request-${field}`} rows={3} value={values[field]} onChange={updateField(field)} />
+    </div>
+  );
+  const select = (field: keyof PrivateRequestUpdate, label: string, options: Array<string | { value: string; label: string }>) => (
+    <div className="field-group" key={field}>
+      <label htmlFor={`request-${field}`}>{label}</label>
+      <select id={`request-${field}`} value={values[field]} onChange={updateField(field)}>
+        <option value="">Seleccionar...</option>
+        {options.map((option) => {
+          const value = typeof option === 'string' ? option : option.value;
+          const label = typeof option === 'string' ? option : option.label;
+          return <option key={value} value={value}>{label}</option>;
+        })}
+      </select>
     </div>
   );
 
@@ -92,13 +112,40 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
       {input('email', 'Email', 'email', true)}
       {input('fecha', 'Fecha', 'date', true)}
       {input('telNovio', 'Teléfono del novio', 'tel', true)}
-      {input('telNovia', 'Teléfono de la novia', 'tel', true)}
-      {input('lugar', 'Banquete', 'text', true)}
-      {input('ceremonia', 'Ceremonia')}
-      {input('novia', 'Casa de la novia')}
       {input('novio', 'Casa del novio')}
+      {input('telNovia', 'Teléfono de la novia', 'tel', true)}
+      {input('novia', 'Casa de la novia')}
+      {input('ceremonia', 'Ceremonia')}
+      {input('lugar', 'Banquete', 'text', true)}
       {textarea('cronograma', 'Horarios')}
       {textarea('detalles', 'Detalles')}
+      {select('tipoPack', 'Tipo de Pack', [
+        { value: 'indeciso', label: 'Indeciso' },
+        { value: 'boda', label: 'Solo boda' },
+        { value: 'duo-pre', label: 'Boda + pre-boda' },
+        { value: 'duo-post', label: 'Boda + post-boda' },
+        { value: 'trio', label: 'Trío (pre-boda + boda + post-boda)' },
+      ])}
+      {(values.tipoPack === 'duo-pre' || values.tipoPack === 'trio') && (<section className="production-contract-section wide">
+        <header className="production-contract-heading">
+          <h3>Información Post-boda</h3>
+        </header>
+        <div className="production-contract-grid">
+          {input('fechaPreboda', 'Fecha Pre-boda', 'date', true)}
+          {input('lugarPreboda', 'Lugar Pre-boda', 'text', true)}
+          {textarea('detallesPreboda', 'Detalles Pre-boda')}
+        </div>
+      </section>)}
+      {(values.tipoPack === 'duo-post' || values.tipoPack === 'trio') && (<section className="production-contract-section wide">
+        <header className="production-contract-heading">
+          <h3>Información Post-boda</h3>
+        </header>
+        <div className="production-contract-grid">
+          {input('fechaPostboda', 'Fecha Post-boda', 'date', true)}
+          {input('lugarPostboda', 'Lugar Post-boda', 'text', true)}
+          {textarea('detallesPostboda', 'Detalles Post-boda')}
+        </div>
+      </section>)}
     </RequestDetailsModalFrame>
   );
 }

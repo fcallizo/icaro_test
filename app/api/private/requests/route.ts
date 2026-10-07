@@ -21,7 +21,9 @@ export async function GET(request: NextRequest) {
   const weddings = await sql`
     SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
       w.nombre, w.email, w.tel_novio AS "telNovio", w.tel_novia AS "telNovia",
-      w.lugar, w.novia, w.novio, w.ceremonia, w.cronograma, w.detalles
+      w.lugar, w.novia, w.novio, w.ceremonia, w.cronograma, w.detalles, w.tipo_pack AS "tipoPack",
+      w.fecha_preboda AS "fechaPreboda", w.lugar_preboda AS "lugarPreboda", w.detalles_preboda AS "detallesPreboda",
+      w.fecha_postboda AS "fechaPostboda", w.lugar_postboda AS "lugarPostboda", w.detalles_postboda AS "detallesPostboda"
     FROM eventos e
     JOIN wedding_requests w ON w.evento_id = e.id
     WHERE e.tipo = 'wedding' AND e.status IN ('pending', 'confirmed')
@@ -85,7 +87,8 @@ export async function PATCH(request: NextRequest) {
     const values = payload.values;
     const editableFields = [
       'nombre', 'email', 'fecha', 'telNovio', 'telNovia', 'telefono', 'lugar',
-      'novia', 'novio', 'ceremonia', 'cronograma', 'detalles', 'tipo', 'presupuesto', 'descripcion',
+      'novia', 'novio', 'ceremonia', 'cronograma', 'detalles', 'tipo', 'presupuesto', 'descripcion', 'tipoPack',
+      'fechaPreboda', 'lugarPreboda', 'detallesPreboda', 'fechaPostboda', 'lugarPostboda', 'detallesPostboda',
       'cameraSetup', 'cameraPrice', 'droneSetup', 'dronePrice', 'lightingSetup', 'lightingPrice',
       'soundSetup', 'soundPrice', 'deliveryFormat', 'formatPrice', 'extraCrew', 'extraCrewPrice',
       'logistics', 'logisticsPrice', 'taxPercent',
@@ -127,7 +130,11 @@ export async function PATCH(request: NextRequest) {
           nombre = ${values.nombre.trim()}, email = ${values.email.trim()},
           tel_novio = ${values.telNovio.trim()}, tel_novia = ${values.telNovia.trim()},
           lugar = ${values.lugar.trim()}, novia = ${values.novia.trim()}, novio = ${values.novio.trim()},
-          ceremonia = ${values.ceremonia.trim()}, cronograma = ${values.cronograma.trim()}, detalles = ${values.detalles.trim()}
+          ceremonia = ${values.ceremonia.trim()}, cronograma = ${values.cronograma.trim()}, 
+          detalles = ${values.detalles.trim()}, tipo_pack = ${values.tipoPack.trim()},
+          fecha_preboda = ${values.fechaPreboda.trim()}, fecha_postboda = ${values.fechaPostboda.trim()},
+          lugar_preboda = ${values.lugarPreboda.trim()}, lugar_postboda = ${values.lugarPostboda.trim()},
+          detalles_preboda = ${values.detallesPreboda.trim()}, detalles_postboda = ${values.detallesPostboda.trim()}
         FROM updated_event AS e
         WHERE w.evento_id = e.id
         RETURNING w.evento_id;

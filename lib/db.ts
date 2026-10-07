@@ -39,6 +39,13 @@ export async function ensureTables() {
     ceremonia TEXT,
     cronograma TEXT,
     detalles TEXT,
+    tipo_pack TEXT,
+    fecha_preboda TEXT,
+    lugar_preboda TEXT,
+    detalles_preboda TEXT,
+    fecha_postboda TEXT,
+    lugar_postboda TEXT,
+    detalles_postboda TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
   );`;
 

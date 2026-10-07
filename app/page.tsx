@@ -43,6 +43,13 @@ const initialWeddingForm = {
   horaCoctel: '',
   horaBarraLibre: '',
   detalles: '',
+  tipoPack: '',
+  fechaPreboda: '',
+  lugarPreboda: '',
+  detallesPreboda: '',
+  fechaPostboda: '',
+  lugarPostboda: '',
+  detallesPostboda: '',
 };
 
 const initialProductionForm = {

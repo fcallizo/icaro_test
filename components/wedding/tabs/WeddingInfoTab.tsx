@@ -157,7 +157,7 @@ export function WeddingInfoTab({onReserve}: WeddingInfoTabProps) {
               <p className="saving-label">Os ahorráis {trioBasePrice - discountedPrice(trioBasePrice, trioPercentage)} €</p>
             </div>
           </div>
-          <p className="pricing-note">Descuento aplicado sobre el precio de los packs completos de cada servicio. No acumulable con otras promociones.</p>
+          <p className="pricing-note">Descuento aplicado sobre el precio de los packs completos de cada servicio.</p>
           <p className="pricing-note">Los precios son orientativos: las horas adicionales, el desplazamiento y las necesidades de cada pareja pueden modificar el presupuesto final. Consultadnos para una propuesta personalizada.</p>
         </div>
       </section>

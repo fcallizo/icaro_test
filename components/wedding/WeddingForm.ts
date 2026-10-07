@@ -14,4 +14,11 @@ export type WeddingForm = {
   horaCoctel: string;
   horaBarraLibre: string;
   detalles: string;
+  tipoPack: string;
+  fechaPreboda: string;
+  lugarPreboda: string;
+  detallesPreboda: string;
+  fechaPostboda: string;
+  lugarPostboda: string;
+  detallesPostboda: string;
 };

@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (type === 'wedding') {
-    const { nombre, telNovio, telNovia, fecha, lugar, novia, novio, ceremonia, cronograma, detalles } = payload;
+    const { nombre, telNovio, telNovia, fecha, lugar, novia, novio, ceremonia, cronograma, detalles, tipoPack, fechaPreboda, lugarPreboda, detallesPreboda, fechaPostboda, lugarPostboda, detallesPostboda } = payload;
     const eventId = randomUUID();
 
     const result = await sql`
@@ -72,14 +72,16 @@ export async function POST(request: NextRequest) {
         VALUES (${eventId}, 'wedding', ${fecha || ''}, 'pending')
         RETURNING id
       ), new_details AS (
-        INSERT INTO wedding_requests (evento_id, nombre, email, tel_novio, tel_novia, lugar, novia, novio, ceremonia, cronograma, detalles)
-        SELECT id, ${nombre || ''}, ${email}, ${telNovio || ''}, ${telNovia || ''}, ${lugar || ''}, ${novia || ''}, ${novio || ''}, ${ceremonia || ''}, ${cronograma || ''}, ${detalles || ''}
+        INSERT INTO wedding_requests (evento_id, nombre, email, tel_novio, tel_novia, lugar, novia, novio, ceremonia, cronograma, detalles, tipo_pack, fecha_preboda, lugar_preboda, detalles_preboda, fecha_postboda, lugar_postboda, detalles_postboda)
+        SELECT id, ${nombre || ''}, ${email}, ${telNovio || ''}, ${telNovia || ''}, ${lugar || ''}, ${novia || ''}, ${novio || ''}, ${ceremonia || ''}, ${cronograma || ''}, ${detalles || ''}, ${tipoPack || ''},
+           ${fechaPreboda || ''},  ${lugarPreboda || ''},  ${detallesPreboda || ''},  ${fechaPostboda || ''},  ${lugarPostboda || ''}, ${detallesPostboda || ''}
         FROM new_event
         RETURNING evento_id
       )
       SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
         w.nombre, w.email, w.tel_novio AS "telNovio", w.tel_novia AS "telNovia",
-        w.lugar, w.novia, w.novio, w.ceremonia, w.cronograma, w.detalles
+        w.lugar, w.novia, w.novio, w.ceremonia, w.cronograma, w.detalles, w.tipo_pack,
+        w.fecha_preboda, w.lugar_preboda, w.detalles_preboda, w.fecha_postboda, w.lugar_postboda, w.detalles_postboda
       FROM new_details d
       JOIN eventos e ON e.id = d.evento_id
       JOIN wedding_requests w ON w.evento_id = e.id;

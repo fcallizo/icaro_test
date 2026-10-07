@@ -28,9 +28,9 @@ export function WeddingReserveTab({
   return (
     <div className="tab-panel" role="tabpanel">
       <div className="hero-block light">
-          <h1>Empecemos a planificar</h1>
-          <p>Cuéntanos la fecha, los lugares y lo que os gustaría conservar de vuestro día.</p>
-        </div>
+        <h1>Empecemos a planificar</h1>
+        <p>Cuéntanos la fecha, los lugares y lo que os gustaría conservar de vuestro día.</p>
+      </div>
       <div className="reservation-layout">
         <div>
           <AvailabilityCalendar
@@ -52,17 +52,13 @@ export function WeddingReserveTab({
               <label>Nombre completo de los novios</label>
               <input type="text" value={weddingForm.nombre} onChange={(e) => setWeddingForm((current) => ({ ...current, nombre: e.target.value }))} placeholder="Ej: Paola Gómez & David Alfaro" required />
             </div>
-            <div className="field-group">
-              <label>Correo de contacto</label>
-              <input type="email" value={weddingForm.email} onChange={(e) => setWeddingForm((current) => ({ ...current, email: e.target.value }))} placeholder="nombre@ejemplo.com" autoComplete="email" required />
-            </div>
             <div className="two-col">
               <div className="field-group">
-                <label>Teléfono del novio</label>
-                <InternationalPhoneInput value={weddingForm.telNovio} onChange={(value) => setWeddingForm((current) => ({ ...current, telNovio: value }))} placeholder="600 123 456" required />
+                <label>Correo de contacto</label>
+                <input type="email" value={weddingForm.email} onChange={(e) => setWeddingForm((current) => ({ ...current, email: e.target.value }))} placeholder="nombre@ejemplo.com" autoComplete="email" required />
               </div>
               <div className="field-group">
-                <label>Teléfono de la novia</label>
+                <label>Teléfono de Contacto</label>
                 <InternationalPhoneInput value={weddingForm.telNovia} onChange={(value) => setWeddingForm((current) => ({ ...current, telNovia: value }))} placeholder="600 789 012" required />
               </div>
             </div>
@@ -72,47 +68,20 @@ export function WeddingReserveTab({
                 <input type="date" value={weddingForm.fecha} onChange={(e) => setWeddingForm((current) => ({ ...current, fecha: e.target.value }))} required />
               </div>
               <div className="field-group">
-                <label>Lugar de la celebración (banquete)</label>
-                <input type="text" value={weddingForm.lugar} onChange={(e) => setWeddingForm((current) => ({ ...current, lugar: e.target.value }))} placeholder="Ej: Hacienda Dehesa Campoamor" required />
-              </div>
-            </div>
-            <div className="two-col">
-              <div className="field-group">
-                <label>Casa de la novia (dirección exacta)</label>
-                <input type="text" value={weddingForm.novia} onChange={(e) => setWeddingForm((current) => ({ ...current, novia: e.target.value }))} placeholder="Dirección para preparativos" />
-              </div>
-              <div className="field-group">
-                <label>Casa del novio (dirección exacta)</label>
-                <input type="text" value={weddingForm.novio} onChange={(e) => setWeddingForm((current) => ({ ...current, novio: e.target.value }))} placeholder="Dirección para preparativos" />
+                <label>¿Qué os interesa?</label>
+                <select value={weddingForm.tipoPack} onChange={(e) => setWeddingForm((current) => ({ ...current, tipoPack: e.target.value }))} required >
+                  <option value="">Seleccionen una opción</option>
+                  <option value="indeciso">Aún no lo sé</option>
+                  <option value="boda">Solo boda</option>
+                  <option value="duo-pre">Boda + pre-boda</option>
+                  <option value="duo-post">Boda + post-boda</option>
+                  <option value="trio">Trío (pre-boda + boda + post-boda)</option>
+                </select>
               </div>
             </div>
             <div className="field-group">
               <label>Iglesia / lugar de la ceremonia</label>
               <input type="text" value={weddingForm.ceremonia} onChange={(e) => setWeddingForm((current) => ({ ...current, ceremonia: e.target.value }))} placeholder="Nombre y dirección" />
-            </div>
-            <div className="two-col">
-              <div className="field-group">
-                <label>Salida de casa del novio</label>
-                <input type="time" value={weddingForm.horaSalidaNovio} onChange={(e) => setWeddingForm((current) => ({ ...current, horaSalidaNovio: e.target.value }))} />
-              </div>
-              <div className="field-group">
-                <label>Salida de casa de la novia</label>
-                <input type="time" value={weddingForm.horaSalidaNovia} onChange={(e) => setWeddingForm((current) => ({ ...current, horaSalidaNovia: e.target.value }))} />
-              </div>
-            </div>
-            <div className="two-col">
-              <div className="field-group">
-                <label>Hora de la ceremonia</label>
-                <input type="time" value={weddingForm.horaCeremonia} onChange={(e) => setWeddingForm((current) => ({ ...current, horaCeremonia: e.target.value }))} />
-              </div>
-              <div className="field-group">
-                <label>Hora del cóctel</label>
-                <input type="time" value={weddingForm.horaCoctel} onChange={(e) => setWeddingForm((current) => ({ ...current, horaCoctel: e.target.value }))} />
-              </div>
-            </div>
-            <div className="field-group">
-              <label>Hora de la barra libre</label>
-              <input type="time" value={weddingForm.horaBarraLibre} onChange={(e) => setWeddingForm((current) => ({ ...current, horaBarraLibre: e.target.value }))} />
             </div>
             <div className="field-group">
               <label>Cuéntanos más detalles de vuestro día</label>
