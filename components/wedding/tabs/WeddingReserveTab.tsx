@@ -13,6 +13,7 @@ type WeddingReserveTabProps = {
   blockedRanges: CalendarBlockRange[];
   unifyCalendars: boolean;
   isSubmitting: boolean;
+  customerFormPath: string;
   onWeddingSubmit: (event: FormEvent<HTMLFormElement>) => void;
 };
 
@@ -23,6 +24,7 @@ export function WeddingReserveTab({
   blockedRanges,
   unifyCalendars,
   isSubmitting,
+  customerFormPath,
   onWeddingSubmit,
 }: WeddingReserveTabProps) {
   return (
@@ -46,6 +48,12 @@ export function WeddingReserveTab({
           </div>
         </div>
         <div className="booking-form wedding-panel">
+          {customerFormPath && (
+            <div className="customer-form-link-notice" role="status">
+              <p>Solicitud recibida. Podéis completar o actualizar los detalles de vuestra boda desde este enlace privado:</p>
+              <a href={customerFormPath}>Completar los detalles de la boda</a>
+            </div>
+          )}
 
           <form onSubmit={onWeddingSubmit}>
             <div className="field-group">
@@ -65,7 +73,9 @@ export function WeddingReserveTab({
             <div className="two-col">
               <div className="field-group">
                 <label>Fecha del enlace</label>
-                <input type="date" value={weddingForm.fecha} onChange={(e) => setWeddingForm((current) => ({ ...current, fecha: e.target.value }))} required />
+                <div className="date-input">
+                  <input type="date" value={weddingForm.fecha} onChange={(e) => setWeddingForm((current) => ({ ...current, fecha: e.target.value }))} required />
+                </div>
               </div>
               <div className="field-group">
                 <label>¿Qué os interesa?</label>

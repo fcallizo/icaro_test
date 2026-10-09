@@ -20,6 +20,7 @@ type WeddingScreenProps = {
   blockedRanges: CalendarBlockRange[];
   unifyCalendars: boolean;
   isSubmitting: boolean;
+  customerFormPath: string;
   onWeddingSubmit: (event: FormEvent<HTMLFormElement>) => void;
 };
 
@@ -32,6 +33,7 @@ export function WeddingScreen({
   blockedRanges,
   unifyCalendars,
   isSubmitting,
+  customerFormPath,
   onWeddingSubmit,
 }: WeddingScreenProps) {
   const [activeTab, setActiveTab] = useState<WeddingTab>('video');
@@ -72,6 +74,7 @@ export function WeddingScreen({
             blockedRanges={blockedRanges}
             unifyCalendars={unifyCalendars}
             isSubmitting={isSubmitting}
+            customerFormPath={customerFormPath}
             onWeddingSubmit={onWeddingSubmit}
           />
         )}

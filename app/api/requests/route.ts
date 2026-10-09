@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { ensureTables, sql } from '@/lib/db';
 import { sendRequestNotification } from '@/lib/request-notifications';
@@ -63,7 +63,31 @@ export async function POST(request: NextRequest) {
   }
 
   if (type === 'wedding') {
-    const { nombre, telNovia, fecha, ceremonia, detalles, tipoPack } = payload;
+    const token = randomBytes(32).toString('base64url');
+    const tokenHash = createHash('sha256').update(token).digest('hex');
+    const text = (field: string) => typeof payload[field] === 'string' ? payload[field].trim() : '';
+    const nombre = text('nombre');
+    const telNovio = text('telNovio');
+    const telNovia = text('telNovia');
+    const fecha = text('fecha');
+    const lugar = text('lugar');
+    const novia = text('novia');
+    const novio = text('novio');
+    const ceremonia = text('ceremonia');
+    const detalles = text('detalles');
+    const tipoPack = text('tipoPack');
+    const horaSalidaNovio = text('horaSalidaNovio');
+    const horaSalidaNovia = text('horaSalidaNovia');
+    const horaCeremonia = text('horaCeremonia');
+    const horaCoctel = text('horaCoctel');
+    const horaBarraLibre = text('horaBarraLibre');
+    const cronograma = [
+      `Salida Novio: ${horaSalidaNovio || '--:--'}`,
+      `Salida Novia: ${horaSalidaNovia || '--:--'}`,
+      `Ceremonia: ${horaCeremonia || '--:--'}`,
+      `Cóctel: ${horaCoctel || '--:--'}`,
+      `Barra Libre: ${horaBarraLibre || '--:--'}`,
+    ].join(' | ');
     const eventId = randomUUID();
 
     const result = await sql`
@@ -72,20 +96,30 @@ export async function POST(request: NextRequest) {
         VALUES (${eventId}, 'wedding', ${fecha || ''}, 'pending')
         RETURNING id
       ), new_details AS (
-        INSERT INTO wedding_requests (evento_id, nombre, email, tel_novia, ceremonia, detalles, tipo_pack)
-        SELECT id, ${nombre || ''}, ${email}, ${telNovia || ''}, ${ceremonia || ''}, ${detalles || ''}, ${tipoPack || ''}
+        INSERT INTO wedding_requests (
+          evento_id, nombre, email, tel_novio, tel_novia, lugar, novia, novio, ceremonia, cronograma,
+          hora_salida_novio, hora_salida_novia, hora_ceremonia, hora_coctel, hora_barra_libre,
+          detalles, tipo_pack, customer_form_token_hash
+        )
+        SELECT id, ${nombre}, ${email}, ${telNovio}, ${telNovia}, ${lugar}, ${novia}, ${novio}, ${ceremonia}, ${cronograma},
+          ${horaSalidaNovio}, ${horaSalidaNovia}, ${horaCeremonia}, ${horaCoctel}, ${horaBarraLibre},
+          ${detalles}, ${tipoPack}, ${tokenHash}
         FROM new_event
         RETURNING evento_id
       )
       SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
-        w.nombre, w.email, w.tel_novia AS "telNovia", w.ceremonia,w.detalles, w.tipo_pack
+        w.nombre, w.email, w.tel_novia AS "telNovia", w.ceremonia, w.detalles, w.tipo_pack
       FROM new_details d
       JOIN eventos e ON e.id = d.evento_id
       JOIN wedding_requests w ON w.evento_id = e.id;
     `;
 
     await sendRequestNotification({ type: 'wedding', nombre, fecha });
-    return NextResponse.json({ request: { ...result[0], type: 'wedding' }, dbConfigured: true }, { status: 201 });
+    return NextResponse.json({
+      request: { ...result[0], type: 'wedding' },
+      customerFormPath: `/solicitud-boda/${token}`,
+      dbConfigured: true,
+    }, { status: 201 });
   }
 
   const { nombre, telefono, fecha, tipo, presupuesto, descripcion } = payload;

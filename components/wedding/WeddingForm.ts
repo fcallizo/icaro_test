@@ -21,4 +21,5 @@ export type WeddingForm = {
   fechaPostboda: string;
   lugarPostboda: string;
   detallesPostboda: string;
+  status: string;
 };

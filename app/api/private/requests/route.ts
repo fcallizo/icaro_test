@@ -27,7 +27,10 @@ export async function GET(request: NextRequest) {
   const weddings = await sql`
     SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
       w.nombre, w.email, w.tel_novio AS "telNovio", w.tel_novia AS "telNovia",
-      w.lugar, w.novia, w.novio, w.ceremonia, w.cronograma, w.detalles, w.tipo_pack AS "tipoPack",
+      w.lugar, w.novia, w.novio, w.ceremonia, w.cronograma,
+      w.hora_salida_novio AS "horaSalidaNovio", w.hora_salida_novia AS "horaSalidaNovia",
+      w.hora_ceremonia AS "horaCeremonia", w.hora_coctel AS "horaCoctel",
+      w.hora_barra_libre AS "horaBarraLibre", w.detalles, w.tipo_pack AS "tipoPack",
       (SELECT pe.fecha FROM eventos pe WHERE pe.parent_event_id = e.id AND pe.tipo = 'prewedding') AS "fechaPreboda",
       w.lugar_preboda AS "lugarPreboda", w.detalles_preboda AS "detallesPreboda",
       (SELECT pe.fecha FROM eventos pe WHERE pe.parent_event_id = e.id AND pe.tipo = 'postwedding') AS "fechaPostboda",
@@ -94,7 +97,8 @@ export async function PATCH(request: NextRequest) {
     const values = payload.values;
     const editableFields = [
       'nombre', 'email', 'fecha', 'telNovio', 'telNovia', 'telefono', 'lugar',
-      'novia', 'novio', 'ceremonia', 'cronograma', 'detalles', 'tipo', 'presupuesto', 'descripcion', 'tipoPack',
+      'novia', 'novio', 'ceremonia', 'cronograma', 'horaSalidaNovio', 'horaSalidaNovia',
+      'horaCeremonia', 'horaCoctel', 'horaBarraLibre', 'detalles', 'tipo', 'presupuesto', 'descripcion', 'tipoPack',
       'fechaPreboda', 'lugarPreboda', 'detallesPreboda', 'fechaPostboda', 'lugarPostboda', 'detallesPostboda',
       'cameraSetup', 'cameraPrice', 'droneSetup', 'dronePrice', 'lightingSetup', 'lightingPrice',
       'soundSetup', 'soundPrice', 'deliveryFormat', 'formatPrice', 'extraCrew', 'extraCrewPrice',
@@ -142,7 +146,12 @@ export async function PATCH(request: NextRequest) {
           nombre = ${values.nombre.trim()}, email = ${values.email.trim()},
           tel_novio = ${values.telNovio.trim()}, tel_novia = ${values.telNovia.trim()},
           lugar = ${values.lugar.trim()}, novia = ${values.novia.trim()}, novio = ${values.novio.trim()},
-          ceremonia = ${values.ceremonia.trim()}, cronograma = ${values.cronograma.trim()}, 
+          ceremonia = ${values.ceremonia.trim()}, cronograma = ${values.cronograma.trim()},
+          hora_salida_novio = ${values.horaSalidaNovio.trim()},
+          hora_salida_novia = ${values.horaSalidaNovia.trim()},
+          hora_ceremonia = ${values.horaCeremonia.trim()},
+          hora_coctel = ${values.horaCoctel.trim()},
+          hora_barra_libre = ${values.horaBarraLibre.trim()},
           detalles = ${values.detalles.trim()}, tipo_pack = ${values.tipoPack.trim()},
           lugar_preboda = ${values.lugarPreboda.trim()}, lugar_postboda = ${values.lugarPostboda.trim()},
           detalles_preboda = ${values.detallesPreboda.trim()}, detalles_postboda = ${values.detallesPostboda.trim()}

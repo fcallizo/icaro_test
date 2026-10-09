@@ -37,12 +37,18 @@ CREATE TABLE IF NOT EXISTS wedding_requests (
   novio TEXT,
   ceremonia TEXT,
   cronograma TEXT,
+  hora_salida_novio TEXT,
+  hora_salida_novia TEXT,
+  hora_ceremonia TEXT,
+  hora_coctel TEXT,
+  hora_barra_libre TEXT,
   detalles TEXT,
   tipo_pack TEXT,
   lugar_preboda TEXT,
   detalles_preboda TEXT,
   lugar_postboda TEXT,
   detalles_postboda TEXT,
+  customer_form_token_hash TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -74,6 +80,13 @@ CREATE TABLE IF NOT EXISTS production_requests (
 );
 
 ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS hora_salida_novio TEXT;
+ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS hora_salida_novia TEXT;
+ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS hora_ceremonia TEXT;
+ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS hora_coctel TEXT;
+ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS hora_barra_libre TEXT;
+ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS customer_form_token_hash TEXT;
+CREATE UNIQUE INDEX IF NOT EXISTS wedding_requests_customer_form_token_hash_idx ON wedding_requests (customer_form_token_hash) WHERE customer_form_token_hash IS NOT NULL;
 ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS email TEXT;
 ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS camera_setup TEXT;
 ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS camera_price NUMERIC(12, 2);

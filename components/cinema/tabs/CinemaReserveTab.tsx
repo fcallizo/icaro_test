@@ -70,7 +70,9 @@ export function CinemaReserveTab({
             <div className="two-col">
               <div className="field-group">
                 <label>Fecha Realización</label>
-                <input type="date" value={productionForm.fecha} onChange={(e) => setProductionForm((current) => ({ ...current, fecha: e.target.value }))} required />
+                <div className="date-input">
+                  <input type="date" value={productionForm.fecha} onChange={(e) => setProductionForm((current) => ({ ...current, fecha: e.target.value }))} required />
+                </div>
               </div>
               <div className="field-group">
                 <label>Presupuesto estimado</label>

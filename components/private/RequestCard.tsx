@@ -36,7 +36,7 @@ export function RequestCard({
         <time className={dateConflict ? `date-conflict-${dateConflict}` : ''}> {formatFecha(eventDate || request.fecha)} </time>
       </div>
       <h4>{title}</h4>
-      <p className="private-request-summary">{eventType ? eventPlace || 'Lugar por confirmar' : isWedding ? request.lugar || 'Lugar por confirmar' : request.tipo || 'Producción audiovisual'}</p>
+      <p className="private-request-summary">{eventType ? eventPlace || 'Lugar por confirmar' : isWedding ? request.ceremonia || 'Lugar por confirmar' : request.tipo || 'Producción audiovisual'}</p>
       <button type="button" className="private-view-button" onClick={onView}>Ver detalle</button>
     </article>
   );

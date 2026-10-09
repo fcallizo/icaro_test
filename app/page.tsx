@@ -50,6 +50,7 @@ const initialWeddingForm = {
   fechaPostboda: '',
   lugarPostboda: '',
   detallesPostboda: '',
+  status: '',
 };
 
 const initialProductionForm = {
@@ -72,6 +73,7 @@ export default function HomePage() {
   const [unifyCalendars, setUnifyCalendars] = useState(false);
   const [toast, setToast] = useState<{ message: string; tone: StatusToastTone; surface?: 'dark' | 'light' } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [customerFormPath, setCustomerFormPath] = useState('');
 
   useEffect(() => {
     const loadRequests = async () => {
@@ -97,6 +99,7 @@ export default function HomePage() {
     event.preventDefault();
     setIsSubmitting(true);
     setToast(null);
+    setCustomerFormPath('');
 
     try {
       const response = await fetch('/api/requests', {
@@ -122,6 +125,7 @@ export default function HomePage() {
 
       setRequests((current) => [data.request, ...current]);
       setWeddingForm(initialWeddingForm);
+      setCustomerFormPath(typeof data.customerFormPath === 'string' ? data.customerFormPath : '');
       setToast({ message: '¡Solicitud de boda enviada correctamente!', tone: 'success', surface: 'light' });
     } catch (error) {
       setToast({ message: error instanceof Error ? error.message : 'No se pudo enviar.', tone: 'error', surface: 'light' });
@@ -193,6 +197,7 @@ export default function HomePage() {
         blockedRanges={blockedRanges}
         unifyCalendars={unifyCalendars}
         isSubmitting={isSubmitting}
+        customerFormPath={customerFormPath}
         onWeddingSubmit={handleWeddingSubmit}
       />
       <StatusToast message={toast?.message || ''} tone={toast?.tone || 'success'} surface={toast?.surface} onDismiss={() => setToast(null)} />

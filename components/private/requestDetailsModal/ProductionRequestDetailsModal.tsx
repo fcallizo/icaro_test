@@ -1,6 +1,7 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { PrivateRequestUpdate, ProductionMaterialCategory, RequestDetailsModalProps } from '../private-types';
 import { RequestDetailsModalFrame } from './RequestDetailsModalFrame';
+import { InternationalPhoneInput } from '@/components/common/InternationalPhoneInput';
 
 const productionItems = [
   { setup: 'cameraSetup', price: 'cameraPrice', label: 'Cámara principal' },
@@ -83,6 +84,11 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
     novio: request.novio || '',
     ceremonia: request.ceremonia || '',
     cronograma: request.cronograma || '',
+    horaSalidaNovio: request.horaSalidaNovio || '',
+    horaSalidaNovia: request.horaSalidaNovia || '',
+    horaCeremonia: request.horaCeremonia || '',
+    horaCoctel: request.horaCoctel || '',
+    horaBarraLibre: request.horaBarraLibre || '',
     detalles: request.detalles || '',
     tipoPack: request.tipoPack || '',
     fechaPreboda: request.fechaPreboda || '',
@@ -109,6 +115,7 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
     logistics: request.logistics || '',
     logisticsPrice: String(request.logisticsPrice ?? ''),
     taxPercent: String(request.taxPercent ?? ''),
+    status: request.status || '',
   }));
   const title = values.nombre || 'Evento cinematográfico';
   const updateField = (field: keyof PrivateRequestUpdate) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -139,6 +146,19 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
       </select>
     </div>
   );
+
+  const inputPhone = (field: keyof PrivateRequestUpdate, label: string, required = false) => (
+    <div className="field-group" key={field}>
+      <label htmlFor={`customer-${field}`}>{label}</label>
+      <InternationalPhoneInput
+        value={values[field] || ''}
+        onChange={(next) => setValues((current) => ({ ...current, [field]: next ?? '' }))}
+        placeholder="Teléfono"
+        required={required}
+      />
+    </div>
+  );
+
   const materialSelect = (
     category: ProductionMaterialCategory,
     field: keyof PrivateRequestUpdate,
@@ -199,7 +219,7 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
       {input('nombre', 'Nombre / empresa', 'text', true, true)}
       {input('email', 'Email', 'email', true)}
       {input('fecha', 'Fecha', 'date', true)}
-      {input('telefono', 'Teléfono', 'tel', true)}
+      {inputPhone('telefono', 'Teléfono', true)}
       {input('presupuesto', 'Presupuesto (€)', 'number', true)}
       {input('tipo', 'Tipo de producción')}
       {textarea('descripcion', 'Idea principal')}

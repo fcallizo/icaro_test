@@ -15,7 +15,7 @@ export function PageHeader({ view, theme, onHome, onCinema, onWedding }: PageHea
       <div className="nav-container">
         <div className="brand" onClick={onHome}>
           <img src="/logo_transparente.png" alt="Ícaro Logo" className="brand-logo" />
-          <span className="brand-name">ÍCARO <span className="brand-accent">STUDIO</span></span>
+          <span className="brand-name brand-name-reduce">ÍCARO <span className="brand-accent">STUDIO</span></span>
         </div>
 
         <nav className="main-nav">

@@ -5,6 +5,7 @@ type InternationalPhoneInputProps = {
   onChange: (value: string) => void;
   placeholder?: string;
   required?: boolean;
+  disabled?: boolean;
 };
 
 export function InternationalPhoneInput({
@@ -12,6 +13,7 @@ export function InternationalPhoneInput({
   onChange,
   placeholder,
   required = false,
+  disabled = false
 }: InternationalPhoneInputProps) {
   return (
     <PhoneInput
@@ -23,6 +25,7 @@ export function InternationalPhoneInput({
       onChange={(nextValue) => onChange(nextValue ?? '')}
       placeholder={placeholder}
       required={required}
+      disabled={disabled}
     />
   );
 }

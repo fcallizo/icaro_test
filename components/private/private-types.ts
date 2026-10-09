@@ -34,6 +34,11 @@ export type PrivateRequestUpdate = {
   novio: string;
   ceremonia: string;
   cronograma: string;
+  horaSalidaNovio: string;
+  horaSalidaNovia: string;
+  horaCeremonia: string;
+  horaCoctel: string;
+  horaBarraLibre: string;
   detalles: string;
   tipoPack: string;
   tipo: string;
@@ -87,6 +92,11 @@ export type PrivateRequest = {
   novio?: string;
   ceremonia?: string;
   cronograma?: string;
+  horaSalidaNovio?: string;
+  horaSalidaNovia?: string;
+  horaCeremonia?: string;
+  horaCoctel?: string;
+  horaBarraLibre?: string;
   detalles?: string;
   tipoPack?: string;
   tipo?: string;

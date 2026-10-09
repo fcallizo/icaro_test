@@ -1,0 +1,326 @@
+/* =========================================================
+   Aviso del enlace
+   ========================================================= */
+.customer-form-link-notice {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  border: 1px solid rgba(135, 109, 25, 0.24);
+  border-radius: 8px;
+  background: #fbf8ef;
+  color: #3b3526;
+  font-size: 0.9rem;
+}
+
+.customer-form-link-notice a {
+  color: var(--gold);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.customer-form-link-notice ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+/* =========================================================
+   Página y tarjeta
+   ========================================================= */
+.customer-wedding-page {
+  min-height: 100vh;
+  padding: clamp(1.25rem, 5vw, 4rem) 1rem;
+  background: radial-gradient(ellipse at 50% 0%, #fff 0%, transparent 58%), var(--bg-light);
+  color: #28262a;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.customer-wedding-card {
+  width: min(100%, 860px);
+  margin: 0 auto;
+  padding: clamp(1.25rem, 5vw, 3.5rem);
+  border: 1px solid #e8e1d5;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 20px 55px rgba(65, 52, 34, 0.08);
+}
+
+.customer-wedding-brand {
+  display: inline-block;
+  margin-bottom: 2rem;
+  font-family: 'Allura', 'Segoe Script', cursive;
+  font-size: 2.2rem;
+}
+
+.customer-wedding-eyebrow {
+  margin-top: 2rem;
+  margin-bottom: 0.35rem;
+  color: #8c7533;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.customer-wedding-card h1 {
+  max-width: 680px;
+  font-family: 'Allura', 'Segoe Script', cursive;
+  font-size: clamp(2.4rem, 7vw, 3rem);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.customer-wedding-intro {
+  max-width: 620px;
+  margin: 0.85rem 0 2rem;
+  color: #625f5b;
+  font-size: 1.12rem;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   Formulario: variables de color de los campos
+   (cambia estas cuatro líneas para cambiar todo el tono)
+   ========================================================= */
+.customer-wedding-form {
+  --field-bg: #fbf8ef;
+  --field-bg-hover: #f8f5ed;
+  --field-bg-focus: #fffdf7;
+  --field-border: #e3dac2;
+  --field-radius: 6px; /* pon aquí el mismo radio que usan tus inputs */
+
+  display: grid;
+  gap: 1.5rem;
+}
+
+.customer-wedding-section {
+  padding-top: 1.25rem;
+  border-top: 1px solid #eee9df;
+}
+
+.customer-wedding-section h2 {
+  margin-bottom: 0.8rem;
+  color: #4a4130;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.45rem;
+  font-weight: 600;
+}
+
+.customer-wedding-section-intro {
+  margin: -0.4rem 0 0.8rem;
+  color: #706c65;
+  font-size: 0.95rem;
+}
+
+.customer-wedding-form .two-col {
+  gap: 0.9rem 1rem;
+}
+
+.customer-wedding-wide {
+  grid-column: 1 / -1;
+}
+
+/* =========================================================
+   Horarios: columna de texto + columna estrecha para la hora
+   ========================================================= */
+.two-col.customer-wedding-schedule {
+  grid-template-columns: minmax(0, 1fr) 150px;
+}
+
+.customer-wedding-schedule input[type='time'] {
+  width: 100%;
+  height: 49px; 
+}
+
+/* Cóctel y Barra libre: ocupan toda la fila, con dos columnas de hora */
+.customer-wedding-schedule .schedule-times {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, 150px);
+  gap: 0.9rem 1rem;
+}
+
+@media (max-width: 480px) {
+  .two-col.customer-wedding-schedule {
+    grid-template-columns: 1fr;
+  }
+
+  .customer-wedding-schedule .schedule-times {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* =========================================================
+   Campos: etiquetas, inputs, textarea y select
+   ========================================================= */
+.customer-wedding-form .field-group label {
+  color: var(--gold-soft);
+  font-family: 'Montserrat', sans-serif;
+}
+
+.customer-wedding-form .field-group input,
+.customer-wedding-form .field-group textarea,
+.customer-wedding-form .field-group select {
+  border-color: var(--field-border);
+  background: var(--bg-light);
+  color: #28262a;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.customer-wedding-form .field-group input:hover,
+.customer-wedding-form .field-group textarea:hover,
+.customer-wedding-form .field-group select:hover {
+  background: var(--field-bg-hover);
+}
+
+.customer-wedding-form .field-group input:focus,
+.customer-wedding-form .field-group textarea:focus,
+.customer-wedding-form .field-group select:focus {
+  background: var(--field-bg-focus);
+  border-color: var(--gold-soft);
+  outline: 1px solid var(--gold-soft);
+}
+
+.customer-wedding-form .field-group input::placeholder,
+.customer-wedding-form .field-group textarea::placeholder {
+  color: rgba(40, 38, 42, 0.4);
+}
+
+.customer-wedding-form .field-group select option {
+  background: #fff;
+  color: #28262a;
+}
+
+/* Fecha y hora */
+.customer-wedding-form .field-group input[type='date'],
+.customer-wedding-form .field-group input[type='time'] {
+  color-scheme: light;
+}
+
+.customer-wedding-form .field-group input[type='date'] {
+  padding-right: 2.75rem;
+}
+
+.customer-wedding-form .field-group .date-input {
+  color: #28262a;
+}
+
+/* Autocompletado del navegador (necesita un color sólido) */
+.customer-wedding-form .field-group input:-webkit-autofill,
+.customer-wedding-form .field-group input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #fbf8ef inset;
+  -webkit-text-fill-color: #28262a;
+  caret-color: #28262a;
+}
+
+/* =========================================================
+   Teléfono con prefijo (react-phone-number-input)
+   El fondo, el borde y el foco van en el contenedor;
+   los elementos internos quedan transparentes.
+   ========================================================= */
+
+/* Teléfono internacional: misma caja y mismo toque de color */
+.customer-wedding-form .field-group > .international-phone-input {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid #ded9cf;
+  border-radius: 8px;
+  background: rgba(140, 117, 51, 0.06);   /* igual que los inputs */
+  overflow: hidden;
+}
+
+/* Prefijo (bandera + código) algo más intenso para distinguirlo */
+.customer-wedding-form .field-group > .international-phone-input .PhoneInputCountry {
+  background: rgba(140, 117, 51, 0.14);
+  border-right: 1px solid #ded9cf;
+  padding: 0 0.6rem;
+  display: flex;
+  align-items: center;
+}
+
+/* El <select> del país transparente para que se vea el tintado */
+.customer-wedding-form .field-group > .international-phone-input .PhoneInputCountrySelect {
+  background: transparent;
+  border: none;
+}
+
+/* Input numérico: hereda el fondo de la caja */
+.customer-wedding-form .field-group > .international-phone-input .PhoneInputInput {
+  border: none;
+  background: transparent;
+  flex: 1;
+  color: #28262a;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.customer-wedding-form .field-group > .international-phone-input .PhoneInputInput:focus {
+  outline: none !important;
+  border-color: var(--gold);
+  outline: 1px solid var(--gold);
+}
+
+/* Mismo anillo de foco que el resto de inputs */
+.customer-wedding-form .field-group > .international-phone-input:focus-within {
+  border-color: var(--gold-soft);
+  outline: 1px solid var(--gold-soft);
+}
+
+.customer-wedding-form .field-group > .international-phone-input .PhoneInputInput:hover {
+  background: var(--field-bg-hover);
+}
+
+/* =========================================================
+   Privacidad
+   ========================================================= */
+.customer-wedding-form .privacy-form-notice {
+  color: #625f5b;
+}
+
+.customer-wedding-form .privacy-form-notice a {
+  color: var(--gold);
+}
+
+/* =========================================================
+   Botón y mensajes
+   ========================================================= */
+.customer-wedding-submit {
+  min-height: 48px;
+  padding: 0.8rem 1.1rem;
+  border: 0;
+  border-radius: 8px;
+  background: var(--gold);
+  color: #fff;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.customer-wedding-submit:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.customer-wedding-message {
+  margin: 1rem 0;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  background: #f5f1e8;
+  color: #49443a;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.88rem;
+}
+
+.customer-wedding-error {
+  background: #fff0ee;
+  color: #8a2c24;
+}
+
+.customer-wedding-success {
+  background: #edf7ed;
+  color: #275c2a;
+}

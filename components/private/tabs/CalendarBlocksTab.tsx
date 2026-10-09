@@ -40,11 +40,15 @@ export function CalendarBlocksTab({ blocks, busyId, isCreating, onCreate, onDele
         <form className="calendar-block-form" onSubmit={(event) => void handleCreate(event)}>
           <label>
             Desde
-            <input type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} required />
+            <div className="date-input">
+              <input type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} required />
+            </div>
           </label>
           <label>
             Hasta
-            <input type="date" value={endDate} min={startDate || undefined} onChange={(event) => setEndDate(event.target.value)} required />
+            <div className="date-input">
+              <input type="date" value={endDate} min={startDate || undefined} onChange={(event) => setEndDate(event.target.value)} required />
+            </div>
           </label>
           <label className="calendar-block-reason">
             Motivo interno (opcional)

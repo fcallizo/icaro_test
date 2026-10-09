@@ -52,12 +52,18 @@ export async function ensureTables() {
     novio TEXT,
     ceremonia TEXT,
     cronograma TEXT,
+    hora_salida_novio TEXT,
+    hora_salida_novia TEXT,
+    hora_ceremonia TEXT,
+    hora_coctel TEXT,
+    hora_barra_libre TEXT,
     detalles TEXT,
     tipo_pack TEXT,
     lugar_preboda TEXT,
     detalles_preboda TEXT,
     lugar_postboda TEXT,
     detalles_postboda TEXT,
+    customer_form_token_hash TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
   );`;
 
@@ -89,6 +95,13 @@ export async function ensureTables() {
   );`;
 
   await sql`ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS email TEXT;`;
+  await sql`ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS hora_salida_novio TEXT;`;
+  await sql`ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS hora_salida_novia TEXT;`;
+  await sql`ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS hora_ceremonia TEXT;`;
+  await sql`ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS hora_coctel TEXT;`;
+  await sql`ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS hora_barra_libre TEXT;`;
+  await sql`ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS customer_form_token_hash TEXT;`;
+  await sql`CREATE UNIQUE INDEX IF NOT EXISTS wedding_requests_customer_form_token_hash_idx ON wedding_requests (customer_form_token_hash) WHERE customer_form_token_hash IS NOT NULL;`;
   await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS email TEXT;`;
   await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS camera_setup TEXT;`;
   await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS camera_price NUMERIC(12, 2);`;
