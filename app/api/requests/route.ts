@@ -1,7 +1,7 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { ensureTables, sql } from '@/lib/db';
-import { sendRequestNotification } from '@/lib/request-notifications';
+import { sendRequestNotification, sendRequestWeddingNotification } from '@/lib/request-notifications';
 
 export async function GET() {
   if (!sql) {
@@ -89,6 +89,7 @@ export async function POST(request: NextRequest) {
       `Barra Libre: ${horaBarraLibre || '--:--'}`,
     ].join(' | ');
     const eventId = randomUUID();
+    const email = text('email');
 
     const result = await sql`
       WITH new_event AS (
@@ -115,6 +116,13 @@ export async function POST(request: NextRequest) {
     `;
 
     await sendRequestNotification({ type: 'wedding', nombre, fecha });
+    await sendRequestWeddingNotification({
+        type: 'wedding',
+        email: email,
+        nombre: nombre,
+        token: token,
+      });
+    
     return NextResponse.json({
       request: { ...result[0], type: 'wedding' },
       customerFormPath: `/solicitud-boda/${token}`,

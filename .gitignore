@@ -5,3 +5,5 @@ out
 .env
 npm-debug.log*
 .DS_Store
+.vscode
+*.mp4

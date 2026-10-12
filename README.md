@@ -26,7 +26,9 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 Cuando `usuarios` está vacía, la primera visita al panel crea el usuario configurado y guarda su contraseña derivada con scrypt. Los usuarios existentes no se sobrescriben. Reinicia el servidor después de cambiar `.env.local`.
 
-Para enviar avisos de nuevas solicitudes configura también `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` y `SMTP_FROM`. El campo `notificaciones` de cada usuario acepta `0` (ningún aviso), `1` (cine), `2` (bodas) o `3` (ambos). Si SMTP no está configurado o falla, la solicitud se guarda igualmente.
+El envío de correo usa Resend en desarrollo local y en los despliegues Preview de Vercel (`RESEND_API_KEY` y, opcionalmente, `RESEND_FROM`). En el despliegue Production usa SMTP (`SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` y `SMTP_FROM`). Vercel define `VERCEL_ENV` automáticamente; fuera de Vercel se usa `NODE_ENV` para distinguir producción. Si usas `onboarding@resend.dev`, Resend limita los destinatarios a las direcciones permitidas en tu cuenta; para enviar a clientes configura un dominio verificado y su dirección en `RESEND_FROM`.
+
+El endpoint `GET /api/test-email` prueba el proveedor correspondiente al entorno. Configura `EMAIL_TEST_RECIPIENT` para elegir el destinatario. El campo `notificaciones` de cada usuario acepta `0` (ningún aviso), `1` (cine), `2` (bodas) o `3` (ambos). Si el correo no está configurado o falla, la solicitud se guarda igualmente.
 
 ## Desarrollo local
 
@@ -55,7 +57,7 @@ También hay endpoints API disponibles:
 ## Despliegue en Vercel
 
 1. Conecta este repositorio a Vercel.
-2. Define `DATABASE_URL`, `ADMIN_USERNAME`, `ADMIN_PASSWORD` y `PRIVATE_SESSION_SECRET` en Vercel.
+2. Define `DATABASE_URL`, `ADMIN_USERNAME`, `ADMIN_PASSWORD` y `PRIVATE_SESSION_SECRET` en Vercel. Añade la configuración SMTP en el entorno Production y `RESEND_API_KEY` (y opcionalmente `RESEND_FROM`) en los entornos Preview.
 3. Haz deploy del proyecto.
 4. Si la base de datos está vacía, ejecuta el SQL de `scripts/init-db.sql` desde el editor de Neon o con psql.
 

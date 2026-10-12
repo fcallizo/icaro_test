@@ -1,5 +1,5 @@
-import nodemailer from 'nodemailer';
 import { sql } from '@/lib/db';
+import { createEmailSender, getEmailConfigurationHint } from '@/lib/email';
 
 type RequestNotification = {
   type: 'wedding' | 'production';
@@ -7,35 +7,15 @@ type RequestNotification = {
   fecha?: string;
 };
 
-function createSmtpTransporter() {
-  const smtpHost = process.env.SMTP_HOST;
-  const smtpPort = Number(process.env.SMTP_PORT || 587);
-  const smtpUser = process.env.SMTP_USER;
-  const smtpPassword = process.env.SMTP_PASSWORD;
-  const emailFrom = process.env.SMTP_FROM || smtpUser;
-
-  if (!smtpHost || !smtpUser || !smtpPassword || !emailFrom || !Number.isInteger(smtpPort) || smtpPort < 1 || smtpPort > 65535) return null;
-
-  return {
-    from: emailFrom,
-    transporter: nodemailer.createTransport({
-      host: smtpHost,
-      port: smtpPort,
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: { user: smtpUser, pass: smtpPassword },
-    }),
-  };
-}
-
 export async function sendRequestNotification(notification: RequestNotification) {
   if (!sql) return;
 
   const notificationFlag = notification.type === 'wedding' ? 2 : 1;
 
   try {
-    const mailer = createSmtpTransporter();
-    if (!mailer) {
-      console.warn('Notificación de solicitud omitida: configura SMTP_HOST, SMTP_USER, SMTP_PASSWORD y un SMTP_PORT válido.');
+    const sendEmail = createEmailSender();
+    if (!sendEmail) {
+      console.warn(`Notificación de solicitud omitida: ${getEmailConfigurationHint()}.`);
       return;
     }
 
@@ -62,7 +42,7 @@ export async function sendRequestNotification(notification: RequestNotification)
     ].join('\n');
 
     const deliveries = await Promise.allSettled(
-      recipients.map(({ email }) => mailer.transporter.sendMail({ from: mailer.from, to: email, subject, text })),
+      recipients.map(({ email }) => sendEmail({ to: email, subject, text })),
     );
     const failedDeliveries = deliveries.filter((delivery) => delivery.status === 'rejected').length;
 
@@ -71,6 +51,43 @@ export async function sendRequestNotification(notification: RequestNotification)
     }
   } catch (error) {
     console.error('No se pudieron enviar notificaciones de solicitudes:', error);
+  }
+}
+
+type RequestWeddingNotification = RequestNotification & {
+  email?: string | null;
+  token?: string;
+};
+
+export async function sendRequestWeddingNotification(notification: RequestWeddingNotification) {
+  const recipient = notification.email?.trim();
+  if (!recipient) return;
+
+  try {
+    const sendEmail = createEmailSender();
+    if (!sendEmail) {
+      console.warn(`Aviso de decisión omitido: ${getEmailConfigurationHint()}.`);
+      return;
+    }
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '');
+    const accessUrl = `${appUrl.replace(/\/+$/, '')}/solicitud-boda/${notification.token}`;
+    const subject = `Solicitud de presupuesto de Boda`;
+    const text = [
+      `Hola${notification.nombre ? ` ${notification.nombre}` : ''},`,
+      '',
+      `Muchas gracias por confiar en Icaro Studio para compartir un momento tan importante.`,
+      '',
+      'Hemos recibido vuestra solicitud y nos pondremos en contacto con ustedes en las próximas 24 horas.',
+      'Si quieren ir avanzando, pueden acceder al formulario para completar los datos de la boda. Si prefieren esperar a hablar con nosotros, no se preocupen: les contactaremos lo antes posible.',
+      '',
+      'Gracias,',
+      'Un saludo,',
+    ].join('\n');
+
+    await sendEmail({ to: recipient, subject, text, action: { label: 'Completar formulario', url: accessUrl } });
+  } catch (error) {
+    console.error('No se pudo enviar el aviso de decisión al cliente:', error);
   }
 }
 
@@ -84,9 +101,9 @@ export async function sendRequestDecisionNotification(notification: RequestDecis
   if (!recipient) return;
 
   try {
-    const mailer = createSmtpTransporter();
-    if (!mailer) {
-      console.warn('Aviso de decisión omitido: configura las variables SMTP.');
+    const sendEmail = createEmailSender();
+    if (!sendEmail) {
+      console.warn(`Aviso de decisión omitido: ${getEmailConfigurationHint()}.`);
       return;
     }
 
@@ -101,7 +118,7 @@ export async function sendRequestDecisionNotification(notification: RequestDecis
       'Gracias por contactar con Ícaro Studio.',
     ].join('\n');
 
-    await mailer.transporter.sendMail({ from: mailer.from, to: recipient, subject, text });
+    await sendEmail({ to: recipient, subject, text });
   } catch (error) {
     console.error('No se pudo enviar el aviso de decisión al cliente:', error);
   }
