@@ -33,13 +33,11 @@ export type PrivateRequestUpdate = {
   novia: string;
   novio: string;
   ceremonia: string;
-  cronograma: string;
   horaSalidaNovio: string;
   horaSalidaNovia: string;
   horaCeremonia: string;
   horaCoctel: string;
   horaBarraLibre: string;
-  detalles: string;
   tipoPack: string;
   tipo: string;
   fechaPreboda: string;
@@ -49,7 +47,7 @@ export type PrivateRequestUpdate = {
   lugarPostboda: string;
   detallesPostboda: string;
   presupuesto: string;
-  descripcion: string;
+  detalles: string;
   cameraSetup: string;
   cameraPrice: string;
   droneSetup: string;
@@ -91,13 +89,12 @@ export type PrivateRequest = {
   novia?: string;
   novio?: string;
   ceremonia?: string;
-  cronograma?: string;
   horaSalidaNovio?: string;
   horaSalidaNovia?: string;
   horaCeremonia?: string;
   horaCoctel?: string;
   horaBarraLibre?: string;
-  detalles?: string;
+  detalles: string;
   tipoPack?: string;
   tipo?: string;
   fechaPreboda?: string | null;
@@ -107,7 +104,6 @@ export type PrivateRequest = {
   lugarPostboda?: string | null;
   detallesPostboda?: string | null;
   presupuesto?: string;
-  descripcion?: string;
   cameraSetup?: string | null;
   cameraPrice?: string | null;
   droneSetup?: string | null;

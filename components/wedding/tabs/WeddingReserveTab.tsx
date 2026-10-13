@@ -4,11 +4,11 @@ import { AvailabilityCalendar, CalendarRequest } from '@/components/common/Avail
 import { PrivacyFormNotice } from '@/components/common/PrivacyFormNotice';
 import { CalendarBlockRange } from '@/components/private/private-types';
 import { ContactPanel } from '@/components/common/ContactPanel';
-import { WeddingForm } from '../WeddingForm';
+import { ReserveWeddingForm } from '../WeddingForm';
 
 type WeddingReserveTabProps = {
-  weddingForm: WeddingForm;
-  setWeddingForm: Dispatch<SetStateAction<WeddingForm>>;
+  weddingForm: ReserveWeddingForm;
+  setWeddingForm: Dispatch<SetStateAction<ReserveWeddingForm>>;
   requests: CalendarRequest[];
   blockedRanges: CalendarBlockRange[];
   unifyCalendars: boolean;

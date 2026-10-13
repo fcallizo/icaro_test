@@ -155,14 +155,6 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
     return NextResponse.json({ error: 'Completa la fecha y el lugar de la postboda para el pack seleccionado.' }, { status: 400 });
   }
 
-  const cronograma = [
-    `Salida Novio: ${values.horaSalidaNovio || '--:--'}`,
-    `Salida Novia: ${values.horaSalidaNovia || '--:--'}`,
-    `Ceremonia: ${values.horaCeremonia || '--:--'}`,
-    `Cóctel: ${values.horaCoctel || '--:--'}`,
-    `Barra Libre: ${values.horaBarraLibre || '--:--'}`,
-  ].join(' | ');
-
   const updatedRows = await sql`
     WITH updated_event AS (
       UPDATE eventos SET fecha = ${values.fecha}, updated_at = NOW()
@@ -173,7 +165,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
       nombre = ${values.nombre}, email = ${values.email},
       tel_novio = ${values.telNovio}, tel_novia = ${values.telNovia},
       lugar = ${values.lugar}, novia = ${values.novia}, novio = ${values.novio},
-      ceremonia = ${values.ceremonia}, cronograma = ${cronograma},
+      ceremonia = ${values.ceremonia},
       hora_salida_novio = ${values.horaSalidaNovio},
       hora_salida_novia = ${values.horaSalidaNovia},
       hora_ceremonia = ${values.horaCeremonia},

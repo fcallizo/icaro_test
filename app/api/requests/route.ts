@@ -81,13 +81,6 @@ export async function POST(request: NextRequest) {
     const horaCeremonia = text('horaCeremonia');
     const horaCoctel = text('horaCoctel');
     const horaBarraLibre = text('horaBarraLibre');
-    const cronograma = [
-      `Salida Novio: ${horaSalidaNovio || '--:--'}`,
-      `Salida Novia: ${horaSalidaNovia || '--:--'}`,
-      `Ceremonia: ${horaCeremonia || '--:--'}`,
-      `Cóctel: ${horaCoctel || '--:--'}`,
-      `Barra Libre: ${horaBarraLibre || '--:--'}`,
-    ].join(' | ');
     const eventId = randomUUID();
     const email = text('email');
 
@@ -98,11 +91,11 @@ export async function POST(request: NextRequest) {
         RETURNING id
       ), new_details AS (
         INSERT INTO wedding_requests (
-          evento_id, nombre, email, tel_novio, tel_novia, lugar, novia, novio, ceremonia, cronograma,
+          evento_id, nombre, email, tel_novio, tel_novia, lugar, novia, novio, ceremonia,
           hora_salida_novio, hora_salida_novia, hora_ceremonia, hora_coctel, hora_barra_libre,
           detalles, tipo_pack, customer_form_token_hash
         )
-        SELECT id, ${nombre}, ${email}, ${telNovio}, ${telNovia}, ${lugar}, ${novia}, ${novio}, ${ceremonia}, ${cronograma},
+        SELECT id, ${nombre}, ${email}, ${telNovio}, ${telNovia}, ${lugar}, ${novia}, ${novio}, ${ceremonia},
           ${horaSalidaNovio}, ${horaSalidaNovia}, ${horaCeremonia}, ${horaCoctel}, ${horaBarraLibre},
           ${detalles}, ${tipoPack}, ${tokenHash}
         FROM new_event
@@ -130,7 +123,7 @@ export async function POST(request: NextRequest) {
     }, { status: 201 });
   }
 
-  const { nombre, telefono, fecha, tipo, presupuesto, descripcion } = payload;
+  const { nombre, telefono, fecha, tipo, presupuesto, detalles } = payload;
   const eventId = randomUUID();
 
   const result = await sql`
@@ -139,13 +132,13 @@ export async function POST(request: NextRequest) {
       VALUES (${eventId}, 'production', ${fecha || ''}, 'pending')
       RETURNING id
     ), new_details AS (
-      INSERT INTO production_requests (evento_id, nombre, email, telefono, tipo, presupuesto, descripcion)
-      SELECT id, ${nombre || ''}, ${email}, ${telefono || ''}, ${tipo || ''}, ${presupuesto || ''}, ${descripcion || ''}
+      INSERT INTO production_requests (evento_id, nombre, email, telefono, tipo, presupuesto, detalles)
+      SELECT id, ${nombre || ''}, ${email}, ${telefono || ''}, ${tipo || ''}, ${presupuesto || ''}, ${detalles || ''}
       FROM new_event
       RETURNING evento_id
     )
     SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
-      p.nombre, p.email, p.telefono, p.tipo, p.presupuesto, p.descripcion
+      p.nombre, p.email, p.telefono, p.tipo, p.presupuesto, p.detalles
     FROM new_details d
     JOIN eventos e ON e.id = d.evento_id
     JOIN production_requests p ON p.evento_id = e.id;

@@ -83,7 +83,6 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
     novia: request.novia || '',
     novio: request.novio || '',
     ceremonia: request.ceremonia || '',
-    cronograma: request.cronograma || '',
     horaSalidaNovio: request.horaSalidaNovio || '',
     horaSalidaNovia: request.horaSalidaNovia || '',
     horaCeremonia: request.horaCeremonia || '',
@@ -99,7 +98,6 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
     detallesPostboda: request.detallesPostboda || '',
     tipo: request.tipo || '',
     presupuesto: request.presupuesto || '',
-    descripcion: request.descripcion || '',
     cameraSetup: request.cameraSetup || '',
     cameraPrice: String(request.cameraPrice ?? ''),
     droneSetup: request.droneSetup || '',
@@ -222,7 +220,7 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
       {inputPhone('telefono', 'Teléfono', true)}
       {input('presupuesto', 'Presupuesto (€)', 'number', true)}
       {input('tipo', 'Tipo de producción')}
-      {textarea('descripcion', 'Idea principal')}
+      {textarea('detalles', 'Idea principal')}
       <section className="production-contract-section wide">
         <header className="production-contract-heading">
           <h3>Desglose técnico y contrato</h3>

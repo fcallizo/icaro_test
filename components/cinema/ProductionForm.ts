@@ -1,9 +1,9 @@
-export type ProductionForm = {
+export type ReserveProductionForm = {
     nombre: string;
     email: string;
     telefono: string;
     fecha: string;
     tipo: string;
     presupuesto: string;
-    descripcion: string;
+    detalles: string;
 };

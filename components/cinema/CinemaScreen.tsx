@@ -7,7 +7,7 @@ import { CalendarBlockRange } from '@/components/private/private-types';
 import { CinemaVideoTab } from './tabs/CinemaVideoTab';
 import { CinemaInfoTab } from './tabs/CinemaInfoTab';
 import { CinemaReserveTab } from './tabs/CinemaReserveTab';
-import { ProductionForm } from './ProductionForm';
+import { ReserveProductionForm } from './ProductionForm';
 
 type TabMode = 'video' | 'info' | 'reserva';
 
@@ -16,8 +16,8 @@ type CinemaScreenProps = {
   onShowWedding: () => void;
   tab: TabMode;
   setTab: (tab: TabMode) => void;
-  productionForm: ProductionForm;
-  setProductionForm: Dispatch<SetStateAction<ProductionForm>>;
+  productionForm: ReserveProductionForm;
+  setProductionForm: Dispatch<SetStateAction<ReserveProductionForm>>;
   requests: CalendarRequest[];
   blockedRanges: CalendarBlockRange[];
   unifyCalendars: boolean;

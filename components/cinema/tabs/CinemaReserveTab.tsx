@@ -4,20 +4,11 @@ import { AvailabilityCalendar, CalendarRequest } from '@/components/common/Avail
 import { PrivacyFormNotice } from '@/components/common/PrivacyFormNotice';
 import { CalendarBlockRange } from '@/components/private/private-types';
 import { ContactPanel } from '@/components/common/ContactPanel';
-
-type ProductionForm = {
-  nombre: string;
-  email: string;
-  telefono: string;
-  fecha: string;
-  tipo: string;
-  presupuesto: string;
-  descripcion: string;
-};
+import { ReserveProductionForm } from '../ProductionForm';
 
 type CinemaReserveTabProps = {
-  productionForm: ProductionForm;
-  setProductionForm: Dispatch<SetStateAction<ProductionForm>>;
+  productionForm: ReserveProductionForm;
+  setProductionForm: Dispatch<SetStateAction<ReserveProductionForm>>;
   requests: CalendarRequest[];
   blockedRanges: CalendarBlockRange[];
   unifyCalendars: boolean;
@@ -88,7 +79,7 @@ export function CinemaReserveTab({
             </div>
             <div className="field-group">
               <label>Idea principal</label>
-              <textarea rows={4} value={productionForm.descripcion} onChange={(e) => setProductionForm((current) => ({ ...current, descripcion: e.target.value }))} placeholder="Explícanos brevemente tu idea para el rodaje..." />
+              <textarea rows={4} value={productionForm.detalles} onChange={(e) => setProductionForm((current) => ({ ...current, detalles: e.target.value }))} placeholder="Explícanos brevemente tu idea para el rodaje..." />
             </div>
             <PrivacyFormNotice />
             <button type="submit" className="submit-btn" disabled={isSubmitting}>{isSubmitting ? 'Enviando...' : 'Enviar solicitud técnica'}</button>

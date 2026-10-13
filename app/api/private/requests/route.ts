@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
   const weddings = await sql`
     SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
       w.nombre, w.email, w.tel_novio AS "telNovio", w.tel_novia AS "telNovia",
-      w.lugar, w.novia, w.novio, w.ceremonia, w.cronograma,
+      w.lugar, w.novia, w.novio, w.ceremonia,
       w.hora_salida_novio AS "horaSalidaNovio", w.hora_salida_novia AS "horaSalidaNovia",
       w.hora_ceremonia AS "horaCeremonia", w.hora_coctel AS "horaCoctel",
       w.hora_barra_libre AS "horaBarraLibre", w.detalles, w.tipo_pack AS "tipoPack",
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
   `;
   const productions = await sql`
     SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
-      p.nombre, p.email, p.telefono, p.tipo, p.presupuesto, p.descripcion,
+      p.nombre, p.email, p.telefono, p.tipo, p.presupuesto, p.detalles,
       p.camera_setup AS "cameraSetup", p.camera_price AS "cameraPrice",
       p.drone_setup AS "droneSetup", p.drone_price AS "dronePrice",
       p.lighting_setup AS "lightingSetup", p.lighting_price AS "lightingPrice",
@@ -97,8 +97,8 @@ export async function PATCH(request: NextRequest) {
     const values = payload.values;
     const editableFields = [
       'nombre', 'email', 'fecha', 'telNovio', 'telNovia', 'telefono', 'lugar',
-      'novia', 'novio', 'ceremonia', 'cronograma', 'horaSalidaNovio', 'horaSalidaNovia',
-      'horaCeremonia', 'horaCoctel', 'horaBarraLibre', 'detalles', 'tipo', 'presupuesto', 'descripcion', 'tipoPack',
+      'novia', 'novio', 'ceremonia', 'horaSalidaNovio', 'horaSalidaNovia',
+      'horaCeremonia', 'horaCoctel', 'horaBarraLibre', 'detalles', 'tipo', 'presupuesto', 'detalles', 'tipoPack',
       'fechaPreboda', 'lugarPreboda', 'detallesPreboda', 'fechaPostboda', 'lugarPostboda', 'detallesPostboda',
       'cameraSetup', 'cameraPrice', 'droneSetup', 'dronePrice', 'lightingSetup', 'lightingPrice',
       'soundSetup', 'soundPrice', 'deliveryFormat', 'formatPrice', 'extraCrew', 'extraCrewPrice',
@@ -146,7 +146,7 @@ export async function PATCH(request: NextRequest) {
           nombre = ${values.nombre.trim()}, email = ${values.email.trim()},
           tel_novio = ${values.telNovio.trim()}, tel_novia = ${values.telNovia.trim()},
           lugar = ${values.lugar.trim()}, novia = ${values.novia.trim()}, novio = ${values.novio.trim()},
-          ceremonia = ${values.ceremonia.trim()}, cronograma = ${values.cronograma.trim()},
+          ceremonia = ${values.ceremonia.trim()},
           hora_salida_novio = ${values.horaSalidaNovio.trim()},
           hora_salida_novia = ${values.horaSalidaNovia.trim()},
           hora_ceremonia = ${values.horaCeremonia.trim()},
@@ -167,7 +167,7 @@ export async function PATCH(request: NextRequest) {
         )
         UPDATE production_requests AS p SET
           nombre = ${values.nombre.trim()}, email = ${values.email.trim()}, telefono = ${values.telefono.trim()},
-          tipo = ${values.tipo.trim()}, presupuesto = ${values.presupuesto.trim()}, descripcion = ${values.descripcion.trim()},
+          tipo = ${values.tipo.trim()}, presupuesto = ${values.presupuesto.trim()}, detalles = ${values.detalles.trim()},
           camera_setup = ${values.cameraSetup.trim() || null}, camera_price = ${values.cameraPrice.trim() === '' ? null : Number(values.cameraPrice)},
           drone_setup = ${values.droneSetup.trim() || null}, drone_price = ${values.dronePrice.trim() === '' ? null : Number(values.dronePrice)},
           lighting_setup = ${values.lightingSetup.trim() || null}, lighting_price = ${values.lightingPrice.trim() === '' ? null : Number(values.lightingPrice)},

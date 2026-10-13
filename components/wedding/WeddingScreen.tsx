@@ -7,15 +7,15 @@ import { CalendarBlockRange } from '@/components/private/private-types';
 import { WeddingVideoTab } from './tabs/WeddingVideoTab';
 import { WeddingInfoTab } from './tabs/WeddingInfoTab';
 import { WeddingReserveTab } from './tabs/WeddingReserveTab';
-import { WeddingForm } from './WeddingForm';
+import { ReserveWeddingForm } from './WeddingForm';
 
 type WeddingTab = 'video' | 'info' | 'reserva';
 
 type WeddingScreenProps = {
   onBackToHome: () => void;
   onShowCinema: () => void;
-  weddingForm: WeddingForm;
-  setWeddingForm: Dispatch<SetStateAction<WeddingForm>>;
+  weddingForm: ReserveWeddingForm;
+  setWeddingForm: Dispatch<SetStateAction<ReserveWeddingForm>>;
   requests: CalendarRequest[];
   blockedRanges: CalendarBlockRange[];
   unifyCalendars: boolean;

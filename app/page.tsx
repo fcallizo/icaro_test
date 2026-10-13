@@ -13,15 +13,13 @@ type TabMode = 'video' | 'info' | 'reserva';
 type RequestItem = {
   id: string;
   type: 'wedding' | 'production' | 'prewedding' | 'postwedding';
-  nombre?: string;
-  nombre_cliente?: string;
-  nombre_empresa?: string;
-  email?: string;
+  nombre: string;
+  email: string;
   telefono?: string;
-  fecha?: string;
+  fecha: string;
   status?: string;
   lugar?: string;
-  descripcion?: string;
+  detalles?: string;
   tipo?: string;
   presupuesto?: string;
   created_at?: string;
@@ -30,27 +28,11 @@ type RequestItem = {
 const initialWeddingForm = {
   nombre: '',
   email: '',
-  telNovio: '',
   telNovia: '',
   fecha: '',
-  lugar: '',
-  novia: '',
-  novio: '',
-  ceremonia: '',
-  horaSalidaNovio: '',
-  horaSalidaNovia: '',
-  horaCeremonia: '',
-  horaCoctel: '',
-  horaBarraLibre: '',
-  detalles: '',
   tipoPack: '',
-  fechaPreboda: '',
-  lugarPreboda: '',
-  detallesPreboda: '',
-  fechaPostboda: '',
-  lugarPostboda: '',
-  detallesPostboda: '',
-  status: '',
+  ceremonia: '',
+  detalles: '',
 };
 
 const initialProductionForm = {
@@ -60,7 +42,7 @@ const initialProductionForm = {
   fecha: '',
   tipo: '',
   presupuesto: '',
-  descripcion: '',
+  detalles: '',
 };
 
 export default function HomePage() {
@@ -108,13 +90,6 @@ export default function HomePage() {
         body: JSON.stringify({
           type: 'wedding',
           ...weddingForm,
-          cronograma: [
-            `Salida Novio: ${weddingForm.horaSalidaNovio || '--:--'}`,
-            `Salida Novia: ${weddingForm.horaSalidaNovia || '--:--'}`,
-            `Ceremonia: ${weddingForm.horaCeremonia || '--:--'}`,
-            `Cóctel: ${weddingForm.horaCoctel || '--:--'}`,
-            `Barra Libre: ${weddingForm.horaBarraLibre || '--:--'}`,
-          ].join(' | '),
         }),
       });
 

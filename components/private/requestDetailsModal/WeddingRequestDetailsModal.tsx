@@ -3,13 +3,6 @@ import { PrivateRequestUpdate, RequestDetailsModalProps } from '../private-types
 import { RequestDetailsModalFrame } from './RequestDetailsModalFrame';
 import { InternationalPhoneInput } from '@/components/common/InternationalPhoneInput';
 
-function getScheduleTime(value: string | undefined, cronograma: string | undefined, label: string) {
-  if (value) return value;
-  const legacyEntry = cronograma?.split('|').find((entry) => entry.trim().startsWith(`${label}:`));
-  const legacyValue = legacyEntry?.split(': ').slice(1).join(': ').trim() || '';
-  return /^\d{2}:\d{2}$/.test(legacyValue) ? legacyValue : '';
-}
-
 function downloadWeddingSheet(request: RequestDetailsModalProps['request'], values: PrivateRequestUpdate) {
   const content = [
     'FICHA DE RODAJE - ICARO STUDIO',
@@ -50,17 +43,15 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
     novia: request.novia || '',
     novio: request.novio || '',
     ceremonia: request.ceremonia || '',
-    cronograma: request.cronograma || '',
-    horaSalidaNovio: getScheduleTime(request.horaSalidaNovio, request.cronograma, 'Salida Novio'),
-    horaSalidaNovia: getScheduleTime(request.horaSalidaNovia, request.cronograma, 'Salida Novia'),
-    horaCeremonia: getScheduleTime(request.horaCeremonia, request.cronograma, 'Ceremonia'),
-    horaCoctel: getScheduleTime(request.horaCoctel, request.cronograma, 'Cóctel'),
-    horaBarraLibre: getScheduleTime(request.horaBarraLibre, request.cronograma, 'Barra Libre'),
+    horaSalidaNovio: request.horaSalidaNovio || '',
+    horaSalidaNovia: request.horaSalidaNovia || '',
+    horaCeremonia: request.horaCeremonia || '',
+    horaCoctel: request.horaCoctel || '',
+    horaBarraLibre: request.horaBarraLibre || '',
     detalles: request.detalles || '',
     tipoPack: request.tipoPack || '',
     tipo: request.tipo || '',
     presupuesto: request.presupuesto || '',
-    descripcion: request.descripcion || '',
     fechaPreboda: request.fechaPreboda || '',
     lugarPreboda: request.lugarPreboda || '',
     detallesPreboda: request.detallesPreboda || '',
@@ -143,14 +134,7 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
       canConfirm={hasCompleteBreakdown}
       onSubmit={(event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const cronograma = [
-          `Salida Novio: ${values.horaSalidaNovio || '--:--'}`,
-          `Salida Novia: ${values.horaSalidaNovia || '--:--'}`,
-          `Ceremonia: ${values.horaCeremonia || '--:--'}`,
-          `Cóctel: ${values.horaCoctel || '--:--'}`,
-          `Barra Libre: ${values.horaBarraLibre || '--:--'}`,
-        ].join(' | ');
-        onSave({ ...values, cronograma });
+        onSave({ ...values });
       }}
       rightAction={request.status !== 'pending' ? (
         <button type="button" className="private-download-button" disabled={props.busy} onClick={() => downloadWeddingSheet(request, values)}>
