@@ -1,7 +1,8 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
-import { PrivateRequestUpdate, ProductionMaterialCategory, RequestDetailsModalProps } from '../private-types';
+import { PrivateRequestUpdate, ProductionMaterialCategory, RequestDetailsModalProps, setDefaultFormValues } from '../private-types';
 import { RequestDetailsModalFrame } from './RequestDetailsModalFrame';
 import { InternationalPhoneInput } from '@/components/common/InternationalPhoneInput';
+import type { ProductionContractData } from '../pdfs/ProductionContractPdf';
 
 const productionItems = [
   { setup: 'cameraSetup', price: 'cameraPrice', label: 'Cámara principal' },
@@ -13,109 +14,47 @@ const productionItems = [
   { setup: 'logistics', price: 'logisticsPrice', label: 'Logística y transporte' },
 ] as const;
 
-function printProductionContract(
-  values: PrivateRequestUpdate,
-  subtotal: number,
-  taxAmount: number,
-  total: number,
-) {
-  const printWindow = window.open('', '_blank');
-  if (!printWindow) return;
+const currency = (amount: number) =>
+  new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
 
-  printWindow.opener = null;
-  printWindow.document.open();
-  printWindow.document.write(`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Contrato de producción</title><style>
-    body{font:14px Arial,sans-serif;color:#181818;margin:48px;line-height:1.5}h1,h2{margin:0 0 12px}h1{font-size:24px}h2{font-size:17px;margin-top:28px;border-bottom:1px solid #bbb;padding-bottom:8px}p{margin:5px 0}table{width:100%;border-collapse:collapse;margin-top:12px}td,th{text-align:left;padding:9px;border-bottom:1px solid #ddd}td:last-child,th:last-child{text-align:right}.total{font-size:18px;font-weight:bold;margin-top:16px;text-align:right}
-  </style></head><body></body></html>`);
-  printWindow.document.close();
+/** "2026-06-14" -> "14-06-2026" */
+const formatDate = (value: string) =>
+  /^\d{4}-\d{2}-\d{2}$/.test(value) ? value.split('-').reverse().join('-') : value;
 
-  const document = printWindow.document;
-  const heading = document.createElement('h1');
-  heading.textContent = 'ÍCARO STUDIO | DESGLOSE TÉCNICO Y CONTRATO';
-  document.body.append(heading);
-  const client = document.createElement('p');
-  client.textContent = `Cliente: ${values.nombre} | Email: ${values.email} | Teléfono: ${values.telefono} | Fecha: ${values.fecha} | Proyecto: ${values.tipo || 'Producción audiovisual'} | Presupuesto cliente: ${values.presupuesto} €`;
-  document.body.append(client);
+const toFileName = (name: string) =>
+  (name || 'produccion')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 
-  const table = document.createElement('table');
-  const head = document.createElement('tr');
-  head.innerHTML = '<th>Partida</th><th>Configuración</th><th>Importe</th>';
-  table.append(head);
-  for (const item of productionItems) {
-    const row = document.createElement('tr');
-    const name = document.createElement('td');
-    const setup = document.createElement('td');
-    const price = document.createElement('td');
-    name.textContent = item.label;
-    setup.textContent = values[item.setup];
-    price.textContent = `${Number(values[item.price]).toFixed(2)} €`;
-    row.append(name, setup, price);
-    table.append(row);
-  }
-  document.body.append(table);
+async function downloadProductionContract(data: ProductionContractData) {
+  // Import dinámico: la librería solo se descarga al pulsar el botón
+  const [{ pdf }, { ProductionContractPdf }] = await Promise.all([
+    import('@react-pdf/renderer'),
+    import('../pdfs/ProductionContractPdf'),
+  ]);
 
-  const totals = document.createElement('div');
-  const currency = (amount: number) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
-  totals.innerHTML = `<p>Subtotal: ${currency(subtotal)}</p><p>IVA (${values.taxPercent}%): ${currency(taxAmount)}</p><p class="total">Total de contrato: ${currency(total)}</p>`;
-  document.body.append(totals);
-
-  const signature = document.createElement('p');
-  signature.style.marginTop = '72px';
-  signature.textContent = 'Dirección de Ícaro Studio: ____________________     Conformidad del cliente: ____________________';
-  document.body.append(signature);
-  window.setTimeout(() => {
-    printWindow.focus();
-    printWindow.print();
-  }, 150);
+  const blob = await pdf(<ProductionContractPdf data={data} />).toBlob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `contrato-${toFileName(data.nombre)}.pdf`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
   const { request, onSave } = props;
   const materials = props.materials || [];
-  const [values, setValues] = useState<PrivateRequestUpdate>(() => ({
-    nombre: request.nombre || '',
-    email: request.email || '',
-    fecha: request.fecha || '',
-    telNovio: request.telNovio || '',
-    telNovia: request.telNovia || '',
-    telefono: request.telefono || '',
-    lugar: request.lugar || '',
-    novia: request.novia || '',
-    novio: request.novio || '',
-    ceremonia: request.ceremonia || '',
-    horaSalidaNovio: request.horaSalidaNovio || '',
-    horaSalidaNovia: request.horaSalidaNovia || '',
-    horaCeremonia: request.horaCeremonia || '',
-    horaCoctel: request.horaCoctel || '',
-    horaBarraLibre: request.horaBarraLibre || '',
-    detalles: request.detalles || '',
-    tipoPack: request.tipoPack || '',
-    fechaPreboda: request.fechaPreboda || '',
-    lugarPreboda: request.lugarPreboda || '',
-    detallesPreboda: request.detallesPreboda || '',
-    fechaPostboda: request.fechaPostboda || '',
-    lugarPostboda: request.lugarPostboda || '',
-    detallesPostboda: request.detallesPostboda || '',
-    tipo: request.tipo || '',
-    presupuesto: request.presupuesto || '',
-    cameraSetup: request.cameraSetup || '',
-    cameraPrice: String(request.cameraPrice ?? ''),
-    droneSetup: request.droneSetup || '',
-    dronePrice: String(request.dronePrice ?? ''),
-    lightingSetup: request.lightingSetup || '',
-    lightingPrice: String(request.lightingPrice ?? ''),
-    soundSetup: request.soundSetup || '',
-    soundPrice: String(request.soundPrice ?? ''),
-    deliveryFormat: request.deliveryFormat || '',
-    formatPrice: String(request.formatPrice ?? ''),
-    extraCrew: request.extraCrew || '',
-    extraCrewPrice: String(request.extraCrewPrice ?? ''),
-    logistics: request.logistics || '',
-    logisticsPrice: String(request.logisticsPrice ?? ''),
-    taxPercent: String(request.taxPercent ?? ''),
-    status: request.status || '',
-  }));
+  const [values, setValues] = useState<PrivateRequestUpdate>(setDefaultFormValues(request));
+  const [generating, setGenerating] = useState(false);
+  const [pdfError, setPdfError] = useState('');
   const title = values.nombre || 'Evento cinematográfico';
+
   const updateField = (field: keyof PrivateRequestUpdate) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setValues((current) => ({ ...current, [field]: event.target.value }));
   };
@@ -147,7 +86,7 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
 
   const inputPhone = (field: keyof PrivateRequestUpdate, label: string, required = false) => (
     <div className="field-group" key={field}>
-      <label htmlFor={`customer-${field}`}>{label}</label>
+      <label htmlFor={`request-${field}`}>{label}</label>
       <InternationalPhoneInput
         value={values[field] || ''}
         onChange={(next) => setValues((current) => ({ ...current, [field]: next ?? '' }))}
@@ -199,7 +138,35 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
     && Number.isFinite(Number(values[item.price]))
     && Number(values[item.price]) >= 0)
     && ['0', '21'].includes(values.taxPercent);
-  const currency = (amount: number) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
+
+  const handleDownloadContract = async () => {
+    setGenerating(true);
+    setPdfError('');
+    try {
+      await downloadProductionContract({
+        nombre: values.nombre,
+        email: values.email,
+        telefono: values.telefono,
+        fecha: formatDate(values.fecha),
+        proyecto: values.tipo || 'Producción audiovisual',
+        presupuesto: currency(Number(values.presupuesto) || 0),
+        rows: productionItems.map((item) => ({
+          label: item.label,
+          setup: values[item.setup],
+          price: currency(Number(values[item.price]) || 0),
+        })),
+        taxPercent: String(taxRate),
+        subtotal: currency(subtotal),
+        iva: currency(taxAmount),
+        total: currency(contractTotal),
+      });
+    } catch (error) {
+      console.error('No se pudo generar el contrato:', error);
+      setPdfError('No se pudo generar el contrato. Inténtalo de nuevo.');
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   return (
     <RequestDetailsModalFrame
@@ -209,9 +176,17 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
       canConfirm={hasCompleteBreakdown}
       onSubmit={(event: FormEvent<HTMLFormElement>) => { event.preventDefault(); onSave(values); }}
       rightAction={hasCompleteBreakdown ? (
-        <button type="button" className="private-download-button" disabled={props.busy} onClick={() => printProductionContract(values, subtotal, taxAmount, contractTotal)}>
-          Generar contrato PDF
-        </button>
+        <>
+          <button
+            type="button"
+            className="private-download-button"
+            disabled={props.busy || generating}
+            onClick={() => void handleDownloadContract()}
+          >
+            {generating ? 'Generando…' : 'Generar contrato PDF'}
+          </button>
+          {pdfError && <span role="alert" className="private-download-error">{pdfError}</span>}
+        </>
       ) : undefined}
     >
       {input('nombre', 'Nombre / empresa', 'text', true, true)}
@@ -223,7 +198,7 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
       {textarea('detalles', 'Idea principal')}
       <section className="production-contract-section wide">
         <header className="production-contract-heading">
-          <h3>Desglose técnico y contrato</h3>
+          <h3>Desglose técnico</h3>
           <span>Se completa antes de confirmar</span>
         </header>
         <div className="production-contract-grid">

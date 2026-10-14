@@ -26,28 +26,44 @@ export type PrivateRequestUpdate = {
   nombre: string;
   email: string;
   fecha: string;
+  detalles: string;
+
+  // boda
   telNovio: string;
   telNovia: string;
-  telefono: string;
-  lugar: string;
-  novia: string;
   novio: string;
-  ceremonia: string;
   horaSalidaNovio: string;
+  novia: string;
   horaSalidaNovia: string;
+  ceremonia: string;
   horaCeremonia: string;
+  lugar: string;
   horaCoctel: string;
   horaBarraLibre: string;
   tipoPack: string;
-  tipo: string;
+  servicioBoda: string;
+  extraBoda: string;
+  precioExtraBoda: string;
+  descuentoBoda: string;
+
+  servicioPreboda: string;
   fechaPreboda: string;
   lugarPreboda: string;
   detallesPreboda: string;
+  extraPreboda: string;
+  precioExtraPreboda: string;
+
+  servicioPostboda: string;
   fechaPostboda: string;
   lugarPostboda: string;
   detallesPostboda: string;
+  extraPostboda: string;
+  precioExtraPostboda: string;
+
+  // produccion
+  telefono: string;
+  tipo: string;
   presupuesto: string;
-  detalles: string;
   cameraSetup: string;
   cameraPrice: string;
   droneSetup: string;
@@ -76,34 +92,52 @@ export type RequestDetailsModalProps = {
 };
 
 export type PrivateRequest = {
+  // comunes
   id: string;
   type: RequestType;
   status: RequestStatus;
   nombre?: string;
   email?: string;
+  fecha?: string;
+  created_at?: string;
+  detalles: string;
+
+  // boda
   telNovio?: string;
   telNovia?: string;
-  telefono?: string;
-  fecha?: string;
-  lugar?: string;
   novia?: string;
-  novio?: string;
-  ceremonia?: string;
-  horaSalidaNovio?: string;
   horaSalidaNovia?: string;
+  novio?: string;
+  horaSalidaNovio?: string;
+  ceremonia?: string;
   horaCeremonia?: string;
+  lugar?: string;
   horaCoctel?: string;
   horaBarraLibre?: string;
-  detalles: string;
   tipoPack?: string;
-  tipo?: string;
-  fechaPreboda?: string | null;
-  lugarPreboda?: string | null;
-  detallesPreboda?: string | null;
-  fechaPostboda?: string | null;
-  lugarPostboda?: string | null;
-  detallesPostboda?: string | null;
+  servicioBoda?: string;
+  extraBoda?: string;
+  precioExtraBoda?: string;
+  descuentoBoda?: string;
+
+  servicioPreboda?: string;
+  fechaPreboda?: string;
+  lugarPreboda?: string;
+  detallesPreboda?: string;
+  extraPreboda?: string;
+  precioExtraPreboda?: string;
+
+  servicioPostboda?: string;
+  fechaPostboda?: string;
+  lugarPostboda?: string;
+  detallesPostboda?: string;
+  extraPostboda?: string;
+  precioExtraPostboda?: string;
+  
+  // produccion
+  telefono?: string;
   presupuesto?: string;
+  tipo?: string;
   cameraSetup?: string | null;
   cameraPrice?: string | null;
   droneSetup?: string | null;
@@ -119,5 +153,64 @@ export type PrivateRequest = {
   logistics?: string | null;
   logisticsPrice?: string | null;
   taxPercent?: string | null;
-  created_at?: string;
 };
+
+
+export function setDefaultFormValues(request: PrivateRequest) {
+return {
+    nombre: request.nombre || '',
+    email: request.email || '',
+    fecha: request.fecha || '',
+    detalles: request.detalles || '',
+    
+    telNovio: request.telNovio || '',
+    telNovia: request.telNovia || '',
+    novia: request.novia || '',
+    horaSalidaNovio: request.horaSalidaNovio || '',
+    novio: request.novio || '',
+    horaSalidaNovia: request.horaSalidaNovia || '',
+    ceremonia: request.ceremonia || '',
+    horaCeremonia: request.horaCeremonia || '',
+    lugar: request.lugar || '',
+    horaCoctel: request.horaCoctel || '',
+    horaBarraLibre: request.horaBarraLibre || '',
+    tipoPack: request.tipoPack || '',
+    servicioBoda: request.servicioBoda || 'duo',
+    extraBoda: request.extraBoda || '',
+    precioExtraBoda: String(request.precioExtraBoda ?? '0,00'),
+    descuentoBoda: String(request.descuentoBoda ?? '0'),
+
+    servicioPreboda: request.servicioPreboda || 'duo',
+    fechaPreboda: request.fechaPreboda || '',
+    lugarPreboda: request.lugarPreboda || '',
+    detallesPreboda: request.detallesPreboda || '',
+    extraPreboda: request.extraPreboda || '',
+    precioExtraPreboda: String(request.precioExtraPreboda ?? '0,00'),
+
+    servicioPostboda: request.servicioPostboda || 'duo',
+    fechaPostboda: request.fechaPostboda || '',
+    lugarPostboda: request.lugarPostboda || '',
+    detallesPostboda: request.detallesPostboda || '',
+    extraPostboda: request.extraPostboda || '',
+    precioExtraPostboda: String(request.precioExtraPostboda ?? '0,00'),
+
+    telefono: request.telefono || '',
+    tipo: request.tipo || '',
+    presupuesto: request.presupuesto || '',
+    cameraSetup: request.cameraSetup || '',
+    cameraPrice: String(request.cameraPrice ?? '0,00'),
+    droneSetup: request.droneSetup || '',
+    dronePrice: String(request.dronePrice ?? '0,00'),
+    lightingSetup: request.lightingSetup || '',
+    lightingPrice: String(request.lightingPrice ?? '0,00'),
+    soundSetup: request.soundSetup || '',
+    soundPrice: String(request.soundPrice ?? '0,00'),
+    deliveryFormat: request.deliveryFormat || '',
+    formatPrice: String(request.formatPrice ?? '0,00'),
+    extraCrew: request.extraCrew || '',
+    extraCrewPrice: String(request.extraCrewPrice ?? '0,00'),
+    logistics: request.logistics || '',
+    logisticsPrice: String(request.logisticsPrice ?? '0,00'),
+    taxPercent: String(request.taxPercent ?? '0,00'),
+  }
+}

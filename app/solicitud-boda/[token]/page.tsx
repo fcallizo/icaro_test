@@ -27,6 +27,9 @@ type WeddingFormValues = {
   fechaPostboda: string;
   lugarPostboda: string;
   detallesPostboda: string;
+  servicioBoda: string;
+  servicioPreboda: string;
+  servicioPostboda: string;
   status: string;
 };
 
@@ -35,7 +38,8 @@ const emptyValues: WeddingFormValues = {
   novio: '', novia: '', ceremonia: '', horaSalidaNovio: '', horaSalidaNovia: '',
   horaCeremonia: '', horaCoctel: '', horaBarraLibre: '', detalles: '', tipoPack: '',
   fechaPreboda: '', lugarPreboda: '', detallesPreboda: '',
-  fechaPostboda: '', lugarPostboda: '', detallesPostboda: '', status: ''
+  fechaPostboda: '', lugarPostboda: '', detallesPostboda: '', status: '',
+  servicioBoda: 'duo', servicioPreboda: 'duo', servicioPostboda: 'duo',
 };
 
 function getString(value: unknown) {
@@ -274,12 +278,29 @@ export default function CustomerWeddingFormPage({ params }: { params: { token: s
                     <option value="trio">Pre-boda + boda + post-boda</option>
                   </select>
                 </div>
+                <div className="field-group customer-wedding-wide">
+                  <label htmlFor="customer-tipoPack">incluido En la boda</label>
+                  <select id="customer-tipoPack" name="servicioBoda" value={values.servicioBoda} onChange={updateField} required disabled={disabledForm}>
+                    <option value="fotos">Sesión Fotográfica</option>
+                    <option value="video">Video Documental</option>
+                    <option value="duo">Sesión Fotográfica + Video Documental</option>
+                  </select>
+                </div>
               </div>
             </div>
-
             {hasPreWedding && (
               <div className="customer-wedding-section">
                 <h2>Preboda</h2>
+                <div className="two-col">
+                  <div className="field-group customer-wedding-wide">
+                    <label htmlFor="customer-tipoPack">incluido En la preboda</label>
+                    <select id="customer-tipoPack" name="servicioPreboda" value={values.servicioPreboda} onChange={updateField} required disabled={disabledForm}>
+                      <option value="fotos">Sesión Fotográfica</option>
+                      <option value="video">Video Documental</option>
+                      <option value="duo">Sesión Fotográfica + Video Documental</option>
+                    </select>
+                  </div>
+                </div>
                 <div className="two-col">
                   {input('fechaPreboda', 'Fecha de la preboda', 'date', true)}
                   {input('lugarPreboda', 'Lugar de la preboda', 'text', true)}
@@ -291,6 +312,16 @@ export default function CustomerWeddingFormPage({ params }: { params: { token: s
             {hasPostWedding && (
               <div className="customer-wedding-section">
                 <h2>Postboda</h2>
+                <div className="two-col">
+                  <div className="field-group customer-wedding-wide">
+                    <label htmlFor="customer-tipoPack">incluido En la postboda</label>
+                    <select id="customer-tipoPack" name="servicioPostboda" value={values.servicioPostboda} onChange={updateField} required disabled={disabledForm}>
+                      <option value="fotos">Sesión Fotográfica</option>
+                      <option value="video">Video Documental</option>
+                      <option value="duo">Sesión Fotográfica + Video Documental</option>
+                    </select>
+                  </div>
+                </div>
                 <div className="two-col">
                   {input('fechaPostboda', 'Fecha de la postboda', 'date', true)}
                   {input('lugarPostboda', 'Lugar de la postboda', 'text', true)}

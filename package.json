@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.0",
+    "@react-pdf/renderer": "^4.9.0",
     "jose": "^6.2.12",
     "next": "14.2.15",
     "nodemailer": "^10.0.13",

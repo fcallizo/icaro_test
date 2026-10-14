@@ -1,5 +1,5 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
-import { PrivateRequestUpdate, RequestDetailsModalProps } from '../private-types';
+import { PrivateRequestUpdate, RequestDetailsModalProps, setDefaultFormValues } from '../private-types';
 import { RequestDetailsModalFrame } from './RequestDetailsModalFrame';
 import { InternationalPhoneInput } from '@/components/common/InternationalPhoneInput';
 
@@ -32,49 +32,14 @@ function downloadWeddingSheet(request: RequestDetailsModalProps['request'], valu
 
 export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
   const { request, onSave } = props;
-  const [values, setValues] = useState<PrivateRequestUpdate>(() => ({
-    nombre: request.nombre || '',
-    email: request.email || '',
-    fecha: request.fecha || '',
-    telNovio: request.telNovio || '',
-    telNovia: request.telNovia || '',
-    telefono: request.telefono || '',
-    lugar: request.lugar || '',
-    novia: request.novia || '',
-    novio: request.novio || '',
-    ceremonia: request.ceremonia || '',
-    horaSalidaNovio: request.horaSalidaNovio || '',
-    horaSalidaNovia: request.horaSalidaNovia || '',
-    horaCeremonia: request.horaCeremonia || '',
-    horaCoctel: request.horaCoctel || '',
-    horaBarraLibre: request.horaBarraLibre || '',
-    detalles: request.detalles || '',
-    tipoPack: request.tipoPack || '',
-    tipo: request.tipo || '',
-    presupuesto: request.presupuesto || '',
-    fechaPreboda: request.fechaPreboda || '',
-    lugarPreboda: request.lugarPreboda || '',
-    detallesPreboda: request.detallesPreboda || '',
-    fechaPostboda: request.fechaPostboda || '',
-    lugarPostboda: request.lugarPostboda || '',
-    detallesPostboda: request.detallesPostboda || '',
-    cameraSetup: '',
-    cameraPrice: '',
-    droneSetup: '',
-    dronePrice: '',
-    lightingSetup: '',
-    lightingPrice: '',
-    soundSetup: '',
-    soundPrice: '',
-    deliveryFormat: '',
-    formatPrice: '',
-    extraCrew: '',
-    extraCrewPrice: '',
-    logistics: '',
-    logisticsPrice: '',
-    taxPercent: '',
-    status: '',
-  }));
+   const [values, setValues] = useState<PrivateRequestUpdate>(setDefaultFormValues(request));
+
+  const servicePack = [
+    { value: 'fotos', label: 'Sesión Fotográfica', price: 250, complementPrice: 100 },
+    { value: 'video', label: 'Video Documental', price: 300, complementPrice: 150 },
+    { value: 'duo', label: 'Sesión Fotográfica + Video Documental', price: 500, complementPrice: 200 },
+  ];
+
   const title = values.nombre || 'Boda sin nombre';
   const updateField = (field: keyof PrivateRequestUpdate) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setValues((current) => ({ ...current, [field]: event.target.value }));
@@ -117,14 +82,25 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
     </div>
   );
 
+  const hasPreWedding = values.tipoPack === 'duo-pre' || values.tipoPack === 'trio';
+  const preWeddingFilled = values.fechaPreboda.trim() !== '' && values.lugarPreboda.trim() !== '' && values.detallesPreboda.trim() !== '';
 
-  const hasPreWeddingFilled = values.fechaPreboda.trim() !== '' && values.lugarPreboda.trim() !== '' && values.detallesPreboda.trim() !== '';
-  const hasPostWeddingFilled = values.fechaPostboda.trim() !== '' && values.lugarPostboda.trim() !== '' && values.detallesPostboda.trim() !== '';
+  const hasPostWedding = values.tipoPack === 'duo-post' || values.tipoPack === 'trio';
+  const postWeddingFilled = values.fechaPostboda.trim() !== '' && values.lugarPostboda.trim() !== '' && values.detallesPostboda.trim() !== '';
+
   const hasCompleteBreakdown = values.tipoPack === 'Indeciso' || values.tipoPack === 'boda' ||
-    (values.tipoPack === 'duo-pre' && hasPreWeddingFilled) ||
-    (values.tipoPack === 'duo-post' && hasPostWeddingFilled) ||
-    (values.tipoPack === 'trio' && hasPreWeddingFilled && hasPostWeddingFilled)
-    ;
+    (values.tipoPack === 'duo-pre' && preWeddingFilled) ||
+    (values.tipoPack === 'duo-post' && postWeddingFilled) ||
+    (values.tipoPack === 'trio' && preWeddingFilled && postWeddingFilled)
+
+  const subtotal = (servicePack.find((service) => service.value === values.servicioBoda)?.price ?? 0) + parseFloat(values.precioExtraBoda ?? 0)
+    + (hasPreWedding ? 
+      ((servicePack.find((service) => service.value === values.servicioPreboda)?.complementPrice ?? 0) + parseFloat(values.precioExtraPreboda ?? 0)) : 0)
+    + (hasPostWedding ? 
+      ((servicePack.find((service) => service.value === values.servicioPostboda)?.complementPrice ?? 0) + parseFloat(values.precioExtraPostboda ?? 0)) : 0);
+  const discountAmount = (subtotal * parseFloat(values.descuentoBoda ?? 0)) / 100;
+  const contractTotal = subtotal - discountAmount;
+  const currency = (amount: number) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
 
   return (
     <RequestDetailsModalFrame
@@ -156,34 +132,72 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
       {input('lugar', 'Banquete', 'text', true)}
       {input('horaCoctel', 'Hora del cóctel', 'time')}
       {input('horaBarraLibre', 'Hora de la barra libre', 'time')}
-      {textarea('detalles', 'Detalles')}
-      {select('tipoPack', 'Tipo de Pack', [
-        { value: 'indeciso', label: 'Indeciso' },
-        { value: 'boda', label: 'Solo boda' },
-        { value: 'duo-pre', label: 'Boda + pre-boda' },
-        { value: 'duo-post', label: 'Boda + post-boda' },
-        { value: 'trio', label: 'Trío (pre-boda + boda + post-boda)' },
-      ])}
-      {(values.tipoPack === 'duo-pre' || values.tipoPack === 'trio') && (<section className="production-contract-section wide">
+
+      <section className="production-contract-section wide">
         <header className="production-contract-heading">
-          <h3>Información Post-boda</h3>
+          <h3>Desglose técnico</h3>
+          <span>Se completa antes de confirmar</span>
         </header>
         <div className="production-contract-grid">
-          {input('fechaPreboda', 'Fecha Pre-boda', 'date', true)}
-          {input('lugarPreboda', 'Lugar Pre-boda', 'text', true)}
-          {textarea('detallesPreboda', 'Detalles Pre-boda')}
+          {select('tipoPack', 'Tipo de Pack', [
+            { value: 'indeciso', label: 'Indeciso' },
+            { value: 'boda', label: 'Solo boda' },
+            { value: 'duo-pre', label: 'Boda + pre-boda' },
+            { value: 'duo-post', label: 'Boda + post-boda' },
+            { value: 'trio', label: 'Trío (pre-boda + boda + post-boda)' },
+          ])}
+          {select('servicioBoda', 'Servicios', servicePack)}
+          {textarea('detalles', 'Detalles')}
+          {input('extraBoda', 'Extras', 'text')}
+          {input('precioExtraBoda', 'Precio extras (€)', 'number')}
         </div>
-      </section>)}
-      {(values.tipoPack === 'duo-post' || values.tipoPack === 'trio') && (<section className="production-contract-section wide">
-        <header className="production-contract-heading">
-          <h3>Información Post-boda</h3>
-        </header>
+        {hasPreWedding && (
+          <div>
+            <br />
+            <header className="production-contract-heading">
+              <h3>Información Pre-boda</h3>
+            </header>
+            <div className="production-contract-grid">
+              {select('servicioPreboda', 'Servicios', servicePack)}
+            </div>
+            <div className="production-contract-grid">
+              {input('fechaPreboda', 'Fecha Pre-boda', 'date', true)}
+              {input('lugarPreboda', 'Lugar Pre-boda', 'text', true)}
+              {textarea('detallesPreboda', 'Detalles Pre-boda')}
+              {input('extraPreboda', 'Extras', 'text')}
+              {input('precioExtraPreboda', 'Precio extras (€)', 'number')}
+            </div>
+          </div>
+        )}
+        {hasPostWedding && (
+          <div>
+            <br />
+            <header className="production-contract-heading">
+              <h3>Información Post-boda</h3>
+            </header>
+            <div className="production-contract-grid">
+              {select('servicioPostboda', 'Servicios', servicePack)}
+            </div>
+            <div className="production-contract-grid">
+              {input('fechaPostboda', 'Fecha Post-boda', 'date', true)}
+              {input('lugarPostboda', 'Lugar Post-boda', 'text', true)}
+              {textarea('detallesPostboda', 'Detalles Post-boda')}
+              {input('extraPostboda', 'Extras', 'text')}
+              {input('precioExtraPostboda', 'Precio extras (€)', 'number')}
+            </div>
+          </div>
+        )}
+        <br />
         <div className="production-contract-grid">
-          {input('fechaPostboda', 'Fecha Post-boda', 'date', true)}
-          {input('lugarPostboda', 'Lugar Post-boda', 'text', true)}
-          {textarea('detallesPostboda', 'Detalles Post-boda')}
+          {input('descuentoBoda', 'Descuento (%)', 'number')}
         </div>
-      </section>)}
+
+        <div className="production-contract-totals" aria-live="polite">
+          <p>Subtotal <strong>{currency(subtotal)}</strong></p>
+          <p>descuento ({values.descuentoBoda} %) <strong>{currency(discountAmount)}</strong></p>
+          <p className="production-contract-total">Total del contrato <strong>{currency(contractTotal)}</strong></p>
+        </div>
+      </section>
     </RequestDetailsModalFrame>
   );
 }

@@ -31,6 +31,9 @@ export async function GET(request: NextRequest) {
       w.hora_salida_novio AS "horaSalidaNovio", w.hora_salida_novia AS "horaSalidaNovia",
       w.hora_ceremonia AS "horaCeremonia", w.hora_coctel AS "horaCoctel",
       w.hora_barra_libre AS "horaBarraLibre", w.detalles, w.tipo_pack AS "tipoPack",
+      w.servicio_boda AS "servicioBoda", w.extra_boda AS "extraBoda", w.precio_extra_boda AS "precioExtraBoda", w.descuento_boda AS "descuentoBoda",
+      w.servicio_preboda AS "servicioPreboda", w.extra_preboda AS "extraPreboda", w.precio_extra_preboda AS "precioExtraPreboda",
+      w.servicio_postboda AS "servicioPostboda", w.extra_postboda AS "extraPostboda", w.precio_extra_postboda AS "precioExtraPostboda",
       (SELECT pe.fecha FROM eventos pe WHERE pe.parent_event_id = e.id AND pe.tipo = 'prewedding') AS "fechaPreboda",
       w.lugar_preboda AS "lugarPreboda", w.detalles_preboda AS "detallesPreboda",
       (SELECT pe.fecha FROM eventos pe WHERE pe.parent_event_id = e.id AND pe.tipo = 'postwedding') AS "fechaPostboda",
@@ -100,6 +103,9 @@ export async function PATCH(request: NextRequest) {
       'novia', 'novio', 'ceremonia', 'horaSalidaNovio', 'horaSalidaNovia',
       'horaCeremonia', 'horaCoctel', 'horaBarraLibre', 'detalles', 'tipo', 'presupuesto', 'detalles', 'tipoPack',
       'fechaPreboda', 'lugarPreboda', 'detallesPreboda', 'fechaPostboda', 'lugarPostboda', 'detallesPostboda',
+      'servicioBoda', 'extraBoda', 'precioExtraBoda', 'descuentoBoda',
+      'servicioPreboda', 'extraPreboda', 'precioExtraPreboda',
+      'servicioPostboda', 'extraPostboda', 'precioExtraPostboda',
       'cameraSetup', 'cameraPrice', 'droneSetup', 'dronePrice', 'lightingSetup', 'lightingPrice',
       'soundSetup', 'soundPrice', 'deliveryFormat', 'formatPrice', 'extraCrew', 'extraCrewPrice',
       'logistics', 'logisticsPrice', 'taxPercent',
@@ -154,7 +160,15 @@ export async function PATCH(request: NextRequest) {
           hora_barra_libre = ${values.horaBarraLibre.trim()},
           detalles = ${values.detalles.trim()}, tipo_pack = ${values.tipoPack.trim()},
           lugar_preboda = ${values.lugarPreboda.trim()}, lugar_postboda = ${values.lugarPostboda.trim()},
-          detalles_preboda = ${values.detallesPreboda.trim()}, detalles_postboda = ${values.detallesPostboda.trim()}
+          detalles_preboda = ${values.detallesPreboda.trim() ?? null},
+          detalles_postboda = ${values.detallesPostboda.trim() ?? null},
+          servicio_boda = ${values.servicioBoda.trim() ?? null}, extra_boda = ${values.extraBoda.trim() ?? null},
+          precio_extra_boda = ${values.precioExtraBoda === '' ? null : Number(values.precioExtraBoda)},
+          descuento_boda = ${values.descuentoBoda === '' ? null : Number(values.descuentoBoda)},
+          servicio_preboda = ${values.servicioPreboda.trim() ?? null}, extra_preboda = ${values.extraPreboda.trim() ?? null},
+          precio_extra_preboda = ${values.precioExtraPreboda === '' ? null : Number(values.precioExtraPreboda)},
+          servicio_postboda = ${values.servicioPostboda.trim() ?? null}, extra_postboda = ${values.extraPostboda.trim() ?? null},
+          precio_extra_postboda = ${values.precioExtraPostboda === '' ? null : Number(values.precioExtraPostboda)}
         FROM updated_event AS e
         WHERE w.evento_id = e.id
         RETURNING w.evento_id;

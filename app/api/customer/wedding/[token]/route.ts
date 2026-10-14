@@ -32,6 +32,9 @@ const textFields = [
   'fechaPostboda',
   'lugarPostboda',
   'detallesPostboda',
+  'servicioBoda',
+  'servicioPreboda',
+  'servicioPostboda',
   'status',
   ...scheduleFields,
 ] as const;
@@ -61,6 +64,7 @@ async function findWedding(tokenHash: string) {
       w.hora_coctel AS "horaCoctel",
       w.hora_barra_libre AS "horaBarraLibre",
       w.detalles, w.tipo_pack AS "tipoPack",
+      w.servicio_boda, w.servicio_preboda, w.servicio_postboda,
       (SELECT pe.fecha FROM eventos pe WHERE pe.parent_event_id = e.id AND pe.tipo = 'prewedding') AS "fechaPreboda",
       w.lugar_preboda AS "lugarPreboda", w.detalles_preboda AS "detallesPreboda",
       (SELECT pe.fecha FROM eventos pe WHERE pe.parent_event_id = e.id AND pe.tipo = 'postwedding') AS "fechaPostboda",
@@ -121,6 +125,9 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
     fechaPostboda: rawValues.fechaPostboda.trim(),
     lugarPostboda: rawValues.lugarPostboda.trim(),
     detallesPostboda: rawValues.detallesPostboda.trim(),
+    servicioBoda: rawValues.servicioBoda.trim(),
+    servicioPreboda: rawValues.servicioPreboda.trim(),
+    servicioPostboda: rawValues.servicioPostboda.trim(),
     status: rawValues.status.trim(),
   };
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email);
@@ -175,7 +182,10 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
       lugar_preboda = ${includesPreWedding ? values.lugarPreboda : ''},
       detalles_preboda = ${includesPreWedding ? values.detallesPreboda : ''},
       lugar_postboda = ${includesPostWedding ? values.lugarPostboda : ''},
-      detalles_postboda = ${includesPostWedding ? values.detallesPostboda : ''}
+      detalles_postboda = ${includesPostWedding ? values.detallesPostboda : ''},
+      servicio_boda = ${values.servicioBoda},
+      servicio_preboda = ${values.servicioPreboda},
+      servicio_postboda = ${values.servicioPostboda}
     FROM updated_event AS e
     WHERE w.evento_id = e.id
     RETURNING w.evento_id;
