@@ -30,7 +30,7 @@ const passwordHash = `scrypt$${salt.toString('hex')}$${key.toString('hex')}`;
 const sql = neon(process.env.DATABASE_URL);
 
 await sql`
-  INSERT INTO usuarios (usuario, pass, email, notificaciones)
+  INSERT INTO users (usuario, pass, email, notificaciones)
   VALUES (${username}, ${passwordHash}, ${email || null}, ${notificationLevel})
   ON CONFLICT (usuario) DO UPDATE
   SET pass = EXCLUDED.pass,

@@ -155,7 +155,6 @@ export type PrivateRequest = {
   taxPercent?: string | null;
 };
 
-
 export function setDefaultFormValues(request: PrivateRequest) {
 return {
     nombre: request.nombre || '',

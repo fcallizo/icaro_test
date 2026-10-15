@@ -21,7 +21,7 @@ export async function sendRequestNotification(notification: RequestNotification)
 
     const recipients = await sql`
       SELECT email
-      FROM usuarios
+      FROM users
       WHERE email IS NOT NULL
         AND btrim(email) <> ''
         AND (notificaciones & ${notificationFlag}) = ${notificationFlag};

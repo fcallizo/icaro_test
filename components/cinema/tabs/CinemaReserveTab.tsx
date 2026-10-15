@@ -1,10 +1,10 @@
 import { Dispatch, FormEvent, SetStateAction } from 'react';
-import { InternationalPhoneInput } from '@/components/common/InternationalPhoneInput';
 import { AvailabilityCalendar, CalendarRequest } from '@/components/common/AvailabilityCalendar';
 import { PrivacyFormNotice } from '@/components/common/PrivacyFormNotice';
 import { CalendarBlockRange } from '@/components/private/private-types';
 import { ContactPanel } from '@/components/common/ContactPanel';
 import { ReserveProductionForm } from '../ProductionForm';
+import { createFormFields } from '@/components/common/FormFields';
 
 type CinemaReserveTabProps = {
   productionForm: ReserveProductionForm;
@@ -25,6 +25,15 @@ export function CinemaReserveTab({
   isSubmitting,
   onProductionSubmit,
 }: CinemaReserveTabProps) {
+    const { input, inputPhone, textarea, inputPrice } = createFormFields({
+      values: productionForm,
+      idPrefix: 'wedding-reserve',
+      onChange: (field, value) => setProductionForm((current) => ({ ...current, [field]: value })),
+      dateInputWrapper: true,
+      textareaClassName: 'field-group',
+      emptyOption: 'Seleccionen una opción',
+    });
+
   return (
     <div className="tab-panel">
       <div className="reservation-layout">
@@ -44,43 +53,17 @@ export function CinemaReserveTab({
         <div className="booking-form card-dark">
           <form onSubmit={onProductionSubmit}>
             <h4>Solicitar Producción</h4>
-            <div className="field-group">
-              <label>Nombre / Empresa</label>
-              <input value={productionForm.nombre} onChange={(e) => setProductionForm((current) => ({ ...current, nombre: e.target.value }))} required />
+            {input('nombre', 'Nombre / Empresa', 'text', true, false, false, '')}
+            <div className="two-col">
+              {input('email', 'Correo de contacto', 'email', true, false, false, 'nombre@ejemplo.com')}
+              {inputPhone('telefono', 'Teléfono de Contacto', true, false)}
             </div>
             <div className="two-col">
-              <div className="field-group">
-                <label>Correo de contacto</label>
-                <input type="email" value={productionForm.email} onChange={(e) => setProductionForm((current) => ({ ...current, email: e.target.value }))} placeholder="nombre@ejemplo.com" autoComplete="email" required />
-              </div>
-              <div className="field-group">
-                <label>Teléfono</label>
-                <InternationalPhoneInput value={productionForm.telefono} onChange={(value) => setProductionForm((current) => ({ ...current, telefono: value }))} placeholder="600 123 456" required />
-              </div>
+              {input('fecha', 'Fecha de Realización', 'date', true, false, false, '')}
+              {inputPrice('presupuesto', 'Presupuesto estimado', true, false, false)}
             </div>
-            <div className="two-col">
-              <div className="field-group">
-                <label>Fecha Realización</label>
-                <div className="date-input">
-                  <input type="date" value={productionForm.fecha} onChange={(e) => setProductionForm((current) => ({ ...current, fecha: e.target.value }))} required />
-                </div>
-              </div>
-              <div className="field-group">
-                <label>Presupuesto estimado</label>
-                <div className="input-with-suffix">
-                <input type="number" value={productionForm.presupuesto} onChange={(e) => setProductionForm((current) => ({ ...current, presupuesto: e.target.value }))} required />
-                <span className="input-suffix">€</span>
-                </div>
-              </div>
-            </div>
-            <div className="field-group">
-              <label>Tipo de producción</label>
-              <input value={productionForm.tipo} onChange={(e) => setProductionForm((current) => ({ ...current, tipo: e.target.value }))} placeholder="Ej: Publicidad, Videoclip, Corporativo" />
-            </div>
-            <div className="field-group">
-              <label>Idea principal</label>
-              <textarea rows={4} value={productionForm.detalles} onChange={(e) => setProductionForm((current) => ({ ...current, detalles: e.target.value }))} placeholder="Explícanos brevemente tu idea para el rodaje..." />
-            </div>
+            {input('tipo', 'Tipo de producción', 'text', true, false, false, 'Ej: Publicidad, Videoclip, Corporativo')}
+            {textarea('detalles', 'Idea principal', false, 'Explícanos brevemente tu idea para el rodaje...')}
             <PrivacyFormNotice />
             <button type="submit" className="submit-btn" disabled={isSubmitting}>{isSubmitting ? 'Enviando...' : 'Enviar solicitud técnica'}</button>
           </form>

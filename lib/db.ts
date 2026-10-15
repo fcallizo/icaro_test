@@ -263,7 +263,7 @@ export async function ensureTables() {
     await sql`ALTER TABLE production_requests DROP COLUMN IF EXISTS status;`;
   }
 
-  await sql`CREATE TABLE IF NOT EXISTS usuarios (
+  await sql`CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     usuario TEXT NOT NULL UNIQUE,
     pass TEXT NOT NULL,
@@ -272,8 +272,8 @@ export async function ensureTables() {
     created_at TIMESTAMPTZ DEFAULT NOW()
   );`;
 
-  await sql`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS email TEXT;`;
-  await sql`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS notificaciones SMALLINT NOT NULL DEFAULT 0 CHECK (notificaciones BETWEEN 0 AND 3);`;
+  await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS email TEXT;`;
+  await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS notificaciones SMALLINT NOT NULL DEFAULT 0 CHECK (notificaciones BETWEEN 0 AND 3);`;
 
   await sql`CREATE TABLE IF NOT EXISTS app_settings (
     setting_key TEXT PRIMARY KEY,

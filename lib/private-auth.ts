@@ -51,12 +51,12 @@ export async function seedInitialAdmin() {
   const password = process.env.ADMIN_PASSWORD;
   if (!username || !password || password.length < 12) return;
 
-  const existingUsers = await sql`SELECT id FROM usuarios LIMIT 1;`;
+  const existingUsers = await sql`SELECT id FROM users LIMIT 1;`;
   if (existingUsers.length > 0) return;
 
   const passwordHash = await hashPassword(password);
   await sql`
-    INSERT INTO usuarios (usuario, pass)
+    INSERT INTO users (usuario, pass)
     VALUES (${username}, ${passwordHash})
     ON CONFLICT (usuario) DO NOTHING;
   `;

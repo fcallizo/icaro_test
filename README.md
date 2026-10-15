@@ -24,7 +24,7 @@ Para el área privada configura `ADMIN_USERNAME`, `ADMIN_PASSWORD` (mínimo 12 c
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-Cuando `usuarios` está vacía, la primera visita al panel crea el usuario configurado y guarda su contraseña derivada con scrypt. Los usuarios existentes no se sobrescriben. Reinicia el servidor después de cambiar `.env.local`.
+Cuando `users` está vacía, la primera visita al panel crea el usuario configurado y guarda su contraseña derivada con scrypt. Los usuarios existentes no se sobrescriben. Reinicia el servidor después de cambiar `.env.local`.
 
 El envío de correo usa Resend en desarrollo local y en los despliegues Preview de Vercel (`RESEND_API_KEY` y, opcionalmente, `RESEND_FROM`). En el despliegue Production usa SMTP (`SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` y `SMTP_FROM`). Vercel define `VERCEL_ENV` automáticamente; fuera de Vercel se usa `NODE_ENV` para distinguir producción. Si usas `onboarding@resend.dev`, Resend limita los destinatarios a las direcciones permitidas en tu cuenta; para enviar a clientes configura un dominio verificado y su dirección en `RESEND_FROM`.
 

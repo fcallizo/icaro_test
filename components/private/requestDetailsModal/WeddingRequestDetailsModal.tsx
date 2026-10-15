@@ -1,28 +1,12 @@
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { formatPhoneNumberIntl } from 'react-phone-number-input';
 import { PrivateRequestUpdate, RequestDetailsModalProps, setDefaultFormValues } from '../private-types';
 import { RequestDetailsModalFrame } from './RequestDetailsModalFrame';
-import { InternationalPhoneInput } from '@/components/common/InternationalPhoneInput';
+import { createFormFields } from '@/components/common/FormFields';
 import type { WeddingSheetBlock, WeddingSheetData } from '../pdfs/WeddingContractPdf';
+import { PACK_OPTIONS, SERVICE_OPTIONS } from '@/lib/wedding-form';
 
-/* =========================================================
-   Constantes y utilidades (fuera del componente)
-   ========================================================= */
-const servicePack = [
-  { value: 'fotos', label: 'Sesión fotográfica', price: 250, complementPrice: 100 },
-  { value: 'video', label: 'Vídeo documental', price: 300, complementPrice: 150 },
-  { value: 'duo', label: 'Sesión fotográfica + vídeo documental', price: 500, complementPrice: 200 },
-];
-
-const packOptions = [
-  { value: 'indeciso', label: 'Indeciso' },
-  { value: 'boda', label: 'Solo boda' },
-  { value: 'duo-pre', label: 'Boda + preboda' },
-  { value: 'duo-post', label: 'Boda + postboda' },
-  { value: 'trio', label: 'Trío (preboda + boda + postboda)' },
-];
-
-const findService = (value: string) => servicePack.find((service) => service.value === value);
+const findService = (value: string) => SERVICE_OPTIONS.find((service) => service.value === value);
 
 /** Convierte a número sin dar nunca NaN (campo vacío o texto raro = 0). */
 const toNumber = (value: unknown) => {
@@ -76,53 +60,13 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
 
   const title = values.nombre || 'Boda sin nombre';
 
-  const updateField = (field: keyof PrivateRequestUpdate) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setValues((current) => ({ ...current, [field]: event.target.value }));
-  };
-  const input = (field: keyof PrivateRequestUpdate, label: string, type = 'text', required = false, wide = false) => (
-    <div className={`field-group${wide ? ' wide' : ''}`} key={field}>
-      <label htmlFor={`request-${field}`}>{label}</label>
-      <input
-        id={`request-${field}`}
-        type={type}
-        value={values[field]}
-        onChange={updateField(field)}
-        required={required}
-        step={type === 'number' ? 'any' : undefined}
-      />
-    </div>
-  );
-  const textarea = (field: keyof PrivateRequestUpdate, label: string) => (
-    <div className="field-group wide" key={field}>
-      <label htmlFor={`request-${field}`}>{label}</label>
-      <textarea id={`request-${field}`} rows={3} value={values[field]} onChange={updateField(field)} />
-    </div>
-  );
-  const select = (field: keyof PrivateRequestUpdate, label: string, options: Array<string | { value: string; label: string }>) => (
-    <div className="field-group" key={field}>
-      <label htmlFor={`request-${field}`}>{label}</label>
-      <select id={`request-${field}`} value={values[field]} onChange={updateField(field)}>
-        <option value="">Seleccionar...</option>
-        {options.map((option) => {
-          const value = typeof option === 'string' ? option : option.value;
-          const label = typeof option === 'string' ? option : option.label;
-          return <option key={value} value={value}>{label}</option>;
-        })}
-      </select>
-    </div>
-  );
-
-  const inputPhone = (field: keyof PrivateRequestUpdate, label: string, required = false) => (
-    <div className="field-group" key={field}>
-      <label htmlFor={`request-${field}`}>{label}</label>
-      <InternationalPhoneInput
-        value={values[field] || ''}
-        onChange={(next) => setValues((current) => ({ ...current, [field]: next ?? '' }))}
-        placeholder="Teléfono"
-        required={required}
-      />
-    </div>
-  );
+  const { input, inputPhone, textarea, select } = createFormFields({
+    values,
+    idPrefix: 'request',
+    onChange: (field, value) => setValues((current) => ({ ...current, [field]: value })),
+    wideClassName: 'wide',
+    emptyOption: 'Seleccionar...',
+  });
 
   /* ---------- Reglas del pack ---------- */
   const hasPreWedding = values.tipoPack === 'duo-pre' || values.tipoPack === 'trio';
@@ -208,7 +152,7 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
       fecha: formatDate(values.fecha),
       telNovio: formatPhone(values.telNovio),
       telNovia: formatPhone(values.telNovia),
-      pack: packOptions.find((option) => option.value === values.tipoPack)?.label ?? '',
+      pack: PACK_OPTIONS.find((option) => option.value === values.tipoPack)?.label ?? '',
       schedule: [
         { label: 'Salida del novio', place: values.novio, time: values.horaSalidaNovio },
         { label: 'Salida de la novia', place: values.novia, time: values.horaSalidaNovia },
@@ -262,20 +206,20 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
         </>
       ) : undefined}
     >
-      {input('nombre', 'Nombre de la pareja', 'text', true, true)}
-      {input('email', 'Email', 'email', true)}
-      {input('fecha', 'Fecha', 'date', true)}
+      {input('nombre', 'Nombre de la pareja', 'text', true, true, false, '')}
+      {input('email', 'Email', 'email', true, false, false, '')}
+      {input('fecha', 'Fecha', 'date', true, false, false, '')}
       {inputPhone('telNovio', 'Teléfono del novio', true)}
       {inputPhone('telNovia', 'Teléfono de la novia', true)}
-      {input('novio', 'Casa del novio')}
-      {input('horaSalidaNovio', 'Salida del novio', 'time')}
-      {input('novia', 'Casa de la novia')}
-      {input('horaSalidaNovia', 'Salida de la novia', 'time')}
-      {input('ceremonia', 'Ceremonia')}
-      {input('horaCeremonia', 'Hora de la ceremonia', 'time')}
-      {input('lugar', 'Banquete', 'text', true)}
-      {input('horaCoctel', 'Hora del cóctel', 'time')}
-      {input('horaBarraLibre', 'Hora de la barra libre', 'time')}
+      {input('novio', 'Casa del novio', 'text', false, false, false, '')}
+      {input('horaSalidaNovio', 'Salida del novio', 'time', false, false, false, '')}
+      {input('novia', 'Casa de la novia', 'text', false, false, false, '')}
+      {input('horaSalidaNovia', 'Salida de la novia', 'time', false, false, false, '')}
+      {input('ceremonia', 'Ceremonia', 'text', false, false, false, '')}
+      {input('horaCeremonia', 'Hora de la ceremonia', 'time', false, false, false, '')}
+      {input('lugar', 'Banquete', 'text', false, false, false, '')}
+      {input('horaCoctel', 'Hora del cóctel', 'time', false, false, false, '')}
+      {input('horaBarraLibre', 'Hora de la barra libre', 'time', false, false, false, '')}
 
       <section className="production-contract-section wide">
         <header className="production-contract-heading">
@@ -283,11 +227,11 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
           <span>Se completa antes de confirmar</span>
         </header>
         <div className="production-contract-grid">
-          {select('tipoPack', 'Tipo de pack', packOptions)}
-          {select('servicioBoda', 'Servicios', servicePack)}
+          {select('tipoPack', 'Tipo de pack', PACK_OPTIONS)}
+          {select('servicioBoda', 'Servicios', SERVICE_OPTIONS)}
           {textarea('detalles', 'Detalles')}
-          {input('extraBoda', 'Extras', 'text')}
-          {input('precioExtraBoda', 'Precio extras (€)', 'number')}
+          {input('extraBoda', 'Extras', 'text', false, false, false, '')}
+          {input('precioExtraBoda', 'Precio extras (€)', 'number', false, false, false, '')}
         </div>
 
         {hasPreWedding && (
@@ -297,14 +241,14 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
               <h3>Información preboda</h3>
             </header>
             <div className="production-contract-grid">
-              {select('servicioPreboda', 'Servicios', servicePack)}
+              {select('servicioPreboda', 'Servicios', SERVICE_OPTIONS)}
             </div>
             <div className="production-contract-grid">
-              {input('fechaPreboda', 'Fecha preboda', 'date', true)}
-              {input('lugarPreboda', 'Lugar preboda', 'text', true)}
+              {input('fechaPreboda', 'Fecha preboda', 'date', true, false, false, '')}
+              {input('lugarPreboda', 'Lugar preboda', 'text', true, false, false, '')}
               {textarea('detallesPreboda', 'Detalles preboda')}
-              {input('extraPreboda', 'Extras', 'text')}
-              {input('precioExtraPreboda', 'Precio extras (€)', 'number')}
+              {input('extraPreboda', 'Extras', 'text', false, false, false, '')}
+              {input('precioExtraPreboda', 'Precio extras (€)', 'number', false, false, false, '')}
             </div>
           </div>
         )}
@@ -316,21 +260,21 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
               <h3>Información postboda</h3>
             </header>
             <div className="production-contract-grid">
-              {select('servicioPostboda', 'Servicios', servicePack)}
+              {select('servicioPostboda', 'Servicios', SERVICE_OPTIONS)}
             </div>
             <div className="production-contract-grid">
-              {input('fechaPostboda', 'Fecha postboda', 'date', true)}
-              {input('lugarPostboda', 'Lugar postboda', 'text', true)}
+              {input('fechaPostboda', 'Fecha postboda', 'date', true, false, false, '')}
+              {input('lugarPostboda', 'Lugar postboda', 'text', true, false, false, '')}
               {textarea('detallesPostboda', 'Detalles postboda')}
-              {input('extraPostboda', 'Extras', 'text')}
-              {input('precioExtraPostboda', 'Precio extras (€)', 'number')}
+              {input('extraPostboda', 'Extras', 'text', false, false, false, '')}
+              {input('precioExtraPostboda', 'Precio extras (€)', 'number', false, false, false, '')}
             </div>
           </div>
         )}
 
         <br />
         <div className="production-contract-grid">
-          {input('descuentoBoda', 'Descuento (%)', 'number')}
+          {input('descuentoBoda', 'Descuento (%)', 'number', false, false, false, '')}
         </div>
 
         <div className="production-contract-totals" aria-live="polite">

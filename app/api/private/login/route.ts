@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
   try {
     await ensureTables();
     await seedInitialAdmin();
-    const [user] = await sql`SELECT id, usuario, pass FROM usuarios WHERE usuario = ${usuario.trim()} LIMIT 1;`;
+    const [user] = await sql`SELECT id, usuario, pass FROM users WHERE usuario = ${usuario.trim()} LIMIT 1;`;
 
     if (!user || !(await verifyPassword(password, user.pass))) {
       return NextResponse.json({ error: 'Usuario o contraseña incorrectos.' }, { status: 401 });

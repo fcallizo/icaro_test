@@ -1,10 +1,11 @@
 import { Dispatch, FormEvent, SetStateAction } from 'react';
-import { InternationalPhoneInput } from '@/components/common/InternationalPhoneInput';
 import { AvailabilityCalendar, CalendarRequest } from '@/components/common/AvailabilityCalendar';
 import { PrivacyFormNotice } from '@/components/common/PrivacyFormNotice';
 import { CalendarBlockRange } from '@/components/private/private-types';
 import { ContactPanel } from '@/components/common/ContactPanel';
+import { createFormFields } from '@/components/common/FormFields';
 import { ReserveWeddingForm } from '../WeddingForm';
+import { PACK_OPTIONS } from '@/lib/wedding-form';
 
 type WeddingReserveTabProps = {
   weddingForm: ReserveWeddingForm;
@@ -13,7 +14,6 @@ type WeddingReserveTabProps = {
   blockedRanges: CalendarBlockRange[];
   unifyCalendars: boolean;
   isSubmitting: boolean;
-  customerFormPath: string;
   onWeddingSubmit: (event: FormEvent<HTMLFormElement>) => void;
 };
 
@@ -24,9 +24,17 @@ export function WeddingReserveTab({
   blockedRanges,
   unifyCalendars,
   isSubmitting,
-  customerFormPath,
   onWeddingSubmit,
 }: WeddingReserveTabProps) {
+  const { input, inputPhone, textarea, select } = createFormFields({
+    values: weddingForm,
+    idPrefix: 'wedding-reserve',
+    onChange: (field, value) => setWeddingForm((current) => ({ ...current, [field]: value })),
+    dateInputWrapper: true,
+    textareaClassName: 'field-group',
+    emptyOption: 'Seleccionen una opción',
+  });
+
   return (
     <div className="tab-panel" role="tabpanel">
       <div className="hero-block light">
@@ -48,55 +56,18 @@ export function WeddingReserveTab({
           </div>
         </div>
         <div className="booking-form wedding-panel">
-          {customerFormPath && (
-            <div className="customer-form-link-notice" role="status">
-              <p>Solicitud recibida. Podéis completar o actualizar los detalles de vuestra boda desde este enlace privado:</p>
-              <a href={customerFormPath}>Completar los detalles de la boda</a>
-            </div>
-          )}
-
           <form onSubmit={onWeddingSubmit}>
-            <div className="field-group">
-              <label>Nombre completo de los novios</label>
-              <input type="text" value={weddingForm.nombre} onChange={(e) => setWeddingForm((current) => ({ ...current, nombre: e.target.value }))} placeholder="Ej: Paola Gómez & David Alfaro" required />
+            {input('nombre', 'Nombre completo de los novios', 'text', true, false, false, 'Ej: Paola Gómez & David Alfaro')}
+            <div className="two-col">
+              {input('email', 'Correo de contacto', 'email', true, false, false, 'nombre@ejemplo.com')}
+              {inputPhone('telNovia', 'Teléfono de Contacto', true, false)}
             </div>
             <div className="two-col">
-              <div className="field-group">
-                <label>Correo de contacto</label>
-                <input type="email" value={weddingForm.email} onChange={(e) => setWeddingForm((current) => ({ ...current, email: e.target.value }))} placeholder="nombre@ejemplo.com" autoComplete="email" required />
-              </div>
-              <div className="field-group">
-                <label>Teléfono de Contacto</label>
-                <InternationalPhoneInput value={weddingForm.telNovia} onChange={(value) => setWeddingForm((current) => ({ ...current, telNovia: value }))} placeholder="600 789 012" required />
-              </div>
+              {input('fecha', 'Fecha del enlace', 'date', true, false, false, '')}
+              {select('tipoPack', '¿Qué os interesa?', PACK_OPTIONS, true)}
             </div>
-            <div className="two-col">
-              <div className="field-group">
-                <label>Fecha del enlace</label>
-                <div className="date-input">
-                  <input type="date" value={weddingForm.fecha} onChange={(e) => setWeddingForm((current) => ({ ...current, fecha: e.target.value }))} required />
-                </div>
-              </div>
-              <div className="field-group">
-                <label>¿Qué os interesa?</label>
-                <select value={weddingForm.tipoPack} onChange={(e) => setWeddingForm((current) => ({ ...current, tipoPack: e.target.value }))} required >
-                  <option value="">Seleccionen una opción</option>
-                  <option value="indeciso">Aún no lo sé</option>
-                  <option value="boda">Solo boda</option>
-                  <option value="duo-pre">Boda + pre-boda</option>
-                  <option value="duo-post">Boda + post-boda</option>
-                  <option value="trio">Trío (pre-boda + boda + post-boda)</option>
-                </select>
-              </div>
-            </div>
-            <div className="field-group">
-              <label>Iglesia / lugar de la ceremonia</label>
-              <input type="text" value={weddingForm.ceremonia} onChange={(e) => setWeddingForm((current) => ({ ...current, ceremonia: e.target.value }))} placeholder="Nombre y dirección" />
-            </div>
-            <div className="field-group">
-              <label>Cuéntanos más detalles de vuestro día</label>
-              <textarea rows={3} value={weddingForm.detalles} onChange={(e) => setWeddingForm((current) => ({ ...current, detalles: e.target.value }))} placeholder="Ideas clave para el tráiler, estilo del evento..." />
-            </div>
+            {input('ceremonia', 'Iglesia / lugar de la ceremonia', 'text', false, false, false, 'Nombre y dirección')}
+            {textarea('detalles', 'Cuéntanos más detalles de vuestro día', false, 'Ideas clave para el tráiler, estilo del evento...')}
             <PrivacyFormNotice />
             <button type="submit" className="submit-btn" disabled={isSubmitting}>{isSubmitting ? 'Enviando...' : 'Enviar solicitud de boda'}</button>
           </form>

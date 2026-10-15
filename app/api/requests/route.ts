@@ -67,32 +67,13 @@ export async function POST(request: NextRequest) {
     const tokenHash = createHash('sha256').update(token).digest('hex');
     const text = (field: string) => typeof payload[field] === 'string' ? payload[field].trim() : '';
     const nombre = text('nombre');
-    const telNovio = text('telNovio');
     const telNovia = text('telNovia');
     const fecha = text('fecha');
-    const lugar = text('lugar');
-    const novia = text('novia');
-    const novio = text('novio');
     const ceremonia = text('ceremonia');
     const detalles = text('detalles');
     const tipoPack = text('tipoPack');
-    const horaSalidaNovio = text('horaSalidaNovio');
-    const horaSalidaNovia = text('horaSalidaNovia');
-    const horaCeremonia = text('horaCeremonia');
-    const horaCoctel = text('horaCoctel');
-    const horaBarraLibre = text('horaBarraLibre');
     const eventId = randomUUID();
     const email = text('email');
-    const servicioBoda = text('servicioBoda');
-    const extraBoda = text('extraBoda');
-    const precioExtraBoda = text('precioExtraBoda');
-    const descuentoBoda = text('descuentoBoda');
-    const servicioPreboda = text('servicioPreboda');
-    const extraPreboda = text('extraPreboda');
-    const precioExtraPreboda = text('precioExtraPreboda');
-    const servicioPostboda = text('servicioPostboda');
-    const extraPostboda = text('extraPostboda');
-    const precioExtraPostboda = text('precioExtraPostboda');
 
     const result = await sql`
       WITH new_event AS (
@@ -101,19 +82,9 @@ export async function POST(request: NextRequest) {
         RETURNING id
       ), new_details AS (
         INSERT INTO wedding_requests (
-          evento_id, nombre, email, tel_novio, tel_novia, lugar, novia, novio, ceremonia,
-          hora_salida_novio, hora_salida_novia, hora_ceremonia, hora_coctel, hora_barra_libre,
-          detalles, tipo_pack, customer_form_token_hash,
-          servicio_boda, extra_boda, precio_extra_boda, descuento_boda,
-          servicio_preboda, extra_preboda, precio_extra_preboda,
-          servicio_postboda, extra_postboda, precio_extra_postboda
+          evento_id, nombre, email, tel_novia, ceremonia, detalles, tipo_pack, customer_form_token_hash
         )
-        SELECT id, ${nombre}, ${email}, ${telNovio}, ${telNovia}, ${lugar}, ${novia}, ${novio}, ${ceremonia},
-          ${horaSalidaNovio}, ${horaSalidaNovia}, ${horaCeremonia}, ${horaCoctel}, ${horaBarraLibre},
-          ${detalles}, ${tipoPack}, ${tokenHash},
-          ${servicioBoda}, ${extraBoda}, ${precioExtraBoda}, ${descuentoBoda},
-          ${servicioPreboda}, ${extraPreboda}, ${precioExtraPreboda},
-          ${servicioPostboda}, ${extraPostboda}, ${precioExtraPostboda}
+        SELECT id, ${nombre}, ${email}, ${telNovia}, ${ceremonia}, ${detalles}, ${tipoPack}, ${tokenHash}
         FROM new_event
         RETURNING evento_id
       )

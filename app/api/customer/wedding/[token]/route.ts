@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { ensureTables, sql } from '@/lib/db';
+import { setNullValue } from '@/lib/form-values';
 
 type RouteContext = {
   params: { token: string };
@@ -35,7 +36,6 @@ const textFields = [
   'servicioBoda',
   'servicioPreboda',
   'servicioPostboda',
-  'status',
   ...scheduleFields,
 ] as const;
 
@@ -64,7 +64,9 @@ async function findWedding(tokenHash: string) {
       w.hora_coctel AS "horaCoctel",
       w.hora_barra_libre AS "horaBarraLibre",
       w.detalles, w.tipo_pack AS "tipoPack",
-      w.servicio_boda, w.servicio_preboda, w.servicio_postboda,
+      w.servicio_boda AS "servicioBoda",
+      w.servicio_preboda AS "servicioPreboda",
+      w.servicio_postboda AS "servicioPostboda",
       (SELECT pe.fecha FROM eventos pe WHERE pe.parent_event_id = e.id AND pe.tipo = 'prewedding') AS "fechaPreboda",
       w.lugar_preboda AS "lugarPreboda", w.detalles_preboda AS "detallesPreboda",
       (SELECT pe.fecha FROM eventos pe WHERE pe.parent_event_id = e.id AND pe.tipo = 'postwedding') AS "fechaPostboda",
@@ -98,44 +100,49 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
 
   const payload = await request.json().catch(() => null);
   const rawValues = payload?.values;
-  if (!rawValues || textFields.some((field) => typeof rawValues[field] !== 'string' || rawValues[field].length > 10000)) {
+  if (!rawValues || typeof rawValues !== 'object' || Array.isArray(rawValues) ||
+      textFields.some((field) => {
+        const value = rawValues[field];
+        return (typeof value !== 'string' && value !== null) ||
+          (typeof value === 'string' && value.length > 10000);
+      })) {
     return NextResponse.json({ error: 'Revisa los datos del formulario e inténtalo de nuevo.' }, { status: 400 });
   }
 
+  const text = (field: (typeof textFields)[number]) =>
+    typeof rawValues[field] === 'string' ? rawValues[field].trim() : '';
   const values: WeddingFormValues = {
-    nombre: rawValues.nombre.trim(),
-    email: rawValues.email.trim(),
-    fecha: rawValues.fecha.trim(),
-    telNovio: rawValues.telNovio.trim(),
-    telNovia: rawValues.telNovia.trim(),
-    lugar: rawValues.lugar.trim(),
-    novia: rawValues.novia.trim(),
-    novio: rawValues.novio.trim(),
-    ceremonia: rawValues.ceremonia.trim(),
-    horaSalidaNovio: rawValues.horaSalidaNovio.trim(),
-    horaSalidaNovia: rawValues.horaSalidaNovia.trim(),
-    horaCeremonia: rawValues.horaCeremonia.trim(),
-    horaCoctel: rawValues.horaCoctel.trim(),
-    horaBarraLibre: rawValues.horaBarraLibre.trim(),
-    detalles: rawValues.detalles.trim(),
-    tipoPack: rawValues.tipoPack.trim(),
-    fechaPreboda: rawValues.fechaPreboda.trim(),
-    lugarPreboda: rawValues.lugarPreboda.trim(),
-    detallesPreboda: rawValues.detallesPreboda.trim(),
-    fechaPostboda: rawValues.fechaPostboda.trim(),
-    lugarPostboda: rawValues.lugarPostboda.trim(),
-    detallesPostboda: rawValues.detallesPostboda.trim(),
-    servicioBoda: rawValues.servicioBoda.trim(),
-    servicioPreboda: rawValues.servicioPreboda.trim(),
-    servicioPostboda: rawValues.servicioPostboda.trim(),
-    status: rawValues.status.trim(),
+    nombre: text('nombre'),
+    email: text('email'),
+    fecha: text('fecha'),
+    telNovio: text('telNovio'),
+    telNovia: text('telNovia'),
+    lugar: text('lugar'),
+    novia: text('novia'),
+    novio: text('novio'),
+    ceremonia: text('ceremonia'),
+    horaSalidaNovio: text('horaSalidaNovio'),
+    horaSalidaNovia: text('horaSalidaNovia'),
+    horaCeremonia: text('horaCeremonia'),
+    horaCoctel: text('horaCoctel'),
+    horaBarraLibre: text('horaBarraLibre'),
+    detalles: text('detalles'),
+    tipoPack: text('tipoPack'),
+    fechaPreboda: text('fechaPreboda'),
+    lugarPreboda: text('lugarPreboda'),
+    detallesPreboda: text('detallesPreboda'),
+    fechaPostboda: text('fechaPostboda'),
+    lugarPostboda: text('lugarPostboda'),
+    detallesPostboda: text('detallesPostboda'),
+    servicioBoda: text('servicioBoda'),
+    servicioPreboda: text('servicioPreboda'),
+    servicioPostboda: text('servicioPostboda'),
   };
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email);
   if (values.nombre.length > 250 || values.email.length > 254) {
     return NextResponse.json({ error: 'El nombre o el correo superan la longitud permitida.' }, { status: 400 });
   }
-  if (!values.nombre || !validEmail || !isValidDate(values.fecha) ||
-      !values.telNovio || !values.telNovia || !values.lugar) {
+  if (!values.nombre || !validEmail || !isValidDate(values.fecha) || !values.telNovio || !values.telNovia) {
     return NextResponse.json({ error: 'Nombre, email, fecha, teléfonos y lugar de celebración son obligatorios.' }, { status: 400 });
   }
   if (!['indeciso', 'boda', 'duo-pre', 'duo-post', 'trio'].includes(values.tipoPack)) {
@@ -171,21 +178,24 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
     UPDATE wedding_requests AS w SET
       nombre = ${values.nombre}, email = ${values.email},
       tel_novio = ${values.telNovio}, tel_novia = ${values.telNovia},
-      lugar = ${values.lugar}, novia = ${values.novia}, novio = ${values.novio},
-      ceremonia = ${values.ceremonia},
-      hora_salida_novio = ${values.horaSalidaNovio},
-      hora_salida_novia = ${values.horaSalidaNovia},
-      hora_ceremonia = ${values.horaCeremonia},
-      hora_coctel = ${values.horaCoctel},
-      hora_barra_libre = ${values.horaBarraLibre},
-      detalles = ${values.detalles}, tipo_pack = ${values.tipoPack},
-      lugar_preboda = ${includesPreWedding ? values.lugarPreboda : ''},
-      detalles_preboda = ${includesPreWedding ? values.detallesPreboda : ''},
-      lugar_postboda = ${includesPostWedding ? values.lugarPostboda : ''},
-      detalles_postboda = ${includesPostWedding ? values.detallesPostboda : ''},
+      novio = ${setNullValue(values.novio)},
+      hora_salida_novio = ${setNullValue(values.horaSalidaNovio)},
+      novia = ${setNullValue(values.novia)},
+      hora_salida_novia = ${setNullValue(values.horaSalidaNovia)},
+      ceremonia = ${setNullValue(values.ceremonia)},
+      hora_ceremonia = ${setNullValue(values.horaCeremonia)},
+      lugar = ${setNullValue(values.lugar)},
+      hora_coctel = ${setNullValue(values.horaCoctel)},
+      hora_barra_libre = ${setNullValue(values.horaBarraLibre)},
+      detalles = ${values.detalles},
+      tipo_pack = ${values.tipoPack},
       servicio_boda = ${values.servicioBoda},
-      servicio_preboda = ${values.servicioPreboda},
-      servicio_postboda = ${values.servicioPostboda}
+      servicio_preboda = ${includesPreWedding ? values.servicioPreboda : null},
+      lugar_preboda = ${includesPreWedding ? setNullValue(values.lugarPreboda) : null},
+      detalles_preboda = ${includesPreWedding ? setNullValue(values.detallesPreboda) : null},
+      servicio_postboda = ${includesPostWedding ? values.servicioPostboda : null},
+      lugar_postboda = ${includesPostWedding ? setNullValue(values.lugarPostboda) : null},
+      detalles_postboda = ${includesPostWedding ? setNullValue(values.detallesPostboda) : null}
     FROM updated_event AS e
     WHERE w.evento_id = e.id
     RETURNING w.evento_id;

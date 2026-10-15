@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ensureTables, sql } from '@/lib/db';
 import { PRIVATE_SESSION_COOKIE, readPrivateSession } from '@/lib/private-auth';
 import { sendRequestDecisionNotification } from '@/lib/request-notifications';
+import { setNullValue } from '@/lib/form-values';
 
 type RequestType = 'wedding' | 'production';
 
@@ -126,8 +127,8 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Las fechas de preboda y postboda deben ser válidas.' }, { status: 400 });
     }
 
-    if (requestType === 'wedding' && (!values.telNovio.trim() || !values.telNovia.trim() || !values.lugar.trim())) {
-      return NextResponse.json({ error: 'Los teléfonos y el lugar de la boda son obligatorios.' }, { status: 400 });
+    if (requestType === 'wedding' && (!values.telNovio.trim() || !values.telNovia.trim())) {
+      return NextResponse.json({ error: 'Los teléfonos son obligatorios.' }, { status: 400 });
     }
     if (requestType === 'production' && (!values.telefono.trim() || !values.presupuesto.trim() || !Number.isFinite(Number(values.presupuesto)) || Number(values.presupuesto) < 0)) {
       return NextResponse.json({ error: 'El teléfono y un presupuesto válido son obligatorios.' }, { status: 400 });
@@ -151,23 +152,29 @@ export async function PATCH(request: NextRequest) {
         UPDATE wedding_requests AS w SET
           nombre = ${values.nombre.trim()}, email = ${values.email.trim()},
           tel_novio = ${values.telNovio.trim()}, tel_novia = ${values.telNovia.trim()},
-          lugar = ${values.lugar.trim()}, novia = ${values.novia.trim()}, novio = ${values.novio.trim()},
-          ceremonia = ${values.ceremonia.trim()},
-          hora_salida_novio = ${values.horaSalidaNovio.trim()},
-          hora_salida_novia = ${values.horaSalidaNovia.trim()},
-          hora_ceremonia = ${values.horaCeremonia.trim()},
-          hora_coctel = ${values.horaCoctel.trim()},
-          hora_barra_libre = ${values.horaBarraLibre.trim()},
-          detalles = ${values.detalles.trim()}, tipo_pack = ${values.tipoPack.trim()},
-          lugar_preboda = ${values.lugarPreboda.trim()}, lugar_postboda = ${values.lugarPostboda.trim()},
-          detalles_preboda = ${values.detallesPreboda.trim() ?? null},
-          detalles_postboda = ${values.detallesPostboda.trim() ?? null},
-          servicio_boda = ${values.servicioBoda.trim() ?? null}, extra_boda = ${values.extraBoda.trim() ?? null},
+          novio = ${setNullValue(values.novio)},
+          hora_salida_novio = ${setNullValue(values.horaSalidaNovio)},
+          novia = ${setNullValue(values.novia)},
+          hora_salida_novia = ${setNullValue(values.horaSalidaNovia)},
+          ceremonia = ${setNullValue(values.ceremonia)},
+          hora_ceremonia = ${setNullValue(values.horaCeremonia)},
+          lugar = ${setNullValue(values.lugar)},
+          hora_coctel = ${setNullValue(values.horaCoctel)},
+          hora_barra_libre = ${setNullValue(values.horaBarraLibre)},
+          detalles = ${values.detalles.trim()}, tipo_pack = ${values.tipoPack},
+          servicio_boda = ${values.servicioBoda},
+          extra_boda = ${setNullValue(values.extraBoda)},
           precio_extra_boda = ${values.precioExtraBoda === '' ? null : Number(values.precioExtraBoda)},
           descuento_boda = ${values.descuentoBoda === '' ? null : Number(values.descuentoBoda)},
-          servicio_preboda = ${values.servicioPreboda.trim() ?? null}, extra_preboda = ${values.extraPreboda.trim() ?? null},
+          servicio_preboda = ${values.servicioPreboda},
+          lugar_preboda = ${setNullValue(values.lugarPreboda)},
+          detalles_preboda = ${setNullValue(values.detallesPreboda)},
+          extra_preboda = ${setNullValue(values.extraPreboda)},
           precio_extra_preboda = ${values.precioExtraPreboda === '' ? null : Number(values.precioExtraPreboda)},
-          servicio_postboda = ${values.servicioPostboda.trim() ?? null}, extra_postboda = ${values.extraPostboda.trim() ?? null},
+          servicio_postboda = ${values.servicioPostboda},
+          lugar_postboda = ${setNullValue(values.lugarPostboda)},
+          detalles_postboda = ${setNullValue(values.detallesPostboda)},
+          extra_postboda = ${setNullValue(values.extraPostboda)},
           precio_extra_postboda = ${values.precioExtraPostboda === '' ? null : Number(values.precioExtraPostboda)}
         FROM updated_event AS e
         WHERE w.evento_id = e.id

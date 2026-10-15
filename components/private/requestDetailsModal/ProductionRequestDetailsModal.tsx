@@ -1,7 +1,7 @@
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { PrivateRequestUpdate, ProductionMaterialCategory, RequestDetailsModalProps, setDefaultFormValues } from '../private-types';
 import { RequestDetailsModalFrame } from './RequestDetailsModalFrame';
-import { InternationalPhoneInput } from '@/components/common/InternationalPhoneInput';
+import { createFormFields } from '@/components/common/FormFields';
 import type { ProductionContractData } from '../pdfs/ProductionContractPdf';
 
 const productionItems = [
@@ -55,46 +55,13 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
   const [pdfError, setPdfError] = useState('');
   const title = values.nombre || 'Evento cinematográfico';
 
-  const updateField = (field: keyof PrivateRequestUpdate) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setValues((current) => ({ ...current, [field]: event.target.value }));
-  };
-  const input = (field: keyof PrivateRequestUpdate, label: string, type = 'text', required = false, wide = false) => (
-    <div className={`field-group${wide ? ' wide' : ''}`} key={field}>
-      <label htmlFor={`request-${field}`}>{label}</label>
-      <input id={`request-${field}`} type={type} value={values[field]} onChange={updateField(field)} required={required} step={type === 'number' ? 'any' : undefined} />
-    </div>
-  );
-  const textarea = (field: keyof PrivateRequestUpdate, label: string) => (
-    <div className="field-group wide" key={field}>
-      <label htmlFor={`request-${field}`}>{label}</label>
-      <textarea id={`request-${field}`} rows={3} value={values[field]} onChange={updateField(field)} />
-    </div>
-  );
-  const select = (field: keyof PrivateRequestUpdate, label: string, options: Array<string | { value: string; label: string }>) => (
-    <div className="field-group" key={field}>
-      <label htmlFor={`request-${field}`}>{label}</label>
-      <select id={`request-${field}`} value={values[field]} onChange={updateField(field)}>
-        <option value="">Seleccionar...</option>
-        {options.map((option) => {
-          const value = typeof option === 'string' ? option : option.value;
-          const label = typeof option === 'string' ? option : option.label;
-          return <option key={value} value={value}>{label}</option>;
-        })}
-      </select>
-    </div>
-  );
-
-  const inputPhone = (field: keyof PrivateRequestUpdate, label: string, required = false) => (
-    <div className="field-group" key={field}>
-      <label htmlFor={`request-${field}`}>{label}</label>
-      <InternationalPhoneInput
-        value={values[field] || ''}
-        onChange={(next) => setValues((current) => ({ ...current, [field]: next ?? '' }))}
-        placeholder="Teléfono"
-        required={required}
-      />
-    </div>
-  );
+  const { input, inputPhone, textarea, select, inputPrice } = createFormFields({
+    values,
+    idPrefix: 'request',
+    onChange: (field, value) => setValues((current) => ({ ...current, [field]: value })),
+    wideClassName: 'wide',
+    emptyOption: 'Seleccionar...',
+  });
 
   const materialSelect = (
     category: ProductionMaterialCategory,
@@ -189,12 +156,12 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
         </>
       ) : undefined}
     >
-      {input('nombre', 'Nombre / empresa', 'text', true, true)}
-      {input('email', 'Email', 'email', true)}
-      {input('fecha', 'Fecha', 'date', true)}
+      {input('nombre', 'Nombre / empresa', 'text', true, true, false, '')}
+      {input('email', 'Email', 'email', true, false, false, '')}
+      {input('fecha', 'Fecha', 'date', true, false, false, '')}
       {inputPhone('telefono', 'Teléfono', true)}
-      {input('presupuesto', 'Presupuesto (€)', 'number', true)}
-      {input('tipo', 'Tipo de producción')}
+      {inputPrice('presupuesto', 'Presupuesto', true, false, false)}
+      {input('tipo', 'Tipo de producción','text', true, false, false, '')}
       {textarea('detalles', 'Idea principal')}
       <section className="production-contract-section wide">
         <header className="production-contract-heading">
@@ -203,19 +170,26 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
         </header>
         <div className="production-contract-grid">
           {materialSelect('camera', 'cameraSetup', 'cameraPrice', 'Cámara principal')}
-          {input('cameraPrice', 'Precio cámara (€)', 'number')}
+          {inputPrice('cameraPrice', 'Precio cámara', true, false, false)}
+
           {materialSelect('drone', 'droneSetup', 'dronePrice', 'Unidad de vuelo')}
-          {input('dronePrice', 'Precio dron (€)', 'number')}
+          {inputPrice('dronePrice', 'Precio dron', true, false, false)}
+
           {materialSelect('lighting', 'lightingSetup', 'lightingPrice', 'Set de iluminación')}
-          {input('lightingPrice', 'Precio iluminación (€)', 'number')}
+          {inputPrice('lightingPrice', 'Precio iluminación', true, false, false)}
+
           {materialSelect('sound', 'soundSetup', 'soundPrice', 'Tratamiento de sonido')}
-          {input('soundPrice', 'Precio sonido (€)', 'number')}
+          {inputPrice('soundPrice', 'Precio sonido', true, false, false)}
+
           {materialSelect('format', 'deliveryFormat', 'formatPrice', 'Formato de entrega')}
-          {input('formatPrice', 'Precio formato (€)', 'number')}
-          {input('extraCrew', 'Personal técnico extra', 'text')}
-          {input('extraCrewPrice', 'Precio equipo extra (€)', 'number')}
-          {input('logistics', 'Logística y transporte', 'text')}
-          {input('logisticsPrice', 'Precio logística (€)', 'number')}
+          {inputPrice('formatPrice', 'Precio formato', true, false, false)}
+
+          {input('extraCrew', 'Personal técnico extra', 'text', true, false, false, '')}
+          {inputPrice('extraCrewPrice', 'Precio equipo extra', true, false, false)}
+
+          {input('logistics', 'Logística y transporte', 'text', true, false, false, '')}
+          {inputPrice('logisticsPrice', 'Precio logística', true, false, false)}
+
           {select('taxPercent', 'IVA', [
             { value: '0', label: 'Sin IVA (0 %)' },
             { value: '21', label: 'Con IVA (21 %)' },

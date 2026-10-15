@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     await ensureTables();
     await seedInitialAdmin();
     const username = await readPrivateSession(request.cookies.get(PRIVATE_SESSION_COOKIE)?.value);
-    const [userState] = await sql`SELECT EXISTS(SELECT 1 FROM usuarios) AS configured;`;
+    const [userState] = await sql`SELECT EXISTS(SELECT 1 FROM users) AS configured;`;
 
     return NextResponse.json({
       authenticated: Boolean(username),

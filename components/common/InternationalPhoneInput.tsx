@@ -1,6 +1,7 @@
 import PhoneInput from 'react-phone-number-input';
 
 type InternationalPhoneInputProps = {
+  id?: string;
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
@@ -9,6 +10,7 @@ type InternationalPhoneInputProps = {
 };
 
 export function InternationalPhoneInput({
+  id,
   value,
   onChange,
   placeholder,
@@ -17,6 +19,7 @@ export function InternationalPhoneInput({
 }: InternationalPhoneInputProps) {
   return (
     <PhoneInput
+      id={id}
       className="international-phone-input"
       defaultCountry="ES"
       international
