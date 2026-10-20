@@ -116,7 +116,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'La asignación no es válida.' }, { status: 400 });
     }
 
-    const uniqueEventIds = [...new Set(eventIds)];
+    const uniqueEventIds = Array.from(new Set(eventIds));
     if (uniqueEventIds.length !== eventIds.length) {
       return NextResponse.json({ error: 'La lista contiene eventos duplicados.' }, { status: 400 });
     }
