@@ -6,6 +6,7 @@ import { NotificationsTab } from '@/components/private/tabs/NotificationsTab';
 import { ConfirmedTab } from '@/components/private/tabs/ConfirmedTab';
 import { ProductionMaterialsTab } from '@/components/private/tabs/ProductionMaterialsTab';
 import { CalendarBlocksTab } from '@/components/private/tabs/CalendarBlocksTab';
+import { EventManagementTab } from '@/components/private/tabs/EventManagementTab';
 import { CalendarBlock, ProductionMaterial, ProductionMaterialCategory, PrivateRequest, PrivateRequestUpdate, RequestAction } from '@/components/private/private-types';
 import { AvailabilityCalendar } from '@/components/common/AvailabilityCalendar';
 import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
@@ -53,7 +54,7 @@ export function PrivateArea() {
   const [sessionReady, setSessionReady] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [activeTab, setActiveTab] = useState<'notifications' | 'confirmed' | 'materials' | 'blocks'>('notifications');
+  const [activeTab, setActiveTab] = useState<'notifications' | 'confirmed' | 'materials' | 'blocks' | 'events'>('notifications');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [unifyCalendars, setUnifyCalendars] = useState(false);
   const [isSavingCalendarSetting, setIsSavingCalendarSetting] = useState(false);
@@ -440,6 +441,9 @@ export function PrivateArea() {
                 <button type="button" role="tab" aria-selected={activeTab === 'materials'} className={activeTab === 'materials' ? 'active' : ''} onClick={() => setActiveTab('materials')}>
                   📸 Materiales <span>{materials.filter((material) => material.active).length}</span>
                 </button>
+                <button type="button" role="tab" aria-selected={activeTab === 'events'} className={activeTab === 'events' ? 'active' : ''} onClick={() => setActiveTab('events')}>
+                  🕐​​ Gestión de eventos
+                </button>
               </div>
 
               {message && <p className="private-error-message" role="alert">{message}</p>}
@@ -456,6 +460,8 @@ export function PrivateArea() {
                   onUpdate={handleUpdateMaterial}
                   onSetActive={(id, active) => void handleSetMaterialActive(id, active)}
                 />
+              ) : activeTab === 'events' ? (
+                <EventManagementTab />
               ) : (
                 <CalendarBlocksTab
                   blocks={calendarBlocks}

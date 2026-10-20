@@ -1,5 +1,8 @@
+import { CLOUD_NAME } from "@/lib/cloudinary";
 
 export function CinemaVideoTab({ }) {
+  const videoURL = `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/v1792433650/Video_Definitvo_Motrrad.mp4`;
+  
   return (
     <div className="tab-panel">
       <div className="hero-block">
@@ -8,12 +11,11 @@ export function CinemaVideoTab({ }) {
       </div>
 
       <video
-        src="/video.mp4"
+        src={videoURL}
         autoPlay
         loop
         playsInline
         preload="metadata"
-        poster="/videos/boda-poster.jpg"
         className="hero-video"
       />
     </div>

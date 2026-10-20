@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:wght@400;500;600;700&display=swap');
 @import './styles/solicitudBoda.css';
+@import './styles/equipo.css';
 
 :root {
   --gold: #d4af37;
@@ -117,7 +118,7 @@ textarea {
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  padding: 0 1.5rem 1.5rem 1.5rem;
+  padding: 0 5rem 1.5rem 5rem;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
 }
@@ -839,6 +840,7 @@ textarea {
 
 .img-card-div {
   padding: 5px 10px;
+  max-width: 65vw;
 }
 
 .img-card{
@@ -2824,7 +2826,22 @@ input[type="date"] {
 
   .production-material-add-form,
   .production-material-row,
-  .calendar-block-form {
+  .calendar-block-form,
+  .event-member-create {
+    grid-template-columns: 1fr;
+  }
+
+  .event-member-create label {
+    grid-column: auto;
+  }
+
+  .event-member-heading,
+  .team-assigned-event-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .team-event-details {
     grid-template-columns: 1fr;
   }
 

@@ -64,20 +64,20 @@ export type PrivateRequestUpdate = {
   telefono: string;
   tipo: string;
   presupuesto: string;
-  cameraSetup: string;
-  cameraPrice: string;
-  droneSetup: string;
-  dronePrice: string;
-  lightingSetup: string;
-  lightingPrice: string;
-  soundSetup: string;
-  soundPrice: string;
-  deliveryFormat: string;
-  formatPrice: string;
-  extraCrew: string;
-  extraCrewPrice: string;
-  logistics: string;
-  logisticsPrice: string;
+  setupCamara: string;
+  precioCamara: string;
+  setupDrone: string;
+  precioDrone: string;
+  setupIluminacion: string;
+  precioIluminacion: string;
+  setupSonido: string;
+  precioSonido: string;
+  formatoEntrega: string;
+  precioFormato: string;
+  personalExtra: string;
+  precioPersonalExtra: string;
+  logistica: string;
+  precioLogistica: string;
   taxPercent: string;
 };
 
@@ -138,20 +138,20 @@ export type PrivateRequest = {
   telefono?: string;
   presupuesto?: string;
   tipo?: string;
-  cameraSetup?: string | null;
-  cameraPrice?: string | null;
-  droneSetup?: string | null;
-  dronePrice?: string | null;
-  lightingSetup?: string | null;
-  lightingPrice?: string | null;
-  soundSetup?: string | null;
-  soundPrice?: string | null;
-  deliveryFormat?: string | null;
-  formatPrice?: string | null;
-  extraCrew?: string | null;
-  extraCrewPrice?: string | null;
-  logistics?: string | null;
-  logisticsPrice?: string | null;
+  setupCamara?: string | null;
+  precioCamara?: string | null;
+  setupDrone?: string | null;
+  precioDrone?: string | null;
+  setupIluminacion?: string | null;
+  precioIluminacion?: string | null;
+  setupSonido?: string | null;
+  precioSonido?: string | null;
+  formatoEntrega?: string | null;
+  precioFormato?: string | null;
+  personalExtra?: string | null;
+  precioPersonalExtra?: string | null;
+  logistica?: string | null;
+  precioLogistica?: string | null;
   taxPercent?: string | null;
 };
 
@@ -196,20 +196,20 @@ return {
     telefono: request.telefono || '',
     tipo: request.tipo || '',
     presupuesto: request.presupuesto || '',
-    cameraSetup: request.cameraSetup || '',
-    cameraPrice: String(request.cameraPrice ?? '0,00'),
-    droneSetup: request.droneSetup || '',
-    dronePrice: String(request.dronePrice ?? '0,00'),
-    lightingSetup: request.lightingSetup || '',
-    lightingPrice: String(request.lightingPrice ?? '0,00'),
-    soundSetup: request.soundSetup || '',
-    soundPrice: String(request.soundPrice ?? '0,00'),
-    deliveryFormat: request.deliveryFormat || '',
-    formatPrice: String(request.formatPrice ?? '0,00'),
-    extraCrew: request.extraCrew || '',
-    extraCrewPrice: String(request.extraCrewPrice ?? '0,00'),
-    logistics: request.logistics || '',
-    logisticsPrice: String(request.logisticsPrice ?? '0,00'),
+    setupCamara: request.setupCamara || '',
+    precioCamara: String(request.precioCamara ?? '0,00'),
+    setupDrone: request.setupDrone || '',
+    precioDrone: String(request.precioDrone ?? '0,00'),
+    setupIluminacion: request.setupIluminacion || '',
+    precioIluminacion: String(request.precioIluminacion ?? '0,00'),
+    setupSonido: request.setupSonido || '',
+    precioSonido: String(request.precioSonido ?? '0,00'),
+    formatoEntrega: request.formatoEntrega || '',
+    precioFormato: String(request.precioFormato ?? '0,00'),
+    personalExtra: request.personalExtra || '',
+    precioPersonalExtra: String(request.precioPersonalExtra ?? '0,00'),
+    logistica: request.logistica || '',
+    precioLogistica: String(request.precioLogistica ?? '0,00'),
     taxPercent: String(request.taxPercent ?? '0,00'),
   }
 }

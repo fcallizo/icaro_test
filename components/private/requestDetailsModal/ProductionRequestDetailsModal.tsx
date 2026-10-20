@@ -5,19 +5,18 @@ import { createFormFields } from '@/components/common/FormFields';
 import type { ProductionContractData } from '../pdfs/ProductionContractPdf';
 
 const productionItems = [
-  { setup: 'cameraSetup', price: 'cameraPrice', label: 'Cámara principal' },
-  { setup: 'droneSetup', price: 'dronePrice', label: 'Unidad aérea' },
-  { setup: 'lightingSetup', price: 'lightingPrice', label: 'Iluminación' },
-  { setup: 'soundSetup', price: 'soundPrice', label: 'Sonido' },
-  { setup: 'deliveryFormat', price: 'formatPrice', label: 'Formato de entrega' },
-  { setup: 'extraCrew', price: 'extraCrewPrice', label: 'Equipo extra' },
-  { setup: 'logistics', price: 'logisticsPrice', label: 'Logística y transporte' },
+  { setup: 'setupCamara', price: 'precioCamara', label: 'Cámara principal' },
+  { setup: 'setupDrone', price: 'precioDrone', label: 'Unidad aérea' },
+  { setup: 'setupIluminacion', price: 'precioIluminacion', label: 'Iluminación' },
+  { setup: 'setupSonido', price: 'precioSonido', label: 'Sonido' },
+  { setup: 'formatoEntrega', price: 'precioFormato', label: 'Formato de entrega' },
+  { setup: 'personalExtra', price: 'precioPersonalExtra', label: 'Equipo extra' },
+  { setup: 'logistica', price: 'precioLogistica', label: 'Logística y transporte' },
 ] as const;
 
 const currency = (amount: number) =>
   new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
 
-/** "2026-06-14" -> "14-06-2026" */
 const formatDate = (value: string) =>
   /^\d{4}-\d{2}-\d{2}$/.test(value) ? value.split('-').reverse().join('-') : value;
 
@@ -160,6 +159,7 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
       {input('email', 'Email', 'email', true, false, false, '')}
       {input('fecha', 'Fecha', 'date', true, false, false, '')}
       {inputPhone('telefono', 'Teléfono', true)}
+      {input('lugar', 'Lugar del evento', 'text', true, false, false, '')}
       {inputPrice('presupuesto', 'Presupuesto', true, false, false)}
       {input('tipo', 'Tipo de producción','text', true, false, false, '')}
       {textarea('detalles', 'Idea principal')}
@@ -169,26 +169,26 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
           <span>Se completa antes de confirmar</span>
         </header>
         <div className="production-contract-grid">
-          {materialSelect('camera', 'cameraSetup', 'cameraPrice', 'Cámara principal')}
-          {inputPrice('cameraPrice', 'Precio cámara', true, false, false)}
+          {materialSelect('camera', 'setupCamara', 'precioCamara', 'Cámara principal')}
+          {inputPrice('precioCamara', 'Precio cámara', true, false, false)}
 
-          {materialSelect('drone', 'droneSetup', 'dronePrice', 'Unidad de vuelo')}
-          {inputPrice('dronePrice', 'Precio dron', true, false, false)}
+          {materialSelect('drone', 'setupDrone', 'precioDrone', 'Unidad de vuelo')}
+          {inputPrice('precioDrone', 'Precio dron', true, false, false)}
 
-          {materialSelect('lighting', 'lightingSetup', 'lightingPrice', 'Set de iluminación')}
-          {inputPrice('lightingPrice', 'Precio iluminación', true, false, false)}
+          {materialSelect('lighting', 'setupIluminacion', 'precioIluminacion', 'Set de iluminación')}
+          {inputPrice('precioIluminacion', 'Precio iluminación', true, false, false)}
 
-          {materialSelect('sound', 'soundSetup', 'soundPrice', 'Tratamiento de sonido')}
-          {inputPrice('soundPrice', 'Precio sonido', true, false, false)}
+          {materialSelect('sound', 'setupSonido', 'precioSonido', 'Tratamiento de sonido')}
+          {inputPrice('precioSonido', 'Precio sonido', true, false, false)}
 
-          {materialSelect('format', 'deliveryFormat', 'formatPrice', 'Formato de entrega')}
-          {inputPrice('formatPrice', 'Precio formato', true, false, false)}
+          {materialSelect('format', 'formatoEntrega', 'precioFormato', 'Formato de entrega')}
+          {inputPrice('precioFormato', 'Precio formato', true, false, false)}
 
-          {input('extraCrew', 'Personal técnico extra', 'text', true, false, false, '')}
-          {inputPrice('extraCrewPrice', 'Precio equipo extra', true, false, false)}
+          {input('personalExtra', 'Personal técnico extra', 'text', true, false, false, '')}
+          {inputPrice('precioPersonalExtra', 'Precio equipo extra', true, false, false)}
 
-          {input('logistics', 'Logística y transporte', 'text', true, false, false, '')}
-          {inputPrice('logisticsPrice', 'Precio logística', true, false, false)}
+          {input('logistica', 'Logística y transporte', 'text', true, false, false, '')}
+          {inputPrice('precioLogistica', 'Precio logística', true, false, false)}
 
           {select('taxPercent', 'IVA', [
             { value: '0', label: 'Sin IVA (0 %)' },

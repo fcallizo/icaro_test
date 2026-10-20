@@ -28,8 +28,6 @@ Cuando `users` está vacía, la primera visita al panel crea el usuario configur
 
 El envío de correo usa Resend en desarrollo local y en los despliegues Preview de Vercel (`RESEND_API_KEY` y, opcionalmente, `RESEND_FROM`). En el despliegue Production usa SMTP (`SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` y `SMTP_FROM`). Vercel define `VERCEL_ENV` automáticamente; fuera de Vercel se usa `NODE_ENV` para distinguir producción. Si usas `onboarding@resend.dev`, Resend limita los destinatarios a las direcciones permitidas en tu cuenta; para enviar a clientes configura un dominio verificado y su dirección en `RESEND_FROM`.
 
-El endpoint `GET /api/test-email` prueba el proveedor correspondiente al entorno. Configura `EMAIL_TEST_RECIPIENT` para elegir el destinatario. El campo `notificaciones` de cada usuario acepta `0` (ningún aviso), `1` (cine), `2` (bodas) o `3` (ambos). Si el correo no está configurado o falla, la solicitud se guarda igualmente.
-
 ## Desarrollo local
 
 ```bash
@@ -53,7 +51,10 @@ También hay endpoints API disponibles:
 - `GET /api/private/session`
 - `POST /api/private/login` y `POST /api/private/logout`
 - `GET /api/private/requests` y `PATCH /api/private/requests` (requieren sesión)
+- `/api/private/event-management` (requiere sesión): gestión de colaboradores y asignación de eventos confirmados
+- `/equipo/[token]`: calendario externo de solo lectura para eventos asignados
 
+Los enlaces de equipo funcionan como credenciales personales: quien tenga el enlace puede consultar todos los datos del evento asignado. Desde el área privada se pueden renovar o revocar; la base de datos solo conserva el hash del token.
 ## Despliegue en Vercel
 
 1. Conecta este repositorio a Vercel.

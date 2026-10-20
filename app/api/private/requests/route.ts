@@ -46,14 +46,14 @@ export async function GET(request: NextRequest) {
   `;
   const productions = await sql`
     SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
-      p.nombre, p.email, p.telefono, p.tipo, p.presupuesto, p.detalles,
-      p.camera_setup AS "cameraSetup", p.camera_price AS "cameraPrice",
-      p.drone_setup AS "droneSetup", p.drone_price AS "dronePrice",
-      p.lighting_setup AS "lightingSetup", p.lighting_price AS "lightingPrice",
-      p.sound_setup AS "soundSetup", p.sound_price AS "soundPrice",
-      p.delivery_format AS "deliveryFormat", p.format_price AS "formatPrice",
-      p.extra_crew AS "extraCrew", p.extra_crew_price AS "extraCrewPrice",
-      p.logistics, p.logistics_price AS "logisticsPrice", p.tax_percent AS "taxPercent"
+      p.nombre, p.email, p.telefono, p.tipo, p.presupuesto, p.lugar, p.detalles,
+      p.setup_camara AS "setupCamara", p.precio_camara AS "precioCamara",
+      p.setup_drone AS "setupDrone", p.precio_drone AS "precioDrone",
+      p.setup_iluminacion AS "setupIluminacion", p.precio_iluminacion AS "precioIluminacion",
+      p.setup_sonido AS "setupSonido", p.precio_sonido AS "precioSonido",
+      p.formato_entrega AS "formatoEntrega", p.precio_formato AS "precioFormato",
+      p.personal_extra AS "personalExtra", p.precio_personal_extra AS "precioPersonalExtra",
+      p.logistica, p.precio_logistica AS "precioLogistica", p.tax_percent AS "taxPercent"
     FROM eventos e
     JOIN production_requests p ON p.evento_id = e.id
     WHERE e.tipo = 'production' AND e.status IN ('pending', 'confirmed')
@@ -107,9 +107,9 @@ export async function PATCH(request: NextRequest) {
       'servicioBoda', 'extraBoda', 'precioExtraBoda', 'descuentoBoda',
       'servicioPreboda', 'extraPreboda', 'precioExtraPreboda',
       'servicioPostboda', 'extraPostboda', 'precioExtraPostboda',
-      'cameraSetup', 'cameraPrice', 'droneSetup', 'dronePrice', 'lightingSetup', 'lightingPrice',
-      'soundSetup', 'soundPrice', 'deliveryFormat', 'formatPrice', 'extraCrew', 'extraCrewPrice',
-      'logistics', 'logisticsPrice', 'taxPercent',
+      'setupCamara', 'precioCamara', 'setupDrone', 'precioDrone', 'setupIluminacion', 'precioIluminacion',
+      'setupSonido', 'precioSonido', 'formatoEntrega', 'precioFormato', 'personalExtra', 'precioPersonalExtra',
+      'logistica', 'precioLogistica', 'taxPercent',
     ];
     if (!values || editableFields.some((field) => typeof values[field] !== 'string' || values[field].length > 10000)) {
       return NextResponse.json({ error: 'Los datos del evento no son válidos.' }, { status: 400 });
@@ -134,7 +134,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'El teléfono y un presupuesto válido son obligatorios.' }, { status: 400 });
     }
 
-    const amountFields = ['cameraPrice', 'dronePrice', 'lightingPrice', 'soundPrice', 'formatPrice', 'extraCrewPrice', 'logisticsPrice'];
+    const amountFields = ['precioCamara', 'precioDrone', 'precioIluminacion', 'precioSonido', 'precioFormato', 'precioPersonalExtra', 'precioLogistica'];
     if (requestType === 'production' && amountFields.some((field) => values[field].trim() !== '' && (!Number.isFinite(Number(values[field])) || Number(values[field]) < 0))) {
       return NextResponse.json({ error: 'Los importes técnicos deben ser números iguales o superiores a cero.' }, { status: 400 });
     }
@@ -188,14 +188,15 @@ export async function PATCH(request: NextRequest) {
         )
         UPDATE production_requests AS p SET
           nombre = ${values.nombre.trim()}, email = ${values.email.trim()}, telefono = ${values.telefono.trim()},
-          tipo = ${values.tipo.trim()}, presupuesto = ${values.presupuesto.trim()}, detalles = ${values.detalles.trim()},
-          camera_setup = ${values.cameraSetup.trim() || null}, camera_price = ${values.cameraPrice.trim() === '' ? null : Number(values.cameraPrice)},
-          drone_setup = ${values.droneSetup.trim() || null}, drone_price = ${values.dronePrice.trim() === '' ? null : Number(values.dronePrice)},
-          lighting_setup = ${values.lightingSetup.trim() || null}, lighting_price = ${values.lightingPrice.trim() === '' ? null : Number(values.lightingPrice)},
-          sound_setup = ${values.soundSetup.trim() || null}, sound_price = ${values.soundPrice.trim() === '' ? null : Number(values.soundPrice)},
-          delivery_format = ${values.deliveryFormat.trim() || null}, format_price = ${values.formatPrice.trim() === '' ? null : Number(values.formatPrice)},
-          extra_crew = ${values.extraCrew.trim() || null}, extra_crew_price = ${values.extraCrewPrice.trim() === '' ? null : Number(values.extraCrewPrice)},
-          logistics = ${values.logistics.trim() || null}, logistics_price = ${values.logisticsPrice.trim() === '' ? null : Number(values.logisticsPrice)},
+          tipo = ${values.tipo.trim()}, presupuesto = ${values.presupuesto.trim()}, 
+          lugar = ${values.lugar.trim()}, detalles = ${values.detalles.trim()},
+          setup_camara = ${values.setupCamara.trim() || null}, precio_camara = ${values.precioCamara.trim() === '' ? null : Number(values.precioCamara)},
+          setup_drone = ${values.setupDrone.trim() || null}, precio_drone = ${values.precioDrone.trim() === '' ? null : Number(values.precioDrone)},
+          setup_iluminacion = ${values.setupIluminacion.trim() || null}, precio_iluminacion = ${values.precioIluminacion.trim() === '' ? null : Number(values.precioIluminacion)},
+          setup_sonido = ${values.setupSonido.trim() || null}, precio_sonido = ${values.precioSonido.trim() === '' ? null : Number(values.precioSonido)},
+          formato_entrega = ${values.formatoEntrega.trim() || null}, precio_formato = ${values.precioFormato.trim() === '' ? null : Number(values.precioFormato)},
+          personal_extra = ${values.personalExtra.trim() || null}, precio_personal_extra = ${values.precioPersonalExtra.trim() === '' ? null : Number(values.precioPersonalExtra)},
+          logistica = ${values.logistica.trim() || null}, precio_logistica = ${values.precioLogistica.trim() === '' ? null : Number(values.precioLogistica)},
           tax_percent = ${values.taxPercent === '' ? null : Number(values.taxPercent)}
         FROM updated_event AS e
         WHERE p.evento_id = e.id
@@ -239,17 +240,17 @@ export async function PATCH(request: NextRequest) {
 
   if (action === 'confirm' && requestType === 'production') {
     const [technicalDetails] = await sql`
-      SELECT p.camera_setup, p.camera_price, p.drone_setup, p.drone_price,
-        p.lighting_setup, p.lighting_price, p.sound_setup, p.sound_price,
-        p.delivery_format, p.format_price, p.extra_crew, p.extra_crew_price,
-        p.logistics, p.logistics_price, p.tax_percent
+      SELECT p.setup_camara, p.precio_camara, p.setup_drone, p.precio_drone,
+        p.setup_iluminacion, p.precio_iluminacion, p.setup_sonido, p.precio_sonido,
+        p.formato_entrega, p.precio_formato, p.personal_extra, p.precio_personal_extra,
+        p.logistica, p.precio_logistica, p.tax_percent
       FROM production_requests p
       JOIN eventos e ON e.id = p.evento_id
       WHERE e.id = ${id} AND e.tipo = 'production' AND e.status = 'pending';
     `;
     if (technicalDetails) {
-      const textFields = ['camera_setup', 'drone_setup', 'lighting_setup', 'sound_setup', 'delivery_format', 'extra_crew', 'logistics'];
-      const amountFields = ['camera_price', 'drone_price', 'lighting_price', 'sound_price', 'format_price', 'extra_crew_price', 'logistics_price'];
+      const textFields = ['setup_camara', 'setup_drone', 'setup_iluminacion', 'setup_sonido', 'formato_entrega', 'personal_extra', 'logistica'];
+      const amountFields = ['precio_camara', 'precio_drone', 'precio_iluminacion', 'precio_sonido', 'precio_formato', 'precio_personal_extra', 'precio_logistica'];
       const isComplete = textFields.every((field) => typeof technicalDetails[field] === 'string' && technicalDetails[field].trim() !== '')
         && amountFields.every((field) => technicalDetails[field] !== null && Number.isFinite(Number(technicalDetails[field])) && Number(technicalDetails[field]) >= 0)
         && technicalDetails.tax_percent !== null

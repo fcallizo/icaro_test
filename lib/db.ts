@@ -84,21 +84,22 @@ export async function ensureTables() {
     telefono TEXT,
     tipo TEXT,
     presupuesto TEXT,
+    lugar TEXT,
     detalles TEXT,
-    camera_setup TEXT,
-    camera_price NUMERIC(12, 2),
-    drone_setup TEXT,
-    drone_price NUMERIC(12, 2),
-    lighting_setup TEXT,
-    lighting_price NUMERIC(12, 2),
-    sound_setup TEXT,
-    sound_price NUMERIC(12, 2),
-    delivery_format TEXT,
-    format_price NUMERIC(12, 2),
-    extra_crew TEXT,
-    extra_crew_price NUMERIC(12, 2),
-    logistics TEXT,
-    logistics_price NUMERIC(12, 2),
+    setup_camara TEXT,
+    precio_camara NUMERIC(12, 2),
+    setup_drone TEXT,
+    precio_drone NUMERIC(12, 2),
+    setup_iluminacion TEXT,
+    precio_iluminacion NUMERIC(12, 2),
+    setup_sonido TEXT,
+    precio_sonido NUMERIC(12, 2),
+    formato_entrega TEXT,
+    precio_formato NUMERIC(12, 2),
+    personal_extra TEXT,
+    precio_personal_extra NUMERIC(12, 2),
+    logistica TEXT,
+    precio_logistica NUMERIC(12, 2),
     tax_percent SMALLINT,
     created_at TIMESTAMPTZ DEFAULT NOW()
   );`;
@@ -112,20 +113,20 @@ export async function ensureTables() {
   await sql`ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS customer_form_token_hash TEXT;`;
   await sql`CREATE UNIQUE INDEX IF NOT EXISTS wedding_requests_customer_form_token_hash_idx ON wedding_requests (customer_form_token_hash) WHERE customer_form_token_hash IS NOT NULL;`;
   await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS email TEXT;`;
-  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS camera_setup TEXT;`;
-  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS camera_price NUMERIC(12, 2);`;
-  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS drone_setup TEXT;`;
-  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS drone_price NUMERIC(12, 2);`;
-  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS lighting_setup TEXT;`;
-  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS lighting_price NUMERIC(12, 2);`;
-  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS sound_setup TEXT;`;
-  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS sound_price NUMERIC(12, 2);`;
-  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS delivery_format TEXT;`;
-  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS format_price NUMERIC(12, 2);`;
-  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS extra_crew TEXT;`;
-  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS extra_crew_price NUMERIC(12, 2);`;
-  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS logistics TEXT;`;
-  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS logistics_price NUMERIC(12, 2);`;
+  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS setup_camara TEXT;`;
+  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS precio_camara NUMERIC(12, 2);`;
+  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS setup_drone TEXT;`;
+  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS precio_drone NUMERIC(12, 2);`;
+  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS setup_iluminacion TEXT;`;
+  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS precio_iluminacion NUMERIC(12, 2);`;
+  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS setup_sonido TEXT;`;
+  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS precio_sonido NUMERIC(12, 2);`;
+  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS formato_entrega TEXT;`;
+  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS precio_formato NUMERIC(12, 2);`;
+  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS personal_extra TEXT;`;
+  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS precio_personal_extra NUMERIC(12, 2);`;
+  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS logistica TEXT;`;
+  await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS precio_logistica NUMERIC(12, 2);`;
   await sql`ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS tax_percent SMALLINT;`;
   await sql`CREATE TABLE IF NOT EXISTS production_materials (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -274,6 +275,21 @@ export async function ensureTables() {
 
   await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS email TEXT;`;
   await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS notificaciones SMALLINT NOT NULL DEFAULT 0 CHECK (notificaciones BETWEEN 0 AND 3);`;
+
+  await sql`CREATE TABLE IF NOT EXISTS team_members (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    token_hash TEXT NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    revoked_at TIMESTAMPTZ
+  );`;
+  await sql`CREATE TABLE IF NOT EXISTS event_assignments (
+    event_id UUID NOT NULL REFERENCES eventos(id) ON DELETE CASCADE,
+    member_id UUID NOT NULL REFERENCES team_members(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (event_id, member_id)
+  );`;
+  await sql`CREATE INDEX IF NOT EXISTS event_assignments_member_id_idx ON event_assignments (member_id);`;
 
   await sql`CREATE TABLE IF NOT EXISTS app_settings (
     setting_key TEXT PRIMARY KEY,
