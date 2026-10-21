@@ -8,6 +8,7 @@ import { WeddingVideoTab } from './tabs/WeddingVideoTab';
 import { WeddingInfoTab } from './tabs/WeddingInfoTab';
 import { WeddingReserveTab } from './tabs/WeddingReserveTab';
 import { ReserveWeddingForm } from './WeddingForm';
+import { WeddingPrices } from '@/lib/wedding-prices';
 
 type WeddingTab = 'video' | 'info' | 'reserva';
 
@@ -19,6 +20,7 @@ type WeddingScreenProps = {
   requests: CalendarRequest[];
   blockedRanges: CalendarBlockRange[];
   unifyCalendars: boolean;
+  weddingPrices: WeddingPrices;
   isSubmitting: boolean;
   onWeddingSubmit: (event: FormEvent<HTMLFormElement>) => void;
 };
@@ -31,6 +33,7 @@ export function WeddingScreen({
   requests,
   blockedRanges,
   unifyCalendars,
+  weddingPrices,
   isSubmitting,
   onWeddingSubmit,
 }: WeddingScreenProps) {
@@ -61,7 +64,7 @@ export function WeddingScreen({
         )}
 
         {activeTab === 'info' && (
-          <WeddingInfoTab onReserve={() => setActiveTab('reserva')}/>
+          <WeddingInfoTab prices={weddingPrices} onReserve={() => setActiveTab('reserva')}/>
         )}
 
         {activeTab === 'reserva' && (

@@ -14,6 +14,7 @@ type FieldProps<Field extends string> = {
   value: string;
   onChange: (field: Field, value: string) => void;
   wrapperClassName?: string;
+  suffix?: string;
 };
 
 type FormFieldsOptions<Values extends { [Field in keyof Values]: string }> = {
@@ -190,6 +191,7 @@ export function FormPriceField<Field extends string>({
   required = false,
   disabled = false,
   wrapperClassName = 'field-group',
+  suffix
 }: FieldProps<Field> & {
   required?: boolean;
   disabled?: boolean;
@@ -200,6 +202,8 @@ export function FormPriceField<Field extends string>({
       id={id}
       name={field}
       type='number'
+      min="0"
+      step="0.01"
       value={value}
       onChange={(event) => onChange(field, event.target.value)}
       required={required}
@@ -212,7 +216,7 @@ export function FormPriceField<Field extends string>({
       <label htmlFor={id}>{label}</label>
       <div className="input-with-suffix">
         {input}
-        <span className="input-suffix">€</span>
+        <span className="input-suffix">{suffix}</span>
       </div>
     </div>
   );
@@ -275,12 +279,13 @@ export function createFormFields<Values extends { [Field in keyof Values]: strin
         disabled={disabled || formDisabled}
       />
     ),
-    inputPrice: (
+    inputSuffix: (
       field: StringKey<Values>,
       label: string,
       required = false,
       disabled = false,
       wide = false,
+      suffix = "€"
     ) => (
       <FormPriceField
         field={field}
@@ -291,6 +296,7 @@ export function createFormFields<Values extends { [Field in keyof Values]: strin
         wrapperClassName={fieldClassName(wide)}
         value={values[field]}
         onChange={onChange}
+        suffix={suffix}
       />
     ),
     textarea: (

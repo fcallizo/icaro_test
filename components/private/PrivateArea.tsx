@@ -11,6 +11,8 @@ import { CalendarBlock, ProductionMaterial, ProductionMaterialCategory, PrivateR
 import { AvailabilityCalendar } from '@/components/common/AvailabilityCalendar';
 import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
 import { RequestDetailsModal } from '@/components/private/requestDetailsModal/RequestDetailsModal';
+import { SettingsTab } from './tabs/SettingsTab';
+import { DEFAULT_WEDDING_PRICES, WeddingPrices } from '@/lib/wedding-prices';
 
 async function getPrivateRequests() {
   const response = await fetch('/api/private/requests', { cache: 'no-store' });
@@ -19,11 +21,14 @@ async function getPrivateRequests() {
   return data.requests as PrivateRequest[];
 }
 
-async function getCalendarSettings() {
+async function getPrivateSettings() {
   const response = await fetch('/api/private/settings', { cache: 'no-store' });
   const data = await response.json();
-  if (!response.ok) throw new Error(data.error || 'No se pudo cargar la configuración del calendario.');
-  return Boolean(data.unifyCalendars);
+  if (!response.ok) throw new Error(data.error || 'No se pudo cargar la configuración.');
+  return {
+    unifyCalendars: Boolean(data.unifyCalendars),
+    weddingPrices: data.weddingPrices as WeddingPrices,
+  };
 }
 
 async function getProductionMaterials() {
@@ -54,10 +59,12 @@ export function PrivateArea() {
   const [sessionReady, setSessionReady] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [activeTab, setActiveTab] = useState<'notifications' | 'confirmed' | 'materials' | 'blocks' | 'events'>('notifications');
+  const [activeTab, setActiveTab] = useState<'notifications' | 'confirmed' | 'materials' | 'blocks' | 'events' | 'settings'>('notifications');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [unifyCalendars, setUnifyCalendars] = useState(false);
   const [isSavingCalendarSetting, setIsSavingCalendarSetting] = useState(false);
+  const [weddingPrices, setWeddingPrices] = useState<WeddingPrices>(DEFAULT_WEDDING_PRICES);
+  const [isSavingWeddingPrices, setIsSavingWeddingPrices] = useState(false);
   const [requests, setRequests] = useState<PrivateRequest[]>([]);
   const [calendarBlocks, setCalendarBlocks] = useState<CalendarBlock[]>([]);
   const [busyBlockId, setBusyBlockId] = useState('');
@@ -83,14 +90,15 @@ export function PrivateArea() {
         setIsAuthenticated(Boolean(data.authenticated));
         setUsername(data.username || '');
         if (data.authenticated) {
-          const [privateRequests, shouldUnifyCalendars, productionMaterials, privateCalendarBlocks] = await Promise.all([
+          const [privateRequests, privateSettings, productionMaterials, privateCalendarBlocks] = await Promise.all([
             getPrivateRequests(),
-            getCalendarSettings(),
+            getPrivateSettings(),
             getProductionMaterials(),
             getCalendarBlocks(),
           ]);
           setRequests(privateRequests);
-          setUnifyCalendars(shouldUnifyCalendars);
+          setUnifyCalendars(privateSettings.unifyCalendars);
+          setWeddingPrices(privateSettings.weddingPrices);
           setMaterials(productionMaterials);
           setCalendarBlocks(privateCalendarBlocks);
         }
@@ -121,14 +129,15 @@ export function PrivateArea() {
       setUsername(data.username);
       setPassword('');
       setIsAuthenticated(true);
-      const [privateRequests, shouldUnifyCalendars, productionMaterials, privateCalendarBlocks] = await Promise.all([
+      const [privateRequests, privateSettings, productionMaterials, privateCalendarBlocks] = await Promise.all([
         getPrivateRequests(),
-        getCalendarSettings(),
+        getPrivateSettings(),
         getProductionMaterials(),
         getCalendarBlocks(),
       ]);
       setRequests(privateRequests);
-      setUnifyCalendars(shouldUnifyCalendars);
+      setUnifyCalendars(privateSettings.unifyCalendars);
+      setWeddingPrices(privateSettings.weddingPrices);
       setMaterials(productionMaterials);
       setCalendarBlocks(privateCalendarBlocks);
     } catch (error) {
@@ -339,6 +348,26 @@ export function PrivateArea() {
     }
   };
 
+  const handleWeddingPricesSave = async (prices: WeddingPrices) => {
+    setIsSavingWeddingPrices(true);
+    setMessage('');
+    try {
+      const response = await fetch('/api/private/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ weddingPrices: prices }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'No se pudieron guardar los precios.');
+      setWeddingPrices(data.weddingPrices as WeddingPrices);
+      setToast({ message: 'Precios de boda actualizados.', tone: 'success' });
+    } catch (error) {
+      setToast({ message: error instanceof Error ? error.message : 'No se pudieron guardar los precios.', tone: 'error' });
+    } finally {
+      setIsSavingWeddingPrices(false);
+    }
+  };
+
   const visibleRequests = selectedDate
     ? requests.filter((request) => [request.fecha, request.fechaPreboda, request.fechaPostboda].includes(selectedDate))
     : requests;
@@ -398,20 +427,6 @@ export function PrivateArea() {
         ) : (
           <>
             <div className="private-calendar-section">
-              <div className="private-calendar-controls">
-                <label className="private-calendar-toggle">
-                  <input
-                    type="checkbox"
-                    role="switch"
-                    checked={unifyCalendars}
-                    disabled={isSavingCalendarSetting}
-                    onChange={(event) => void handleCalendarUnificationChange(event.currentTarget.checked)}
-                  />
-                  <span className="private-calendar-toggle-track" aria-hidden="true" />
-                  <span>Unificar calendarios</span>
-                </label>
-                <p>Las fechas confirmadas de bodas y cine se bloquearán en ambos calendarios públicos.</p>
-              </div>
               <AvailabilityCalendar
                 title="📅 Calendario de eventos confirmados"
                 requests={requests}
@@ -433,7 +448,10 @@ export function PrivateArea() {
                   🔔 Notificaciones <span>{pendingCount}</span>
                 </button>
                 <button type="button" role="tab" aria-selected={activeTab === 'confirmed'} className={activeTab === 'confirmed' ? 'active' : ''} onClick={() => setActiveTab('confirmed')}>
-                  📁 Confirmados <span>{confirmedCount}</span>
+                  ✅​ Confirmados <span>{confirmedCount}</span>
+                </button>
+                <button type="button" role="tab" aria-selected={activeTab === 'events'} className={activeTab === 'events' ? 'active' : ''} onClick={() => setActiveTab('events')}>
+                  🤝​​​ Gestión de Colaboradores
                 </button>
                 <button type="button" role="tab" aria-selected={activeTab === 'blocks'} className={activeTab === 'blocks' ? 'active' : ''} onClick={() => setActiveTab('blocks')}>
                   🚫 Asuntos propios <span>{calendarBlocks.length}</span>
@@ -441,8 +459,8 @@ export function PrivateArea() {
                 <button type="button" role="tab" aria-selected={activeTab === 'materials'} className={activeTab === 'materials' ? 'active' : ''} onClick={() => setActiveTab('materials')}>
                   📸 Materiales <span>{materials.filter((material) => material.active).length}</span>
                 </button>
-                <button type="button" role="tab" aria-selected={activeTab === 'events'} className={activeTab === 'events' ? 'active' : ''} onClick={() => setActiveTab('events')}>
-                  🕐​​ Gestión de eventos
+                <button type="button" role="tab" aria-selected={activeTab === 'settings'} className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>
+                  ⚙️​ Cofiguración
                 </button>
               </div>
 
@@ -462,6 +480,15 @@ export function PrivateArea() {
                 />
               ) : activeTab === 'events' ? (
                 <EventManagementTab />
+              ) : activeTab === 'settings' ? (
+                <SettingsTab
+                  unifyCalendars={unifyCalendars}
+                  isSavingCalendarSetting={isSavingCalendarSetting}
+                  onCalendarUnificationChange={handleCalendarUnificationChange}
+                  weddingPrices={weddingPrices}
+                  isSavingWeddingPrices={isSavingWeddingPrices}
+                  onSaveWeddingPrices={handleWeddingPricesSave}
+                />
               ) : (
                 <CalendarBlocksTab
                   blocks={calendarBlocks}
@@ -479,6 +506,7 @@ export function PrivateArea() {
         <RequestDetailsModal
           key={selectedRequest.id}
           request={selectedRequest}
+          weddingPrices={weddingPrices}
           materials={selectedRequest.type === 'production' ? materials : undefined}
           busy={busyId === selectedRequest.id}
           error={message}

@@ -294,11 +294,25 @@ export async function ensureTables() {
   await sql`CREATE TABLE IF NOT EXISTS app_settings (
     setting_key TEXT PRIMARY KEY,
     boolean_value BOOLEAN NOT NULL DEFAULT FALSE,
+    numeric_value NUMERIC(10, 2),
     updated_at TIMESTAMPTZ DEFAULT NOW()
   );`;
+  await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS numeric_value NUMERIC(10, 2);`;
   await sql`INSERT INTO app_settings (setting_key, boolean_value)
     VALUES ('unify_calendars', FALSE)
     ON CONFLICT (setting_key) DO NOTHING;`;
+  await sql`INSERT INTO app_settings (setting_key, numeric_value)
+    VALUES
+      ('wedding_photo_price', 800),
+      ('wedding_video_price', 800),
+      ('wedding_complete_price', 1300),
+      ('wedding_complementary_photo_price', 200),
+      ('wedding_complementary_video_price', 150),
+      ('wedding_complementary_complete_price', 300),
+      ('wedding_discount_duo', 5),
+      ('wedding_discount_trio', 15)
+    ON CONFLICT (setting_key) DO UPDATE
+      SET numeric_value = COALESCE(app_settings.numeric_value, EXCLUDED.numeric_value);`;
 }
 
 export async function getDbStatus() {

@@ -25,7 +25,7 @@ export function CinemaReserveTab({
   isSubmitting,
   onProductionSubmit,
 }: CinemaReserveTabProps) {
-    const { input, inputPhone, textarea, inputPrice } = createFormFields({
+    const { input, inputPhone, textarea, inputSuffix } = createFormFields({
       values: productionForm,
       idPrefix: 'wedding-reserve',
       onChange: (field, value) => setProductionForm((current) => ({ ...current, [field]: value })),
@@ -60,7 +60,7 @@ export function CinemaReserveTab({
             </div>
             <div className="two-col">
               {input('fecha', 'Fecha de Realización', 'date', true, false, false, '')}
-              {inputPrice('presupuesto', 'Presupuesto estimado', true, false, false)}
+              {inputSuffix('presupuesto', 'Presupuesto estimado', true, false, false)}
             </div>
             {input('tipo', 'Tipo de producción', 'text', true, false, false, 'Ej: Publicidad, Videoclip, Corporativo')}
             {textarea('detalles', 'Idea principal', false, 'Explícanos brevemente tu idea para el rodaje...')}

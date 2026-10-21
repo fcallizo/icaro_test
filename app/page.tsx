@@ -6,6 +6,7 @@ import { CinemaScreen } from '@/components/cinema/CinemaScreen';
 import { WeddingScreen } from '@/components/wedding/WeddingScreen';
 import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
 import { CalendarBlockRange } from '@/components/private/private-types';
+import { DEFAULT_WEDDING_PRICES, WeddingPrices } from '@/lib/wedding-prices';
 
 type View = 'selector' | 'cinema' | 'wedding';
 type TabMode = 'video' | 'info' | 'reserva';
@@ -53,6 +54,7 @@ export default function HomePage() {
   const [requests, setRequests] = useState<RequestItem[]>([]);
   const [blockedRanges, setBlockedRanges] = useState<CalendarBlockRange[]>([]);
   const [unifyCalendars, setUnifyCalendars] = useState(false);
+  const [weddingPrices, setWeddingPrices] = useState<WeddingPrices>(DEFAULT_WEDDING_PRICES);
   const [toast, setToast] = useState<{ message: string; tone: StatusToastTone; surface?: 'dark' | 'light' } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -68,6 +70,7 @@ export default function HomePage() {
           setBlockedRanges(data.blockedRanges as CalendarBlockRange[]);
         }
         setUnifyCalendars(Boolean(data.unifyCalendars));
+        if (data.weddingPrices) setWeddingPrices(data.weddingPrices as WeddingPrices);
       } catch (error) {
         console.warn('No se pudieron cargar las solicitudes:', error);
       }
@@ -167,6 +170,7 @@ export default function HomePage() {
         requests={requests}
         blockedRanges={blockedRanges}
         unifyCalendars={unifyCalendars}
+        weddingPrices={weddingPrices}
         isSubmitting={isSubmitting}
         onWeddingSubmit={handleWeddingSubmit}
       />

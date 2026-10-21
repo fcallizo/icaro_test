@@ -42,7 +42,7 @@ export const PACK_OPTIONS = [
 ];
 
 export const SERVICE_OPTIONS = [
-  { value: 'fotos', label: 'Sesión fotográfica', price: 250, complementPrice: 100 },
-  { value: 'video', label: 'Vídeo documental', price: 300, complementPrice: 150 },
-  { value: 'duo', label: 'Sesión fotográfica + vídeo documental', price: 500, complementPrice: 200 },
+  { value: 'fotos', label: 'Sesión fotográfica' },
+  { value: 'video', label: 'Vídeo documental' },
+  { value: 'duo', label: 'Sesión fotográfica + vídeo documental' },
 ];

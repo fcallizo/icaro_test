@@ -2,10 +2,17 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { ensureTables, sql } from '@/lib/db';
 import { sendRequestNotification, sendRequestWeddingNotification } from '@/lib/request-notifications';
+import { DEFAULT_WEDDING_PRICES, readWeddingPrices } from '@/lib/wedding-prices';
 
 export async function GET() {
   if (!sql) {
-    return NextResponse.json({ requests: [], blockedRanges: [], unifyCalendars: false, dbConfigured: false }, { status: 200 });
+    return NextResponse.json({
+      requests: [],
+      blockedRanges: [],
+      unifyCalendars: false,
+      weddingPrices: DEFAULT_WEDDING_PRICES,
+      dbConfigured: false,
+    }, { status: 200 });
   }
 
   await ensureTables();
@@ -17,11 +24,24 @@ export async function GET() {
     FROM calendar_blocks ORDER BY start_date;
   `;
   const [calendarSetting] = await sql`SELECT boolean_value FROM app_settings WHERE setting_key = 'unify_calendars' LIMIT 1;`;
+  const priceRows = (await sql`
+    SELECT setting_key, numeric_value FROM app_settings WHERE setting_key IN (
+      'wedding_photo_price',
+      'wedding_video_price',
+      'wedding_complete_price',
+      'wedding_complementary_photo_price',
+      'wedding_complementary_video_price',
+      'wedding_complementary_complete_price',
+      'wedding_discount_duo',
+      'wedding_discount_trio'
+    )
+  `) as Array<{ setting_key: string; numeric_value: number | string | null }>;
 
   return NextResponse.json({
     requests: eventRows,
     blockedRanges,
     unifyCalendars: Boolean(calendarSetting?.boolean_value),
+    weddingPrices: readWeddingPrices(priceRows),
     dbConfigured: true,
   }, { status: 200 });
 }

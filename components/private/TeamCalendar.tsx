@@ -14,23 +14,22 @@ type AssignedEvent = {
 };
 
 type TeamCalendarData = { memberName: string; events: AssignedEvent[] };
-type SectionDef = { title: string; fields: string[] };
+type SectionDef = { title: string; fields: string[], type: string; };
 
 // ----- Layout por tipo (aquí ordenas los campos a tu gusto) -----
 const WEDDING_TYPES = new Set(['wedding', 'prewedding', 'postwedding']);
 const isWedding = (type: string) => WEDDING_TYPES.has(type);
 
-
-
 const WEDDING_SECTIONS: SectionDef[] = [
-  { title: 'Información de contacto', fields: ['nombre', 'email', 'tel_novio', 'tel_novia'] },
+  { title: 'Información de contacto', fields: ['nombre', 'email', 'tel_novio', 'tel_novia'], type: 'default' },
   { title: 'Ubicación y hora', fields: ['novio','hora_salida_novio', 'novia', 'hora_salida_novia','ceremonia', 
-    'hora_ceremonia', 'lugar', 'hora_coctel', 'hora_barra_libre'] },
+    'hora_ceremonia', 'lugar', 'hora_coctel', 'hora_barra_libre'], type: 'wedding' },
+  { title: 'Ubicación y hora', fields: ['fecha_preboda','lugar_preboda'], type: 'prewedding'},
+  { title: 'Ubicación y hora', fields: ['fecha_postboda','lugar_postboda'], type: 'postwedding' },
 ];
-
 const PRODUCTION_SECTIONS: SectionDef[] = [
-  { title: 'Información de contacto', fields: ['nombre', 'email', 'telefono', 'lugar'] },
-  { title: 'Material del evento', fields: ['setup_camara', 'setup_drone', 'setup_iluminacion', 'setup_sonido', 'logistica'] },
+  { title: 'Información de contacto', fields: ['nombre', 'email', 'telefono', 'lugar'], type: 'default' },
+  { title: 'Material del evento', fields: ['setup_camara', 'setup_drone', 'setup_iluminacion', 'setup_sonido', 'logistica'], type: 'default' },
 ];
 
 function formatFieldName(value: string) {
@@ -71,6 +70,7 @@ function EventCard({ event }: { event: AssignedEvent }) {
       )}
 
       {sections.map((section) => {
+        if (event.type !== section.type && section.type !== 'default') return null;
         const rows = section.fields
           .map((k) => [k, event.details[k]] as [string, string | number | null])
           .filter(([, v]) => v !== null && v !== '');

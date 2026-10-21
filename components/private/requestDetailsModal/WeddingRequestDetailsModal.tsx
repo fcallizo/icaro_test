@@ -5,10 +5,9 @@ import { RequestDetailsModalFrame } from './RequestDetailsModalFrame';
 import { createFormFields } from '@/components/common/FormFields';
 import type { WeddingSheetBlock, WeddingSheetData } from '../pdfs/WeddingContractPdf';
 import { PACK_OPTIONS, SERVICE_OPTIONS } from '@/lib/wedding-form';
+import type { WeddingPrices } from '@/lib/wedding-prices';
 
-const findService = (value: string) => SERVICE_OPTIONS.find((service) => service.value === value);
 
-/** Convierte a número sin dar nunca NaN (campo vacío o texto raro = 0). */
 const toNumber = (value: unknown) => {
   const n = Number(value);
   return Number.isFinite(n) ? n : 0;
@@ -17,7 +16,6 @@ const toNumber = (value: unknown) => {
 const currency = (amount: number) =>
   new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
 
-/** "2026-06-14" -> "14-06-2026" */
 const formatDate = (value: string) =>
   /^\d{4}-\d{2}-\d{2}$/.test(value) ? value.split('-').reverse().join('-') : value;
 
@@ -31,8 +29,14 @@ const toFileName = (name: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
+/** Descuento que corresponde a cada pack según la configuración. Boda sola o indeciso: 0. */
+function getPackDiscount(tipoPack: string, prices: WeddingPrices) {
+  if (tipoPack === 'trio') return prices.discountTrio ?? 0;
+  if (tipoPack === 'duo-pre' || tipoPack === 'duo-post') return prices.discountDuo ?? 0;
+  return 0;
+}
+
 async function downloadWeddingSheet(data: WeddingSheetData) {
-  // Import dinámico: la librería solo se descarga al pulsar el botón
   const [{ pdf }, { WeddingSheetPdf }] = await Promise.all([
     import('@react-pdf/renderer'),
     import('../pdfs/WeddingContractPdf'),
@@ -49,24 +53,27 @@ async function downloadWeddingSheet(data: WeddingSheetData) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-/* =========================================================
-   Componente
-   ========================================================= */
 export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
-  const { request, onSave } = props;
+  const { request, onSave, weddingPrices } = props;
   const [values, setValues] = useState<PrivateRequestUpdate>(setDefaultFormValues(request));
   const [generating, setGenerating] = useState(false);
   const [pdfError, setPdfError] = useState('');
 
   const title = values.nombre || 'Boda sin nombre';
 
-  const { input, inputPhone, textarea, select } = createFormFields({
-    values,
-    idPrefix: 'request',
-    onChange: (field, value) => setValues((current) => ({ ...current, [field]: value })),
-    wideClassName: 'wide',
-    emptyOption: 'Seleccionar...',
-  });
+  /* ---------- Servicios y precios (vienen de Configuración) ---------- */
+  const serviceOptions = SERVICE_OPTIONS.map((service) => ({
+    ...service,
+    price:
+      service.value === 'fotos' ? weddingPrices.weddingPhoto
+        : service.value === 'video' ? weddingPrices.weddingVideo
+          : weddingPrices.weddingComplete,
+    complementPrice:
+      service.value === 'fotos' ? weddingPrices.complementaryPhoto
+        : service.value === 'video' ? weddingPrices.complementaryVideo
+          : weddingPrices.complementaryComplete,
+  }));
+  const findService = (value: string) => serviceOptions.find((service) => service.value === value);
 
   /* ---------- Reglas del pack ---------- */
   const hasPreWedding = values.tipoPack === 'duo-pre' || values.tipoPack === 'trio';
@@ -82,6 +89,13 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
     (values.tipoPack === 'duo-post' && postWeddingFilled) ||
     (values.tipoPack === 'trio' && preWeddingFilled && postWeddingFilled);
 
+  /* ---------- Descuento --------- */
+  const discountIsSet = values.descuentoBoda.trim() !== '';
+  const discountPercent = Math.min(
+    100,
+    Math.max(0, discountIsSet ? toNumber(values.descuentoBoda) : getPackDiscount(values.tipoPack, weddingPrices)),
+  );
+
   /* ---------- Importes ---------- */
   const bodaService = findService(values.servicioBoda);
   const preService = findService(values.servicioPreboda);
@@ -92,9 +106,24 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
   const postAmount = hasPostWedding ? (postService?.complementPrice ?? 0) + toNumber(values.precioExtraPostboda) : 0;
 
   const subtotal = bodaAmount + preAmount + postAmount;
-  const discountPercent = toNumber(values.descuentoBoda);
   const discountAmount = (subtotal * discountPercent) / 100;
   const contractTotal = subtotal - discountAmount;
+
+  /* ---------- Campos del formulario --------- */
+  const formValues = {
+    ...values,
+    descuentoBoda: discountIsSet ? values.descuentoBoda : String(discountPercent),
+  };
+
+  const { input, inputPhone, textarea, select, inputSuffix } = createFormFields({
+    values: formValues,
+    idPrefix: 'request',
+    onChange: (field, value) => setValues((current) => ({ ...current, [field]: value })),
+    wideClassName: 'wide',
+    emptyOption: 'Seleccionar...',
+  });
+
+  const valuesToSave: PrivateRequestUpdate = { ...values, descuentoBoda: String(discountPercent) };
 
   /* ---------- Datos para el PDF ---------- */
   const buildSheetData = (): WeddingSheetData => {
@@ -186,11 +215,11 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
     <RequestDetailsModalFrame
       {...props}
       title={title}
-      values={values}
+      values={valuesToSave}
       canConfirm={hasCompleteBreakdown}
       onSubmit={(event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        onSave({ ...values });
+        onSave(valuesToSave);
       }}
       rightAction={request.status !== 'pending' ? (
         <>
@@ -228,10 +257,10 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
         </header>
         <div className="production-contract-grid">
           {select('tipoPack', 'Tipo de pack', PACK_OPTIONS)}
-          {select('servicioBoda', 'Servicios', SERVICE_OPTIONS)}
+          {select('servicioBoda', 'Servicios', serviceOptions)}
           {textarea('detalles', 'Detalles')}
           {input('extraBoda', 'Extras', 'text', false, false, false, '')}
-          {input('precioExtraBoda', 'Precio extras (€)', 'number', false, false, false, '')}
+          {inputSuffix('precioExtraBoda', 'Precio extras', true, false, false)}
         </div>
 
         {hasPreWedding && (
@@ -241,14 +270,14 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
               <h3>Información preboda</h3>
             </header>
             <div className="production-contract-grid">
-              {select('servicioPreboda', 'Servicios', SERVICE_OPTIONS)}
+              {select('servicioPreboda', 'Servicios', serviceOptions)}
             </div>
             <div className="production-contract-grid">
               {input('fechaPreboda', 'Fecha preboda', 'date', true, false, false, '')}
               {input('lugarPreboda', 'Lugar preboda', 'text', true, false, false, '')}
               {textarea('detallesPreboda', 'Detalles preboda')}
               {input('extraPreboda', 'Extras', 'text', false, false, false, '')}
-              {input('precioExtraPreboda', 'Precio extras (€)', 'number', false, false, false, '')}
+              {inputSuffix('precioExtraPreboda', 'Precio extras', true, false, false)}
             </div>
           </div>
         )}
@@ -260,21 +289,21 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
               <h3>Información postboda</h3>
             </header>
             <div className="production-contract-grid">
-              {select('servicioPostboda', 'Servicios', SERVICE_OPTIONS)}
+              {select('servicioPostboda', 'Servicios', serviceOptions)}
             </div>
             <div className="production-contract-grid">
               {input('fechaPostboda', 'Fecha postboda', 'date', true, false, false, '')}
               {input('lugarPostboda', 'Lugar postboda', 'text', true, false, false, '')}
               {textarea('detallesPostboda', 'Detalles postboda')}
               {input('extraPostboda', 'Extras', 'text', false, false, false, '')}
-              {input('precioExtraPostboda', 'Precio extras (€)', 'number', false, false, false, '')}
+              {inputSuffix('precioExtraPostboda', 'Precio extras', true, false, false)}
             </div>
           </div>
         )}
 
         <br />
         <div className="production-contract-grid">
-          {input('descuentoBoda', 'Descuento (%)', 'number', false, false, false, '')}
+          {inputSuffix('descuentoBoda', 'Descuento', true, false, false, '%')}
         </div>
 
         <div className="production-contract-totals" aria-live="polite">

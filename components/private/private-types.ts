@@ -1,3 +1,5 @@
+import { WeddingPrices } from '@/lib/wedding-prices';
+
 export type RequestType = 'wedding' | 'production';
 export type RequestStatus = 'pending' | 'confirmed' | 'rejected';
 export type RequestAction = 'confirm' | 'reject';
@@ -83,6 +85,7 @@ export type PrivateRequestUpdate = {
 
 export type RequestDetailsModalProps = {
   request: PrivateRequest;
+  weddingPrices: WeddingPrices;
   materials?: ProductionMaterial[];
   busy: boolean;
   error?: string;
@@ -177,7 +180,7 @@ return {
     servicioBoda: request.servicioBoda || 'duo',
     extraBoda: request.extraBoda || '',
     precioExtraBoda: String(request.precioExtraBoda ?? '0,00'),
-    descuentoBoda: String(request.descuentoBoda ?? '0'),
+    descuentoBoda: String(request.descuentoBoda ?? ''),
 
     servicioPreboda: request.servicioPreboda || 'duo',
     fechaPreboda: request.fechaPreboda || '',

@@ -1762,7 +1762,7 @@ input[type="date"] {
 
 .private-page {
   min-height: 100vh;
-  padding-bottom: 3rem;
+  padding-bottom: 2rem;
   color: var(--text-light);
 }
 
@@ -2080,10 +2080,22 @@ input[type="date"] {
   margin-top: 1.6rem;
 }
 
-.private-request-section h3 {
+.private-request-section h3,
+.private-request-section h4 {
   margin-bottom: 0.85rem;
   color: #e6e6e6;
+}
+
+.private-request-section h3 {
   font-size: 0.95rem;
+}
+
+.private-request-section h4 {
+  font-size: 0.85rem;
+}
+
+.settings-tab-pannel {
+  margin: 25px 10px;
 }
 
 .private-empty-state {
@@ -2474,6 +2486,12 @@ input[type="date"] {
 .production-contract-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1rem;
+}
+
+.production-contract-grid-trio {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0 1rem;
 }
 
