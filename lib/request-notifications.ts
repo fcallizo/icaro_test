@@ -93,8 +93,8 @@ export async function sendRequestWeddingNotification(notification: RequestWeddin
 }
 
 type RequestDecisionNotification = RequestNotification & {
-  fecha:string;
-  email?: string | null;
+  fecha: string;
+  email: string | null;
   decision: 'confirmed' | 'rejected';
 };
 

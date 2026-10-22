@@ -302,7 +302,7 @@ export async function PATCH(request: NextRequest) {
     type: requestType,
     email: typeof affectedRequest.email === 'string' ? affectedRequest.email : null,
     nombre: typeof affectedRequest.nombre === 'string' ? affectedRequest.nombre : undefined,
-    fecha: typeof affectedRequest.fecha === 'string' ? affectedRequest.fecha : undefined,
+    fecha: typeof affectedRequest.fecha === 'string' ? affectedRequest.fecha : '',
     decision: isConfirming ? 'confirmed' : 'rejected',
   });
 
