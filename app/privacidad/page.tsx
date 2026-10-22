@@ -14,7 +14,7 @@ export default function PrivacyPage() {
 
       <section>
         <h2>Responsable del tratamiento</h2>
-        <p>El responsable es el titular legal de Ícaro Studio, cuyos datos completos deben constar en el <a href="/aviso-legal">Aviso legal</a>. Para consultas sobre privacidad puedes escribir a <a href="mailto:icarostudio33@gmail.com">icarostudio33@gmail.com</a>.</p>
+        <p>El responsable es el titular legal de Ícaro Studio, cuyos datos completos deben constar en el <a href="/aviso-legal">Aviso legal</a>. Para consultas sobre privacidad puedes escribir a <a href="mailto:info@icarostudio.es">info@icarostudio.es</a>.</p>
       </section>
 
       <section>
@@ -43,7 +43,7 @@ export default function PrivacyPage() {
 
       <section>
         <h2>Derechos</h2>
-        <p>Puedes solicitar acceso, rectificación, supresión, limitación u oposición al tratamiento y, cuando proceda, portabilidad, escribiendo a <a href="mailto:icarostudio33@gmail.com">icarostudio33@gmail.com</a>. También puedes reclamar ante la <a href="https://www.aepd.es/" target="_blank" rel="noreferrer">Agencia Española de Protección de Datos</a>.</p>
+        <p>Puedes solicitar acceso, rectificación, supresión, limitación u oposición al tratamiento y, cuando proceda, portabilidad, escribiendo a <a href="mailto:info@icarostudio.es">info@icarostudio.es</a>. También puedes reclamar ante la <a href="https://www.aepd.es/" target="_blank" rel="noreferrer">Agencia Española de Protección de Datos</a>.</p>
       </section>
 
       <section>

@@ -19,7 +19,7 @@ export default function LegalNoticePage() {
           <div><dt>Titular legal</dt><dd className="legal-pending">[PENDIENTE: nombre y apellidos o razón social]</dd></div>
           <div><dt>NIF</dt><dd className="legal-pending">[PENDIENTE: NIF del titular]</dd></div>
           <div><dt>Domicilio profesional</dt><dd className="legal-pending">[PENDIENTE: dirección postal del titular]</dd></div>
-          <div><dt>Email</dt><dd><a href="mailto:icarostudio33@gmail.com">icarostudio33@gmail.com</a></dd></div>
+          <div><dt>Email</dt><dd><a href="mailto:info@icarostudio.es">info@icarostudio.es</a></dd></div>
           <div><dt>Teléfono</dt><dd><a href="tel:+34633716171">+34 633 716 171</a></dd></div>
           <div><dt>Registro público</dt><dd>[Completar los datos registrales si el titular está inscrito]</dd></div>
         </dl>

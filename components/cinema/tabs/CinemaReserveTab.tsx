@@ -46,7 +46,7 @@ export function CinemaReserveTab({
           />
 
           <div className="booking-form contact-panel">
-            <ContactPanel />
+            <ContactPanel classType="dark-link" />
           </div>
         </div>
 

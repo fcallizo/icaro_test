@@ -36,7 +36,7 @@ export function PageHeader({ view, theme, onHome, onCinema, onWedding }: PageHea
             </p>
             <p className="contact-info">
                 <span className="icon-mask icon-mail" aria-hidden="true" />
-                <span className="nav-label">icarostudio33@gmail.com</span>
+                <span className="nav-label"><a href="mailto:info@icarostudio.es">info@icarostudio.es</a></span>
             </p>
           </div>
           <a href="/private" className="nav-link" aria-label="Panel privado" title="Panel privado">

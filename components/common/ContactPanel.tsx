@@ -1,6 +1,12 @@
-export function ContactPanel() {
+type ContactPanelProps = {
+  classType: string;
+};
+
+export function ContactPanel({
+  classType
+}: ContactPanelProps) {
   return (
-    <div>
+    <div >
       <h4>Contacta con nosotros</h4>
 
       <p className="contact-info">
@@ -9,11 +15,12 @@ export function ContactPanel() {
       </p>
       <p className="contact-info">
           <span className="icon-mask icon-mail" aria-hidden="true" />
-          <span className="nav-label">icarostudio33@gmail.com</span>
+          <span className="nav-label"><a className={classType} href="mailto:info@icarostudio.es">info@icarostudio.es</a></span>
       </p>
       <p className="contact-info">
           <span className="icon-mask icon-instagram" aria-hidden="true" />
-          <span className="nav-label">icarostudio_</span>
+          <span className="nav-label"><a className={classType} href="https://www.instagram.com/icarostudio_/" target="_blank">icarostudio_</a></span>
+          
       </p>
       <p className="contact-info">
           <span className="icon-mask icon-pin" aria-hidden="true" />

@@ -52,7 +52,7 @@ export function WeddingReserveTab({
           />
 
           <div className="booking-form wedding-panel contact-panel">
-            <ContactPanel />
+            <ContactPanel classType="wedding-link" />
           </div>
         </div>
         <div className="booking-form wedding-panel">

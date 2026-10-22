@@ -71,46 +71,13 @@ function renderEmailText({ text, action }: EmailMessage) {
   return `${text}\n\n${action.label}: ${action.url}`;
 }
 
-function isProductionEnvironment() {
-  if (process.env.VERCEL_ENV) return process.env.VERCEL_ENV === 'production';
-  return process.env.NODE_ENV === 'production';
-}
-
 export function createEmailSender(): EmailSender | null {
-  if (isProductionEnvironment()) {
-    const smtpHost = process.env.SMTP_HOST;
-    const smtpPort = Number(process.env.SMTP_PORT || 587);
-    const smtpUser = process.env.SMTP_USER;
-    const smtpPassword = process.env.SMTP_PASSWORD;
-    const from = process.env.SMTP_FROM || smtpUser;
-
-    if (!smtpHost || !smtpUser || !smtpPassword || !from || !Number.isInteger(smtpPort) || smtpPort < 1 || smtpPort > 65535) {
-      return null;
-    }
-
-    const transporter = nodemailer.createTransport({
-      host: smtpHost,
-      port: smtpPort,
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: { user: smtpUser, pass: smtpPassword },
-    });
-
-    return async (message) => {
-      await transporter.sendMail({
-        from,
-        to: message.to,
-        subject: message.subject,
-        text: renderEmailText(message),
-        html: renderEmailHtml(message),
-      });
-    };
-  }
 
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return null;
 
   const resend = new Resend(apiKey);
-  const from = process.env.RESEND_FROM || 'Ícaro Studio <onboarding@resend.dev>';
+  const from = process.env.RESEND_FROM || 'Ícaro Studio <info@icarostudio.es>';
 
   return async (message) => {
     const { error } = await resend.emails.send({
@@ -125,7 +92,5 @@ export function createEmailSender(): EmailSender | null {
 }
 
 export function getEmailConfigurationHint() {
-  return isProductionEnvironment()
-    ? 'configura SMTP_HOST, SMTP_USER, SMTP_PASSWORD y SMTP_PORT'
-    : 'configura RESEND_API_KEY';
+  return 'configura RESEND_API_KEY';
 }
