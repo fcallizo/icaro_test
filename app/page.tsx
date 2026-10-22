@@ -9,7 +9,7 @@ import { CalendarBlockRange } from '@/components/private/private-types';
 import { DEFAULT_WEDDING_PRICES, WeddingPrices } from '@/lib/wedding-prices';
 
 type View = 'selector' | 'cinema' | 'wedding';
-type TabMode = 'video' | 'info' | 'reserva';
+type TabMode = 'video' | 'trabajos'  | 'info' | 'reserva';
 
 type RequestItem = {
   id: string;
