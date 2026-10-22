@@ -56,8 +56,8 @@ export async function sendRequestNotification(notification: RequestNotification)
 }
 
 type RequestWeddingNotification = RequestNotification & {
-  email?: string | null;
-  token?: string;
+  email: string;
+  token: string;
 };
 
 export async function sendRequestWeddingNotification(notification: RequestWeddingNotification) {

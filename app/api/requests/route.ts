@@ -120,6 +120,7 @@ export async function POST(request: NextRequest) {
         type: 'wedding',
         email: email,
         nombre: nombre,
+        fecha: fecha,
         token: token,
       });
     

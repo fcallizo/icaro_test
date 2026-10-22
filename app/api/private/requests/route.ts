@@ -300,9 +300,15 @@ export async function PATCH(request: NextRequest) {
   const affectedRequest = result[0];
   await sendRequestDecisionNotification({
     type: requestType,
-    email: typeof affectedRequest.email === 'string' ? affectedRequest.email : null,
-    nombre: typeof affectedRequest.nombre === 'string' ? affectedRequest.nombre : undefined,
-    fecha: typeof affectedRequest.fecha === 'string' ? affectedRequest.fecha : '',
+    email: typeof affectedRequest.email === 'string'
+      ? affectedRequest.email
+      : null,
+    nombre: typeof affectedRequest.nombre === 'string'
+      ? affectedRequest.nombre
+      : '',
+    fecha: typeof affectedRequest.fecha === 'string'
+      ? affectedRequest.fecha
+      : '',
     decision: isConfirming ? 'confirmed' : 'rejected',
   });
 
