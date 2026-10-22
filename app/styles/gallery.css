@@ -1,0 +1,62 @@
+
+/* Portfolio de trabajos (Cinema / Wedding) */
+.works-gallery { padding: 1.2rem 0 3rem; color: inherit; }
+.works-heading { max-width: 760px; margin: 0 auto 2rem; text-align: center; }
+.works-eyebrow { display: block; letter-spacing: .24em; font-size: .72rem; opacity: .68; margin-bottom: .7rem; }
+.works-heading h2, .works-project-toolbar h2 { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: clamp(2.1rem, 4vw, 3.5rem); margin-bottom: .5rem; }
+.works-heading p, .works-project-toolbar p { opacity: .72; line-height: 1.6; }
+.works-state { text-align: center; padding: 2rem 1rem; opacity: .8; }
+.works-error { color: #d56c63; }
+.works-project-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; }
+.works-project-card { position: relative; display: block; width: 100%; min-width: 0; aspect-ratio: 4 / 3; overflow: hidden; border: 0; padding: 0; border-radius: 3px; cursor: pointer; text-align: left; background: #252525; color: white; }
+.works-card-1, .works-card-4 { aspect-ratio: 3 / 4; }
+.works-card-2 { aspect-ratio: 5 / 4; }
+.works-project-card img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .55s cubic-bezier(.2,.7,.2,1); }
+.works-project-card:hover img { transform: scale(1.055); }
+.works-project-overlay { position: absolute; inset: auto 0 0; z-index: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: .35rem; padding: 1.2rem; background: linear-gradient(transparent, rgba(0,0,0,.78)); }
+.works-project-overlay strong { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.25rem, 2vw, 1.8rem); font-weight: 500; }
+.works-project-overlay small { opacity: .8; font-size: .75rem; }
+.works-project-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; margin-bottom: 1.5rem; }
+.works-back-button { flex: 0 0 auto; border: 1px solid currentColor; border-radius: 2rem; padding: .65rem 1rem; background: transparent; color: inherit; cursor: pointer; }
+.works-back-button span { margin-right: .35rem; }
+.works-project-toolbar h2 { font-size: clamp(1.8rem, 3vw, 2.6rem); margin: 0; }
+.works-project-toolbar p { font-size: .85rem; }
+.works-mosaic { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: clamp(100px, 13vw, 190px); grid-auto-flow: dense; gap: .6rem; }
+.works-mosaic-item { position: relative; min-width: 0; min-height: 0; padding: 0; overflow: hidden; border: 0; border-radius: 2px; background: #222; cursor: zoom-in; }
+.works-mosaic-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .45s ease; }
+.works-mosaic-item:hover img { transform: scale(1.045); }
+.works-mosaic-item-0, .works-mosaic-item-5 { grid-column: span 2; grid-row: span 2; }
+.works-mosaic-item-1 { grid-row: span 2; }
+.works-mosaic-item-3 { grid-column: span 2; }
+.works-mosaic-item-6 { grid-column: span 2; grid-row: span 2; }
+.works-lightbox { position: fixed; z-index: 10000; inset: 0; display: flex; align-items: center; justify-content: center; padding: 4rem 5rem; background: rgba(8,8,8,.96); cursor: zoom-out; }
+.works-lightbox > img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; cursor: default; }
+.works-lightbox-close, .works-lightbox-arrow { position: absolute; display: grid; place-items: center; color: white; border: 0; background: rgba(255,255,255,.12); cursor: pointer; }
+.works-lightbox-close { top: 1.1rem; right: 1.4rem; width: 2.8rem; height: 2.8rem; border-radius: 50%; font-size: 2rem; }
+.works-lightbox-arrow { top: 50%; transform: translateY(-50%); width: 3rem; height: 3rem; border-radius: 50%; font-size: 2.4rem; line-height: 1; }
+.works-lightbox-prev { left: 1.2rem; }
+.works-lightbox-next { right: 1.2rem; }
+.works-lightbox-count { position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,.8); font-size: .85rem; }
+.works-gallery-wedding .works-project-card, .works-gallery-wedding .works-mosaic-item { background: #e6e1d8; }
+
+@media (max-width: 900px) {
+  .works-project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .works-mosaic { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: clamp(105px, 22vw, 180px); }
+  .works-mosaic-item-5 { grid-column: span 2; }
+}
+@media (max-width: 560px) {
+  .works-gallery { padding-top: .5rem; }
+  .works-heading { margin-bottom: 1.3rem; text-align: left; }
+  .works-project-grid { gap: .65rem; }
+  .works-project-card { aspect-ratio: 4 / 5; }
+  .works-card-1, .works-card-4 { aspect-ratio: 4 / 5; }
+  .works-project-overlay { padding: .8rem; }
+  .works-project-overlay strong { font-size: 1.2rem; }
+  .works-project-toolbar { align-items: flex-start; flex-direction: column; gap: .9rem; }
+  .works-mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: clamp(110px, 36vw, 190px); gap: .4rem; }
+  .works-mosaic-item-0, .works-mosaic-item-5, .works-mosaic-item-6 { grid-column: span 2; grid-row: span 2; }
+  .works-lightbox { padding: 3.5rem 1rem; }
+  .works-lightbox-prev { left: .35rem; }
+  .works-lightbox-next { right: .35rem; }
+  .works-lightbox-arrow { width: 2.4rem; height: 2.4rem; font-size: 1.8rem; }
+}

@@ -7,9 +7,10 @@ import { CalendarBlockRange } from '@/components/private/private-types';
 import { CinemaVideoTab } from './tabs/CinemaVideoTab';
 import { CinemaInfoTab } from './tabs/CinemaInfoTab';
 import { CinemaReserveTab } from './tabs/CinemaReserveTab';
+import { CinemaWorksTab } from './tabs/CinemaWorksTab';
 import { ReserveProductionForm } from './ProductionForm';
 
-type TabMode = 'video' | 'info' | 'reserva';
+type TabMode = 'video' | 'trabajos' | 'info' | 'reserva';
 
 type CinemaScreenProps = {
   onBackToHome: () => void;
@@ -53,7 +54,8 @@ export function CinemaScreen({
 
       <main className="content-section content-section-tabs">
         <div className="tabs">
-          <button className={tab === 'video' ? 'tab active' : 'tab'} onClick={() => setTab('video')}>Showreel & Trabajos</button>
+          <button className={tab === 'video' ? 'tab active' : 'tab'} onClick={() => setTab('video')}>Showreel</button>
+          <button className={tab === 'trabajos' ? 'tab active' : 'tab'} onClick={() => setTab('trabajos')}>Trabajos realizados</button>
           <button className={tab === 'info' ? 'tab active' : 'tab'} onClick={() => setTab('info')}>Área Técnica, Contratos y Tarifas</button>
           <button className={tab === 'reserva' ? 'tab active' : 'tab'} onClick={() => setTab('reserva')}>Comienza tu proyecto</button>
         </div>
@@ -62,6 +64,8 @@ export function CinemaScreen({
           <CinemaVideoTab />
         )}
 
+        {tab === 'trabajos' && <CinemaWorksTab />}
+        
         {tab === 'info' && (
           <CinemaInfoTab onReserve={() => setTab('reserva')}/>
         )}

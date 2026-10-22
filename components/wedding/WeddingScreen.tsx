@@ -7,10 +7,11 @@ import { CalendarBlockRange } from '@/components/private/private-types';
 import { WeddingVideoTab } from './tabs/WeddingVideoTab';
 import { WeddingInfoTab } from './tabs/WeddingInfoTab';
 import { WeddingReserveTab } from './tabs/WeddingReserveTab';
+import { WeddingWorksTab } from './tabs/WeddingWorksTab';
 import { ReserveWeddingForm } from './WeddingForm';
 import { WeddingPrices } from '@/lib/wedding-prices';
 
-type WeddingTab = 'video' | 'info' | 'reserva';
+type WeddingTab = 'video' | 'trabajos' | 'info' | 'reserva';
 
 type WeddingScreenProps = {
   onBackToHome: () => void;
@@ -54,7 +55,8 @@ export function WeddingScreen({
 
       <main className="content-section content-section-tabs weddings-mode">
         <div className="tabs" role="tablist" aria-label="Servicios de bodas">
-          <button type="button" role="tab" aria-selected={activeTab === 'video'} className={activeTab === 'video' ? 'tab active' : 'tab'} onClick={() => setActiveTab('video')}>Mira lo que creamos</button>
+          <button type="button" role="tab" aria-selected={activeTab === 'video'} className={activeTab === 'video' ? 'tab active' : 'tab'} onClick={() => setActiveTab('video')}>Showreel</button>
+          <button type="button" role="tab" aria-selected={activeTab === 'trabajos'} className={activeTab === 'trabajos' ? 'tab active' : 'tab'} onClick={() => setActiveTab('trabajos')}>Bodas realizadas</button>
           <button type="button" role="tab" aria-selected={activeTab === 'info'} className={activeTab === 'info' ? 'tab active' : 'tab'} onClick={() => setActiveTab('info')}>Hacemos realidad vuestoros sueños</button>
           <button type="button" role="tab" aria-selected={activeTab === 'reserva'} className={activeTab === 'reserva' ? 'tab active' : 'tab'} onClick={() => setActiveTab('reserva')}>Hablemos de vuestra boda</button>
         </div>
@@ -63,6 +65,8 @@ export function WeddingScreen({
           <WeddingVideoTab />
         )}
 
+        {activeTab === 'trabajos' && <WeddingWorksTab />}
+        
         {activeTab === 'info' && (
           <WeddingInfoTab prices={weddingPrices} onReserve={() => setActiveTab('reserva')}/>
         )}

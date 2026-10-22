@@ -2,6 +2,9 @@
 @import './styles/solicitudBoda.css';
 @import './styles/equipo.css';
 
+@import './styles/gallery.css';
+
+
 :root {
   --gold: #d4af37;
   --gold-soft: #bfa02c;
