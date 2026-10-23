@@ -1,4 +1,4 @@
-import { WeddingPrices } from '@/lib/wedding-prices';
+import { WeddingPrices } from '@/lib/wedding-form';
 
 export type RequestType = 'wedding' | 'production';
 export type RequestStatus = 'pending' | 'confirmed' | 'rejected';

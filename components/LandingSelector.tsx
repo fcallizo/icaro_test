@@ -1,10 +1,9 @@
 import { PageHeader } from '@/components/common/PageHeader';
 import { PublicLegalFooter } from '@/components/common/PublicLegalFooter';
-
-type View = 'selector' | 'cinema' | 'wedding';
+import { PageView } from '@/lib/properties';
 
 type LandingSelectorProps = {
-  onSelect: (view: View) => void;
+  onSelect: (view: PageView) => void;
 };
 
 export function LandingSelector({ onSelect }: LandingSelectorProps) {

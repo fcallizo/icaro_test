@@ -8,7 +8,7 @@
 .works-state { text-align: center; padding: 2rem 1rem; opacity: .8; }
 .works-error { color: #d56c63; }
 .works-project-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; }
-.works-project-card { position: relative; display: block; width: 100%; min-width: 0; aspect-ratio: 4 / 3; overflow: hidden; border: 0; padding: 0; border-radius: 3px; cursor: pointer; text-align: left; background: #252525; color: white; }
+.works-project-card { position: relative; display: block; width: 100%; min-width: 0; height: 320px; aspect-ratio: 4 / 3; overflow: hidden; border: 0; padding: 0; border-radius: 3px; cursor: pointer; text-align: left; background: #252525; color: white; }
 .works-card-1, .works-card-4 { aspect-ratio: 3 / 4; }
 .works-card-2 { aspect-ratio: 5 / 4; }
 .works-project-card img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .55s cubic-bezier(.2,.7,.2,1); }
@@ -16,9 +16,7 @@
 .works-project-overlay { position: absolute; inset: auto 0 0; z-index: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: .35rem; padding: 1.2rem; background: linear-gradient(transparent, rgba(0,0,0,.78)); }
 .works-project-overlay strong { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.25rem, 2vw, 1.8rem); font-weight: 500; }
 .works-project-overlay small { opacity: .8; font-size: .75rem; }
-.works-project-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; margin-bottom: 1.5rem; }
-.works-back-button { flex: 0 0 auto; border: 1px solid currentColor; border-radius: 2rem; padding: .65rem 1rem; background: transparent; color: inherit; cursor: pointer; }
-.works-back-button span { margin-right: .35rem; }
+.works-project-toolbar { align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; }
 .works-project-toolbar h2 { font-size: clamp(1.8rem, 3vw, 2.6rem); margin: 0; }
 .works-project-toolbar p { font-size: .85rem; }
 .works-mosaic { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: clamp(100px, 13vw, 190px); grid-auto-flow: dense; gap: .6rem; }
@@ -39,10 +37,61 @@
 .works-lightbox-count { position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,.8); font-size: .85rem; }
 .works-gallery-wedding .works-project-card, .works-gallery-wedding .works-mosaic-item { background: #e6e1d8; }
 
+.works-back-container {
+  position: sticky;
+  top: 0px;
+  z-index: 100;
+  margin-bottom: 24px;
+  margin-left: -60px;
+}
+
+.works-back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background-color: transparent;
+  color: var(--gold);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  border: solid 2px var(--gold);
+}
+
+.works-back-button:hover {
+  color: var(--gold-soft);
+  border: solid 2px var(--gold-soft);
+}
+
+.works-back-text {
+  display: inline-block;
+  max-width: 100px;
+  opacity: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  transition:
+    max-width 0.25s ease,
+    opacity 0.2s ease;
+}
+
+.works-back-container.is-compact .works-back-button {
+  padding: 12px;
+  gap: 0;
+}
+
+.works-back-container.is-compact .works-back-text {
+  max-width: 0;
+  opacity: 0;
+}
+
+
 @media (max-width: 900px) {
   .works-project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .works-mosaic { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: clamp(105px, 22vw, 180px); }
   .works-mosaic-item-5 { grid-column: span 2; }
+  .works-back-container { display: hidden; }
+
 }
 @media (max-width: 560px) {
   .works-gallery { padding-top: .5rem; }
@@ -52,7 +101,6 @@
   .works-card-1, .works-card-4 { aspect-ratio: 4 / 5; }
   .works-project-overlay { padding: .8rem; }
   .works-project-overlay strong { font-size: 1.2rem; }
-  .works-project-toolbar { align-items: flex-start; flex-direction: column; gap: .9rem; }
   .works-mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: clamp(110px, 36vw, 190px); gap: .4rem; }
   .works-mosaic-item-0, .works-mosaic-item-5, .works-mosaic-item-6 { grid-column: span 2; grid-row: span 2; }
   .works-lightbox { padding: 3.5rem 1rem; }

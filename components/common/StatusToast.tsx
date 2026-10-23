@@ -1,5 +1,6 @@
 'use client';
 
+import { PageTheme } from '@/lib/properties';
 import { useEffect } from 'react';
 
 export type StatusToastTone = 'success' | 'error';
@@ -12,7 +13,7 @@ export function StatusToast({
 }: {
   message: string;
   tone: StatusToastTone;
-  surface?: 'dark' | 'light';
+  surface?: PageTheme;
   onDismiss: () => void;
 }) {
   useEffect(() => {

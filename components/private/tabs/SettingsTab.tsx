@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
-import { WeddingPrices } from '@/lib/wedding-prices';
+import { WeddingPrices } from '@/lib/wedding-form';
 import { createFormFields } from '@/components/common/FormFields';
 
 type SettingsTabProps = {

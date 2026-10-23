@@ -248,6 +248,10 @@ textarea {
   --icon-image: url("/instagram.svg");
 }
 
+.icon-arrow {
+  --icon-image: url("/flecha.svg");
+}
+
 span.nav-label > a {
   text-transform: lowercase !important;
   font-weight: 500;
@@ -802,7 +806,7 @@ span.nav-label > a {
 }
 
 .card-one-wedding { background-image: url('https://images.unsplash.com/photo-1672758748153-1f13fd8d2eed?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
-.card-two-wedding { background-image: url('https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
+.card-two-wedding { background-image: url('https://res.cloudinary.com/sp5ywaxz/image/upload/v1792704737/Anillos_dorados_y_bordado_nupcial.png'); }
 .card-three-wedding { background-image: url('https://images.unsplash.com/photo-1460978812857-470ed1c77af0?q=80&w=1295&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
 .card-four-wedding { background-image: url('https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
 
@@ -931,6 +935,7 @@ span.nav-label > a {
   gap: 1rem;
   padding: 0.95rem 0;
   border-bottom: 1px solid rgba(255,255,255,0.08);
+  width: 100%;
 }
 
 .price-row strong {
@@ -1616,13 +1621,22 @@ input[type="date"] {
 .old-price { color: #b9aeb4; text-decoration: line-through; font-size: 1.4rem; }
 .new-price { color: var(--gold); font-size: 2rem; font-weight: 700; }
 
+.price-text {
+  width: 100%;
+}
+
+.price-money {
+  width: 90px;
+}
+
+
 .single-price { 
   font-size: 1.4rem;
 }
 
 .package-price { 
   color: var(--gold-soft);
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 600;
 }
 
@@ -2791,6 +2805,10 @@ input[type="date"] {
   }
 
   .process-strip { grid-template-columns: 1fr 1fr; }
+
+  .content-section-tabs > .tab-panel {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+  }
 }
 
 @media (max-width: 600px) {

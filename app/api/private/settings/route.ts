@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ensureTables, sql } from '@/lib/db';
 import { PRIVATE_SESSION_COOKIE, readPrivateSession } from '@/lib/private-auth';
-import { DEFAULT_WEDDING_PRICES, readWeddingPrices, WeddingPrices, WEDDING_PRICE_SETTING_KEYS } from '@/lib/wedding-prices';
+import { DEFAULT_WEDDING_PRICES, readWeddingPrices, WeddingPrices, WEDDING_PRICE_SETTING_KEYS } from '@/lib/wedding-form';
 
 async function isAuthenticated(request: NextRequest) {
   return Boolean(await readPrivateSession(request.cookies.get(PRIVATE_SESSION_COOKIE)?.value));

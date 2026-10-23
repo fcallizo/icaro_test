@@ -1,7 +1,6 @@
 
 "use client";
-
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type Photo = {
   id: string;
@@ -18,9 +17,10 @@ type Folder = {
 
 type WorksGalleryProps = {
   kind: "cinema" | "wedding";
+  isCompact: boolean;
 };
 
-export function WorksGallery({ kind }: WorksGalleryProps) {
+export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
   const [folders, setFolders] = useState<Folder[]>([]);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
@@ -183,15 +183,19 @@ export function WorksGallery({ kind }: WorksGalleryProps) {
         </>
       ) : (
         <>
-          <div className="works-project-toolbar">
+          <div className={`works-back-container ${isCompact ? 'is-compact' : ''}`}>
             <button
               className="works-back-button"
               onClick={goBack}
+              aria-label="Regresar a los trabajos"
+              title="Regresar a los trabajos"
             >
-              <span aria-hidden="true">←</span> Regresar
+              <span className="icon-mask icon-arrow" aria-hidden="true" />
+              <span className="works-back-text">Regresar</span>
             </button>
-
-            <div>
+          </div>
+          <div className="works-project-toolbar">
+            <div style={{ textAlign: "center" }}>
               <h2>{modifyCardName(selectedFolder.name)}</h2>
             </div>
           </div>

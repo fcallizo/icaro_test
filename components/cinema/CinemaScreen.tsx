@@ -1,4 +1,4 @@
-import { Dispatch, FormEvent, SetStateAction } from 'react';
+import { Dispatch, FormEvent, SetStateAction, useState } from 'react';
 import { CalendarRequest } from '@/components/common/AvailabilityCalendar';
 import { PageHeader } from '@/components/common/PageHeader';
 import { PublicLegalFooter } from '@/components/common/PublicLegalFooter';
@@ -9,14 +9,11 @@ import { CinemaInfoTab } from './tabs/CinemaInfoTab';
 import { CinemaReserveTab } from './tabs/CinemaReserveTab';
 import { CinemaWorksTab } from './tabs/CinemaWorksTab';
 import { ReserveProductionForm } from './ProductionForm';
-
-type TabMode = 'video' | 'trabajos' | 'info' | 'reserva';
+import { TabMode } from '@/lib/properties';
 
 type CinemaScreenProps = {
   onBackToHome: () => void;
   onShowWedding: () => void;
-  tab: TabMode;
-  setTab: (tab: TabMode) => void;
   productionForm: ReserveProductionForm;
   setProductionForm: Dispatch<SetStateAction<ReserveProductionForm>>;
   requests: CalendarRequest[];
@@ -29,8 +26,6 @@ type CinemaScreenProps = {
 export function CinemaScreen({
   onBackToHome,
   onShowWedding,
-  tab,
-  setTab,
   productionForm,
   setProductionForm,
   requests,
@@ -39,6 +34,8 @@ export function CinemaScreen({
   isSubmitting,
   onProductionSubmit,
 }: CinemaScreenProps) {
+  const [activeTab, setActiveTab] = useState<TabMode>('video');
+  
   return (
     <div className="page-shell page-shell-tabs">
       <div className="grain-layer" />
@@ -48,29 +45,29 @@ export function CinemaScreen({
         view="cinema"
         theme="dark"
         onHome={onBackToHome}
-        onCinema={() => setTab('video')}
+        onCinema={() => setActiveTab('video')}
         onWedding={onShowWedding}
       />
 
       <main className="content-section content-section-tabs">
         <div className="tabs">
-          <button className={tab === 'video' ? 'tab active' : 'tab'} onClick={() => setTab('video')}>Showreel</button>
-          <button className={tab === 'trabajos' ? 'tab active' : 'tab'} onClick={() => setTab('trabajos')}>Trabajos realizados</button>
-          <button className={tab === 'info' ? 'tab active' : 'tab'} onClick={() => setTab('info')}>Área Técnica, Contratos y Tarifas</button>
-          <button className={tab === 'reserva' ? 'tab active' : 'tab'} onClick={() => setTab('reserva')}>Comienza tu proyecto</button>
+          <button className={activeTab === 'video' ? 'tab active' : 'tab'} onClick={() => setActiveTab('video')}>Inicio</button>
+          <button className={activeTab === 'info' ? 'tab active' : 'tab'} onClick={() => setActiveTab('info')}>Área Técnica, Contratos y Tarifas</button>
+          <button className={activeTab === 'trabajos' ? 'tab active' : 'tab'} onClick={() => setActiveTab('trabajos')}>Eventos realizados</button>
+          <button className={activeTab === 'reserva' ? 'tab active' : 'tab'} onClick={() => setActiveTab('reserva')}>Comienza tu proyecto</button>
         </div>
 
-        {tab === 'video' && (
+        {activeTab === 'video' && (
           <CinemaVideoTab />
         )}
 
-        {tab === 'trabajos' && <CinemaWorksTab />}
+        {activeTab === 'trabajos' && <CinemaWorksTab />}
         
-        {tab === 'info' && (
-          <CinemaInfoTab onReserve={() => setTab('reserva')}/>
+        {activeTab === 'info' && (
+          <CinemaInfoTab onReserve={() => setActiveTab('reserva')}/>
         )}
 
-        {tab === 'reserva' && (
+        {activeTab === 'reserva' && (
           <CinemaReserveTab
             productionForm={productionForm}
             setProductionForm={setProductionForm}

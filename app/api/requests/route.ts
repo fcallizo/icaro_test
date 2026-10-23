@@ -2,7 +2,7 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { ensureTables, sql } from '@/lib/db';
 import { sendRequestNotification, sendRequestWeddingNotification } from '@/lib/request-notifications';
-import { DEFAULT_WEDDING_PRICES, readWeddingPrices } from '@/lib/wedding-prices';
+import { DEFAULT_WEDDING_PRICES, readWeddingPrices } from '@/lib/wedding-form';
 
 export async function GET() {
   if (!sql) {

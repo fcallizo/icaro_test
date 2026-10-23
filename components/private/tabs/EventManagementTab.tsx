@@ -1,5 +1,6 @@
 'use client';
 
+import { EventType } from '@/lib/properties';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 
 type TeamMember = {
@@ -12,7 +13,7 @@ type TeamMember = {
 
 type ManagedEvent = {
   id: string;
-  type: 'wedding' | 'production' | 'prewedding' | 'postwedding';
+  type: EventType;
   date: string;
   clientName: string;
   location: string | null;

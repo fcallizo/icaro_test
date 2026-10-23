@@ -1,9 +1,8 @@
-type PageView = 'selector' | 'cinema' | 'wedding';
-type HeaderTheme = 'light' | 'dark';
+import { PageTheme, PageView } from "@/lib/properties";
 
 type PageHeaderProps = {
   view: PageView;
-  theme: HeaderTheme;
+  theme: PageTheme;
   onHome: () => void;
   onCinema: () => void;
   onWedding: () => void;

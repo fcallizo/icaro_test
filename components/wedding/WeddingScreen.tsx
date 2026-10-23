@@ -9,9 +9,8 @@ import { WeddingInfoTab } from './tabs/WeddingInfoTab';
 import { WeddingReserveTab } from './tabs/WeddingReserveTab';
 import { WeddingWorksTab } from './tabs/WeddingWorksTab';
 import { ReserveWeddingForm } from './WeddingForm';
-import { WeddingPrices } from '@/lib/wedding-prices';
-
-type WeddingTab = 'video' | 'trabajos' | 'info' | 'reserva';
+import { WeddingPrices } from '@/lib/wedding-form';
+import { TabMode } from '@/lib/properties';
 
 type WeddingScreenProps = {
   onBackToHome: () => void;
@@ -38,7 +37,7 @@ export function WeddingScreen({
   isSubmitting,
   onWeddingSubmit,
 }: WeddingScreenProps) {
-  const [activeTab, setActiveTab] = useState<WeddingTab>('video');
+  const [activeTab, setActiveTab] = useState<TabMode>('video');
 
   return (
     <div className="page-shell page-shell-tabs page-shell-bodas">
@@ -55,9 +54,9 @@ export function WeddingScreen({
 
       <main className="content-section content-section-tabs weddings-mode">
         <div className="tabs" role="tablist" aria-label="Servicios de bodas">
-          <button type="button" role="tab" aria-selected={activeTab === 'video'} className={activeTab === 'video' ? 'tab active' : 'tab'} onClick={() => setActiveTab('video')}>Showreel</button>
-          <button type="button" role="tab" aria-selected={activeTab === 'trabajos'} className={activeTab === 'trabajos' ? 'tab active' : 'tab'} onClick={() => setActiveTab('trabajos')}>Bodas realizadas</button>
+          <button type="button" role="tab" aria-selected={activeTab === 'video'} className={activeTab === 'video' ? 'tab active' : 'tab'} onClick={() => setActiveTab('video')}>Inicio</button>
           <button type="button" role="tab" aria-selected={activeTab === 'info'} className={activeTab === 'info' ? 'tab active' : 'tab'} onClick={() => setActiveTab('info')}>Hacemos realidad vuestoros sueños</button>
+          <button type="button" role="tab" aria-selected={activeTab === 'trabajos'} className={activeTab === 'trabajos' ? 'tab active' : 'tab'} onClick={() => setActiveTab('trabajos')}>Bodas realizadas</button>
           <button type="button" role="tab" aria-selected={activeTab === 'reserva'} className={activeTab === 'reserva' ? 'tab active' : 'tab'} onClick={() => setActiveTab('reserva')}>Hablemos de vuestra boda</button>
         </div>
 

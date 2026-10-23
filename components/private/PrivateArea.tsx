@@ -12,7 +12,7 @@ import { AvailabilityCalendar } from '@/components/common/AvailabilityCalendar';
 import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
 import { RequestDetailsModal } from '@/components/private/requestDetailsModal/RequestDetailsModal';
 import { SettingsTab } from './tabs/SettingsTab';
-import { DEFAULT_WEDDING_PRICES, WeddingPrices } from '@/lib/wedding-prices';
+import { DEFAULT_WEDDING_PRICES, WeddingPrices } from '@/lib/wedding-form';
 
 async function getPrivateRequests() {
   const response = await fetch('/api/private/requests', { cache: 'no-store' });

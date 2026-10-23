@@ -1,4 +1,4 @@
-import { WeddingPrices } from '@/lib/wedding-prices';
+import { WeddingPrices } from '@/lib/wedding-form';
 
 type WeddingInfoTabProps = {
   prices: WeddingPrices;
@@ -25,9 +25,9 @@ export function WeddingInfoTab({ prices, onReserve }: WeddingInfoTabProps) {
 
         <div className="hero-crop">
           <img
-          className="hero-img"
+            className="hero-img"
             src="https://images.unsplash.com/photo-1544078751-58fee2d8a03b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            alt="Boda"/>
+            alt="Boda" />
         </div>
 
         <div className="divider-block light">
@@ -74,48 +74,84 @@ export function WeddingInfoTab({ prices, onReserve }: WeddingInfoTabProps) {
           <div className="booking-form combo-card wedding-panel">
             <div className="card-title">Pre-boda <span className="popular-tag complement-tag">Complemento</span></div>
             <div className="price-row">
-              <div><strong>Sesión fotográfica</strong><span>Una sesión relajada antes del gran día. Hasta 1 h y 30 fotos editadas.</span></div>
-              <b className="single-price"><span className="price-start">Desde</span>{prices.complementaryPhoto} €</b>
+              <div className='price-text'>
+                <strong>Sesión fotográfica</strong><span>Una sesión relajada antes del gran día. Hasta 1 h y 30 fotos editadas.</span>
+              </div>
+              <div className='price-money'>
+                <b className="single-price"><span className="price-start">Desde</span>{prices.complementaryPhoto} €</b>
+              </div>
             </div>
             <div className="price-row">
-              <div><strong>Película documental</strong><span>Una pieza breve de 2–3 min, grabada durante la sesión.</span></div>
-              <b className="single-price"><span className="price-start">Desde</span>{prices.complementaryVideo} €</b>
+              <div className='price-text'>
+                <strong>Película documental</strong><span>Una pieza breve de 2–3 min, grabada durante la sesión.</span>
+              </div>
+              <div className='price-money'>
+                <b className="single-price"><span className="price-start">Desde</span>{prices.complementaryVideo} €</b>
+              </div>
             </div>
             <div className="price-row no-border">
-              <div><strong>Pack completo</strong><span>Sesión fotográfica + película documental.</span></div>
-              <b className="package-price"><span className="price-start">Desde</span>{prices.complementaryComplete} €</b>
+              <div className='price-text'>
+                <strong>Pack completo</strong><span>Sesión fotográfica + película documental.</span>
+              </div>
+              <div className='price-money'>
+                <b className="package-price"><span className="price-start">Desde</span>{prices.complementaryComplete} €</b>
+              </div>
             </div>
           </div>
 
           <div className="booking-form combo-card featured wedding-panel">
             <div className="card-title">Boda</div>
             <div className="price-row">
-              <div><strong>Reportaje fotográfico</strong><span>Hasta 6 h de cobertura y un mínimo de 250 fotos editadas.</span></div>
-              <b className="single-price"><span className="price-start">Desde</span>{prices.weddingPhoto} €</b>
+              <div className='price-text'>
+                <strong>Reportaje fotográfico</strong><span>Hasta 6 h de cobertura y un mínimo de 250 fotos editadas.</span>
+              </div>
+              <div className='price-money'>
+                <b className="single-price"><span className="price-start">Desde</span>{prices.weddingPhoto} €</b>
+              </div>
             </div>
             <div className="price-row">
-              <div><strong>Película documental</strong><span>Hasta 6 h de cobertura y una película de 5–8 min.</span></div>
-              <b className="single-price"><span className="price-start">Desde</span>{prices.weddingVideo} €</b>
+              <div className='price-text'>
+                <strong>Película documental</strong><span>Hasta 6 h de cobertura y una película de 5–8 min.</span>
+              </div>
+              <div className='price-money'>
+                <b className="single-price"><span className="price-start">Desde</span>{prices.weddingVideo} €</b>
+              </div>
             </div>
             <div className="price-row no-border">
-              <div><strong>Pack completo</strong><span>Reportaje fotográfico + película documental.</span></div>
-              <b className="package-price"><span className="price-start">Desde</span>{prices.weddingComplete} €</b>
+              <div className='price-text'>
+                <strong>Pack completo</strong><span>Reportaje fotográfico + película documental.</span>
+              </div>
+              <div className='price-money'>
+                <b className="package-price"><span className="price-start">Desde</span>{prices.weddingComplete} €</b>
+              </div>
             </div>
           </div>
 
           <div className="booking-form combo-card wedding-panel">
             <div className="card-title">Post-boda <span className="popular-tag complement-tag">Complemento</span></div>
             <div className="price-row">
-              <div><strong>Sesión fotográfica</strong><span>Una sesión después de la boda, donde elijáis. Hasta 1 h y 30 fotos editadas.</span></div>
-              <b className="single-price"><span className="price-start">Desde</span>{prices.complementaryPhoto} €</b>
+              <div className='price-text'>
+                <strong>Sesión fotográfica</strong> <span>Una sesión después de la boda, donde elijáis. Hasta 1 h y 30 fotos editadas.</span>
+              </div>
+              <div className='price-money'>
+                <b className="single-price"><span className="price-start">Desde</span>{prices.complementaryPhoto} €</b>
+              </div>
             </div>
             <div className="price-row">
-              <div><strong>Película documental</strong><span>Una pieza breve de 2–3 min, grabada durante la sesión.</span></div>
-              <b className="single-price"><span className="price-start">Desde</span>{prices.complementaryVideo} €</b>
+              <div className='price-text'>
+                <strong>Película documental</strong> <span>Una pieza breve de 2–3 min, grabada durante la sesión.</span>
+              </div>
+              <div className='price-money'>
+                <b className="single-price"><span className="price-start">Desde</span>{prices.complementaryVideo} €</b>
+              </div>
             </div>
             <div className="price-row no-border">
-              <div><strong>Pack completo</strong><span>Sesión fotográfica + película documental.</span></div>
-              <b className="package-price"><span className="price-start">Desde</span>{prices.complementaryComplete} €</b>
+              <div className='price-text'>
+                <strong>Pack completo</strong> <span>Sesión fotográfica + película documental.</span>
+              </div>
+              <div className='price-money'>
+                <b className="package-price"><span className="price-start">Desde</span>{prices.complementaryComplete} €</b>
+              </div>
             </div>
           </div>
         </div>
@@ -152,12 +188,12 @@ export function WeddingInfoTab({ prices, onReserve }: WeddingInfoTabProps) {
       </section>
 
       <div className="divider-block light">
-          <div className="divider-title" >
-            <h2>¿Hablamos de vuestra boda?</h2>
-          </div>
-          <p> Contadnos la fecha y el lugar y os respondemos en menos de 24 h con una propuesta sin compromiso. </p>
-          <button className="submit-btn" onClick={() => onReserve()}>Consultar Disponibilidad</button>
+        <div className="divider-title" >
+          <h2>¿Hablamos de vuestra boda?</h2>
         </div>
+        <p> Contadnos la fecha y el lugar y os respondemos en menos de 24 h con una propuesta sin compromiso. </p>
+        <button className="submit-btn" onClick={() => onReserve()}>Consultar Disponibilidad</button>
+      </div>
     </div>
   );
 }

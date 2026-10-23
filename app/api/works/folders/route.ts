@@ -38,8 +38,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const folder = configuredFolder.replace(/^\/+|\/+$/g, '');
-  const root = folder;
+  const root = configuredFolder.replace(/^\/+|\/+$/g, '');
 
   const cloud = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
   const key = process.env.CLOUDINARY_API_KEY;
@@ -59,28 +58,59 @@ export async function GET(request: NextRequest) {
     'Content-Type': 'application/json',
   };
 
+  // Busca una imagen que cumpla la expresión indicada.
+  async function searchImage(
+    expression: string
+  ): Promise<string | null> {
+    const searchUrl = new URL(
+      `https://api.cloudinary.com/v1_1/${cloud}/resources/search`
+    );
+
+    const response = await fetch(searchUrl, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        expression,
+        max_results: 1,
+      }),
+      next: { revalidate: 300 },
+    });
+
+    if (!response.ok) {
+      console.error(
+        'Cloudinary cover search error:',
+        response.status,
+        await response.text()
+      );
+      return null;
+    }
+
+    const data =
+      (await response.json()) as CloudinarySearchResponse;
+
+    return data.resources?.[0]?.secure_url ?? null;
+  }
+
   try {
     const folderPath = root
       .split('/')
       .map(encodeURIComponent)
       .join('/');
 
-    const url = new URL(
+    const foldersUrl = new URL(
       `https://api.cloudinary.com/v1_1/${cloud}/folders/${folderPath}`
     );
 
-    const response = await fetch(url, {
+    const response = await fetch(foldersUrl, {
       headers,
       next: { revalidate: 300 },
     });
 
     if (!response.ok) {
-      const details = await response.text();
-
       console.error(
         'Cloudinary folders API error:',
         response.status,
-        details
+        await response.text()
       );
 
       return NextResponse.json(
@@ -96,38 +126,18 @@ export async function GET(request: NextRequest) {
       (data.folders ?? []).map(async (folder) => {
         let cover: string | null = null;
 
+        const baseExpression =
+          `resource_type:image AND type:upload AND asset_folder="${folder.path}"`;
+
         try {
-          const searchUrl = new URL(
-            `https://api.cloudinary.com/v1_1/${cloud}/resources/search`
+          // 1. Prioridad: imagen con la etiqueta "Portada".
+          cover = await searchImage(
+            `${baseExpression} AND tags=Portada`
           );
 
-          searchUrl.searchParams.set(
-            'expression',
-            `resource_type:image AND type:upload AND asset_folder="${folder.path}"`
-          );
-          searchUrl.searchParams.set('max_results', '1');
-
-          const searchResponse = await fetch(searchUrl, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify({
-              expression: `resource_type:image AND type:upload AND asset_folder="${folder.path}"`,
-              max_results: 1,
-            }),
-            next: { revalidate: 300 },
-          });
-
-          if (searchResponse.ok) {
-            const searchData =
-              (await searchResponse.json()) as CloudinarySearchResponse;
-
-            cover = searchData.resources?.[0]?.secure_url ?? null;
-          } else {
-            console.error(
-              'Cloudinary cover search error:',
-              searchResponse.status,
-              await searchResponse.text()
-            );
+          // 2. Si no existe, utiliza la primera imagen disponible.
+          if (!cover) {
+            cover = await searchImage(baseExpression);
           }
         } catch (error) {
           console.error(

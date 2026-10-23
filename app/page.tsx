@@ -6,14 +6,12 @@ import { CinemaScreen } from '@/components/cinema/CinemaScreen';
 import { WeddingScreen } from '@/components/wedding/WeddingScreen';
 import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
 import { CalendarBlockRange } from '@/components/private/private-types';
-import { DEFAULT_WEDDING_PRICES, WeddingPrices } from '@/lib/wedding-prices';
-
-type View = 'selector' | 'cinema' | 'wedding';
-type TabMode = 'video' | 'trabajos' | 'info' | 'reserva';
+import { DEFAULT_WEDDING_PRICES, WeddingPrices } from '@/lib/wedding-form';
+import { EventType, PageTheme, PageView } from '@/lib/properties';
 
 type RequestItem = {
   id: string;
-  type: 'wedding' | 'production' | 'prewedding' | 'postwedding';
+  type: EventType;
   nombre: string;
   email: string;
   telefono?: string;
@@ -47,15 +45,14 @@ const initialProductionForm = {
 };
 
 export default function HomePage() {
-  const [view, setView] = useState<View>('selector');
-  const [tab, setTab] = useState<TabMode>('video');
+  const [view, setView] = useState<PageView>('selector');
   const [weddingForm, setWeddingForm] = useState(initialWeddingForm);
   const [productionForm, setProductionForm] = useState(initialProductionForm);
   const [requests, setRequests] = useState<RequestItem[]>([]);
   const [blockedRanges, setBlockedRanges] = useState<CalendarBlockRange[]>([]);
   const [unifyCalendars, setUnifyCalendars] = useState(false);
   const [weddingPrices, setWeddingPrices] = useState<WeddingPrices>(DEFAULT_WEDDING_PRICES);
-  const [toast, setToast] = useState<{ message: string; tone: StatusToastTone; surface?: 'dark' | 'light' } | null>(null);
+  const [toast, setToast] = useState<{ message: string; tone: StatusToastTone; surface?: PageTheme } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -145,8 +142,6 @@ export default function HomePage() {
         <CinemaScreen
           onBackToHome={() => setView('selector')}
           onShowWedding={() => setView('wedding')}
-          tab={tab}
-          setTab={setTab}
           productionForm={productionForm}
           setProductionForm={setProductionForm}
           requests={requests}

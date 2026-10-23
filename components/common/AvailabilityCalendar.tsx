@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { CalendarBlockRange } from '@/components/private/private-types';
+import { EventType, PageTheme } from '@/lib/properties';
 
 export type CalendarRequest = {
-  type: 'wedding' | 'production' | 'prewedding' | 'postwedding';
+  type: EventType;
   fecha?: string;
   fechaPreboda?: string | null;
   fechaPostboda?: string | null;
@@ -16,7 +17,7 @@ type AvailabilityCalendarProps = {
   requests: CalendarRequest[];
   manualBlockedRanges?: CalendarBlockRange[];
   requestTypes?: CalendarRequest['type'][];
-  variant?: 'dark' | 'light';
+  variant?: PageTheme;
   showPending?: boolean;
   selectedDate?: string | null;
   onDateSelect?: (date: string | null) => void;

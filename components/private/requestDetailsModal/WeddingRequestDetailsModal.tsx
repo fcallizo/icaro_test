@@ -4,8 +4,7 @@ import { PrivateRequestUpdate, RequestDetailsModalProps, setDefaultFormValues } 
 import { RequestDetailsModalFrame } from './RequestDetailsModalFrame';
 import { createFormFields } from '@/components/common/FormFields';
 import type { WeddingSheetBlock, WeddingSheetData } from '../pdfs/WeddingContractPdf';
-import { PACK_OPTIONS, SERVICE_OPTIONS } from '@/lib/wedding-form';
-import type { WeddingPrices } from '@/lib/wedding-prices';
+import { PACK_OPTIONS, SERVICE_OPTIONS, WeddingPrices } from '@/lib/wedding-form';
 
 
 const toNumber = (value: unknown) => {
