@@ -35,7 +35,12 @@ export function CinemaReserveTab({
     });
 
   return (
-    <div className="tab-panel">
+    <div className="tab-panel" role="tabpanel">
+      <div className="hero-block">
+        <h1>Solicitar Producción</h1>
+        <p>Indicanos Brevemente aquella idea que tengas en mente y te ayudamos a hacerla realidad.</p>
+      </div>
+
       <div className="reservation-layout">
         <div>
           <AvailabilityCalendar
@@ -52,7 +57,6 @@ export function CinemaReserveTab({
 
         <div className="booking-form card-dark">
           <form onSubmit={onProductionSubmit}>
-            <h4>Solicitar Producción</h4>
             {input('nombre', 'Nombre / Empresa', 'text', true, false, false, '')}
             <div className="two-col">
               {input('email', 'Correo de contacto', 'email', true, false, false, 'nombre@ejemplo.com')}

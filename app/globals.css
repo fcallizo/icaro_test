@@ -3,7 +3,7 @@
 @import './styles/equipo.css';
 
 @import './styles/gallery.css';
-
+@import './styles/aboutMe.css';
 
 :root {
   --gold: #d4af37;
@@ -670,13 +670,25 @@ span.nav-label > a {
   font-family: Georgia, 'Times New Roman', serif;
   font-size: clamp(2rem, 3vw, 3rem);
   color: var(--gold);
+  text-transform: uppercase;
 }
 
-.hero-block p {
-  margin-top: 1rem;
-  color: #8b8b8b;
-  line-height: 1.8;
+.hero-block h1::after {
+  content: "";
+  display: block;
+  width: 72px;
+  height: 2px;
+  margin: 1rem auto 0;
+  background: var(--gold);
 }
+
+.hero-block > p {
+  margin: 1.25rem auto 0;
+  color: var(--muted);
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  font-style: italic;
+}
+
 
 .hero-block.light h1,
 .hero-block.light h2,
@@ -2694,7 +2706,6 @@ input[type="date"] {
 .dots { display: flex; justify-content: center; gap: .5rem; margin-top: 1rem; }
 .dot { width: 10px; height: 10px; border-radius: 50%; border: none; background: #d9ccd1; cursor: pointer; }
 .dot.active { background: var(--gold); }
-
 
 @media (max-width: 900px) {
   .nav-container {

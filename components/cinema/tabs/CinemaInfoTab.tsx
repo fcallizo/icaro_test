@@ -18,7 +18,12 @@ type CinemaInfoTabProps = {
 
 export function CinemaInfoTab({onReserve}: CinemaInfoTabProps) {
   return (
-    <div className="tab-panel">
+    <div className="tab-panel" role="tabpanel">
+      <div className="hero-block">
+        <h1>Tu idea en las mejores manos</h1>
+        <p>Contamos con una gran experiencia para realizar todo tipo de proyectos.</p>
+      </div>
+
       <div className="tech-header">
         <div>
           <span className="eyebrow">FOTOGRAFÍA • VÍDEO • CUALQUIER EVENTO</span>

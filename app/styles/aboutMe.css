@@ -1,0 +1,142 @@
+/* ============================================================
+   SOBRE MÍ
+   ============================================================ */
+
+/* ---------- Maquetación ---------- */
+.about-container {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
+
+  max-width: 1240px;
+  margin-inline: auto;
+  padding: clamp(1.5rem, 5vw, 4rem) clamp(1.25rem, 5vw, 3.5rem)
+    clamp(4rem, 9vw, 7rem);
+}
+
+/* ---------- Imagen ---------- */
+.about-media {
+  margin: 0;
+  position: sticky;
+  top: 2rem;
+}
+
+.about-media img {
+  display: block;
+  width: 100%;
+  height: auto; 
+  aspect-ratio: 2 / 3;
+  object-fit: cover; 
+  object-position: center 20%;
+  border-radius: 14px;
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.06),
+    0 18px 40px -12px rgb(0 0 0 / 0.28);
+}
+
+.about-media figcaption {
+  margin-top: 0.85rem;
+  text-align: center;
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ---------- Texto ---------- */
+.about-info {
+  max-width: 68ch;
+}
+
+.about-info p {
+  font-size: clamp(1.02rem, 1.15vw, 1.12rem);
+  line-height: 1.75;
+  letter-spacing: 0.01em; 
+  word-spacing: normal;
+  margin: 0 0 1.4em;
+  text-wrap: pretty;
+}
+
+
+.about-info .lead {
+  font-size: clamp(1.15rem, 1.6vw, 1.35rem);
+  line-height: 1.6;
+}
+
+.important-info {
+  font-size: 1.05em;
+  color: var(--gold);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.about-quote {
+  margin: 2rem 0;
+  padding: 0.35rem 0 0.35rem 1.5rem;
+  border-left: 3px solid var(--gold);
+  font-size: clamp(1.08rem, 1.4vw, 1.22rem);
+  line-height: 1.7;
+  font-style: italic;
+  text-wrap: pretty;
+}
+
+.about-info .closing {
+  margin-top: 2rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid rgb(0 0 0 / 0.1);
+  font-size: clamp(1.08rem, 1.3vw, 1.2rem);
+  font-weight: 500;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .about-container {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .about-media {
+    position: static;
+    width: min(90vw, 420px);
+  }
+
+  .about-info {
+    max-width: 65ch;
+  }
+}
+
+/* Móvil */
+@media (max-width: 520px) {
+  .about-media {
+    width: min(100%, 340px);
+  }
+
+  .about-info p {
+    line-height: 1.7;
+  }
+
+  .about-quote {
+    padding-left: 1.1rem;
+    margin: 1.6rem 0;
+  }
+
+  .important-info {
+    white-space: normal;
+  }
+}
+
+@media (min-width: 1500px) {
+  .about-container {
+    max-width: 1340px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-media {
+    position: static;
+  }
+}

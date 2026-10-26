@@ -11,6 +11,7 @@ import { WeddingWorksTab } from './tabs/WeddingWorksTab';
 import { ReserveWeddingForm } from './WeddingForm';
 import { WeddingPrices } from '@/lib/wedding-form';
 import { TabMode } from '@/lib/properties';
+import { WeddingAboutMeTab } from './tabs/WeddingAboutMeTab';
 
 type WeddingScreenProps = {
   onBackToHome: () => void;
@@ -58,6 +59,7 @@ export function WeddingScreen({
           <button type="button" role="tab" aria-selected={activeTab === 'info'} className={activeTab === 'info' ? 'tab active' : 'tab'} onClick={() => setActiveTab('info')}>Hacemos realidad vuestoros sueños</button>
           <button type="button" role="tab" aria-selected={activeTab === 'trabajos'} className={activeTab === 'trabajos' ? 'tab active' : 'tab'} onClick={() => setActiveTab('trabajos')}>Bodas realizadas</button>
           <button type="button" role="tab" aria-selected={activeTab === 'reserva'} className={activeTab === 'reserva' ? 'tab active' : 'tab'} onClick={() => setActiveTab('reserva')}>Hablemos de vuestra boda</button>
+          <button type="button" role="tab" aria-selected={activeTab === 'sobreMi'} className={activeTab === 'sobreMi' ? 'tab active' : 'tab'} onClick={() => setActiveTab('sobreMi')}>Sobre Mi</button>
         </div>
 
         {activeTab === 'video' && (
@@ -65,13 +67,13 @@ export function WeddingScreen({
         )}
 
         {activeTab === 'trabajos' && <WeddingWorksTab />}
-        
+
         {activeTab === 'info' && (
-          <WeddingInfoTab prices={weddingPrices} onReserve={() => setActiveTab('reserva')}/>
+          <WeddingInfoTab prices={weddingPrices} onReserve={() => setActiveTab('reserva')} />
         )}
 
         {activeTab === 'reserva' && (
-          <WeddingReserveTab 
+          <WeddingReserveTab
             weddingForm={weddingForm}
             setWeddingForm={setWeddingForm}
             requests={requests}
@@ -80,6 +82,10 @@ export function WeddingScreen({
             isSubmitting={isSubmitting}
             onWeddingSubmit={onWeddingSubmit}
           />
+        )}
+
+        {activeTab === 'sobreMi' && (
+          <WeddingAboutMeTab />
         )}
       </main>
       <PublicLegalFooter />

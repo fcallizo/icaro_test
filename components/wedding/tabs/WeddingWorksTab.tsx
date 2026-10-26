@@ -8,7 +8,6 @@ export function WeddingWorksTab() {
     setIsCompact(e.currentTarget.scrollTop >= 200);
   };
 
-
   return (
     <div className="tab-panel" role="tabpanel" onScroll={handleTabScroll}>
       <div className="hero-block light">

@@ -9,7 +9,7 @@ export function CinemaWorksTab() {
   };
 
   return (
-    <div className="tab-panel" onScroll={handleTabScroll}>
+    <div className="tab-panel" role="tabpanel" onScroll={handleTabScroll}>
       <div className="hero-block">
         <h1>Eventos realizados</h1>
         <p>Una selección de proyectos audiovisuales que hemos creado.</p>
