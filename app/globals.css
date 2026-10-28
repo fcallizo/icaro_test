@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:wght@400;500;600;700&display=swap');
 @import './styles/solicitudBoda.css';
 @import './styles/equipo.css';
-
 @import './styles/gallery.css';
 @import './styles/aboutMe.css';
+@import './styles/settings.css';
 
 :root {
   --gold: #d4af37;
@@ -15,14 +15,23 @@
   --text-light: #ffffff;
   --text-dark: #111111;
   --muted: #8b8b8b;
-  --border: rgba(255,255,255,0.12);
+  --border: rgba(255, 255, 255, 0.12);
+
+  /* private colors */
+  --priv-cinema: #3399ff;
+  --priv-wedding: #c98fa2;
+  --priv-success: #7cdb97;
+  --priv-warning: #e4c968;
+  --priv-error: #ff5555;
+  --priv-error-soft: #ff8a8a;
+
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  scrollbar-color: #bfa02c #191a1b;
+  scrollbar-color: var(--gold-soft) var(--bg-dark);
   scrollbar-width: thin;
 }
 
@@ -32,17 +41,17 @@
 }
 
 *::-webkit-scrollbar-track {
-  background: #191a1b;
+  background: var(--bg-dark);
 }
 
 *::-webkit-scrollbar-thumb {
-  border: 2px solid #191a1b;
+  border: 2px solid var(--bg-dark);
   border-radius: 8px;
-  background: #bfa02c;
+  background: var(--gold-soft);
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: #d4af37;
+  background: var(--gold);
 }
 
 html {
@@ -50,7 +59,7 @@ html {
 }
 
 html:has(.page-shell-bodas) {
-  scrollbar-color: #bfa02c var(--bg-light);
+  scrollbar-color: var(--gold-soft) var(--bg-light);
 }
 
 html:has(.page-shell-bodas)::-webkit-scrollbar-track {
@@ -127,7 +136,7 @@ textarea {
 }
 
 .page-shell-bodas .content-section-tabs > .tab-panel {
-  scrollbar-color: #bfa02c var(--bg-light);
+  scrollbar-color: var(--gold-soft) var(--bg-light);
 }
 
 .page-shell-bodas .content-section-tabs > .tab-panel::-webkit-scrollbar-track {
@@ -892,6 +901,162 @@ span.nav-label > a {
 .process-step strong { display: block; margin: 6px 0 4px; }
 .process-step p { margin: 0; font-size: 0.9rem; opacity: 0.8; }
 
+/* ==============================
+   TARIFAS CINEMATOGRÁFICAS
+   ============================== */
+
+.cinema-pricing {
+  width: 100%;
+  max-width: 1200px;
+  margin: 70px auto;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+/* Rejilla de tarjetas */
+
+.cinema-pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+/* Tarjeta individual */
+
+.cinema-price-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 28px 22px 24px;
+  border: 1px solid rgba(128, 128, 128, 0.25);
+  border-radius: 14px;
+  background: rgba(128, 128, 128, 0.04);
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.cinema-price-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--gold-soft);
+  background: rgba(128, 128, 128, 0.07);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+.cinema-price-card h4 {
+  margin: 0 0 14px;
+  font-size: 1.15rem;
+  line-height: 1.4;
+  color: var(--gold);
+}
+
+.cinema-price-card > p {
+  flex: 1;
+  margin: 0 0 28px;
+  font-size: 0.9rem;
+  line-height: 1.8;
+  opacity: 0.75;
+}
+
+/* Precio */
+
+.cinema-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(128, 128, 128, 0.22);
+}
+
+.cinema-price > span {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.cinema-price > strong {
+  font-size: clamp(1.45rem, 2vw, 1.85rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+/* Destacar la producción completa */
+
+.cinema-price-featured {
+  border-color: rgba(180, 150, 105, 0.5);
+}
+
+/* Nota legal/comercial */
+
+.cinema-pricing-note {
+  margin: 22px auto 0;
+  text-align: center;
+  font-size: 0.8rem;
+  line-height: 1.7;
+  opacity: 0.6;
+}
+
+/* ==============================
+   OFERTAS CINEMATOGRÁFICAS
+   ============================== */
+
+/* La tarjeta sirve de referencia para colocar la etiqueta */
+.cinema-price-offer {
+  border-color: var(--gold-soft);
+  background: rgba(180, 150, 105, 0.07);
+}
+
+/* Etiqueta de oferta */
+.cinema-offer-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 1;
+
+  padding: 6px 10px;
+  border-radius: 5px;
+
+  background: var(--gold);
+  color: #fff;
+
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+/* Deja espacio para que el título no choque con la etiqueta */
+.cinema-price-offer h4 {
+  padding-right: 48px;
+}
+
+/* Precio anterior */
+.cinema-price > span del {
+  margin-left: 4px;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  opacity: 0.7;
+}
+
+/* Precio rebajado */
+.cinema-price-offer .cinema-price > strong {
+  color: var(--gold);
+  font-size: clamp(1.7rem, 2.2vw, 2.1rem);
+}
+
+/* Texto de ahorro */
+.cinema-price > .cinema-offer-saving {
+  margin-top: 5px;
+  color: var(--gold);
+  font-size: 0.78rem;
+  font-weight: 600;
+  opacity: 1;
+}
+
 .cinema-div {
   margin: 3rem auto 2rem;
   max-width: 950px;
@@ -1119,17 +1284,17 @@ span.nav-label > a {
 
 .day.free {
   background: rgba(82, 194, 116, 0.15);
-  color: #66d98c;
+  color: var(--priv-success);
 }
 
 .day.busy {
   background: rgba(255, 82, 82, 0.12);
-  color: #ff8a8a;
+  color: var(--priv-error-soft);
 }
 
 .day.pending {
   background: rgba(244, 197, 66, 0.2);
-  color: #f5d76e;
+  color: var(--priv-warning);
 }
 
 .calendar-day-button {
@@ -1395,7 +1560,7 @@ input[type="date"] {
   justify-self: center;
   padding: 2rem 2.5rem;
   border: 1px solid rgba(17,17,17,0.1);
-  border-top: 2px solid #bfa02c;
+  border-top: 2px solid var(--gold-soft);
   background: rgba(255,255,255,0.72);
 }
 
@@ -1447,7 +1612,7 @@ input[type="date"] {
   min-width: 0;
   padding: 1rem;
   border: 1px solid rgba(17,17,17,0.1);
-  border-top: 2px solid #bfa02c;
+  border-top: 2px solid var(--gold-soft);
   background: rgba(255,255,255,0.72);
 }
 
@@ -1532,17 +1697,17 @@ input[type="date"] {
 }
 
 .legend-free {
-  background: #52c274;
+  background: var(--priv-success);
 }
 
 .legend-busy {
   margin-left: 0.75rem;
-  background: #ff5252;
+  background: var(--priv-error-soft);
 }
 
 .legend-pending {
   margin-left: 0.75rem;
-  background: #f5d76e;
+  background: var(--priv-warning);
 }
 
 .video-showcase {
@@ -2239,7 +2404,7 @@ input[type="date"] {
 
 .production-material-state {
   padding-bottom: 0.7rem;
-  color: #7cdb97;
+  color: var(--priv-success);
   font-size: 0.7rem;
 }
 
@@ -2300,7 +2465,7 @@ input[type="date"] {
   gap: 1rem;
   padding: 0.85rem 1rem;
   border: 1px solid rgba(255,255,255,0.1);
-  border-left: 3px solid #ff6262;
+  border-left: 3px solid var(--priv-error);
   background: #151617;
 }
 
@@ -2332,26 +2497,25 @@ input[type="date"] {
   padding: 1rem;
   border: 1px solid rgba(255,255,255,0.1);
   border-left: 3px solid var(--gold);
-  border-radius: 6px;
   background: #111213;
   min-height: -webkit-fill-available;
 }
 
 .private-request-card.production {
-  border-left-color: #3399ff;
+  border-left-color: var(--priv-cinema);
 }
 
 .private-request-card.wedding {
-  border-left-color: #c98fa2;
+  border-left-color: var(--priv-wedding);
 }
 
 .private-request-card.date-conflict-confirmed {
-  border-left-color: #ff5555;
+  border-left-color: var(--priv-error);
   background: #392327;
 }
 
 .private-request-card.date-conflict-pending {
-  border-left-color: var(--gold);
+  border-left-color: var(--priv-warning);
   background: #302b1e;
 }
 
@@ -2362,12 +2526,12 @@ input[type="date"] {
 }
 
 .private-request-heading time.date-conflict-confirmed {
-  color: #ff6b6b;
+  color: var(--priv-error-soft);
   font-weight: 800;
 }
 
 .private-request-heading time.date-conflict-pending {
-  color: #e4c968;
+  color: var(--priv-warning);
   font-weight: 800;
 }
 
@@ -2377,11 +2541,11 @@ input[type="date"] {
 }
 
 .private-request-card.production .private-request-kind {
-  color: #69b4ff;
+  color: var(--priv-cinema);
 }
 
 .private-request-card.wedding .private-request-kind {
-  color: #d59aab;
+  color: var(--priv-wedding);
 }
 
 .private-request-card h4 {
@@ -2672,7 +2836,7 @@ input[type="date"] {
 .private-discard-button {
   border: 1px solid rgba(255,100,100,0.5);
   background: transparent;
-  color: #ff9898;
+  color: var(--priv-error-soft);
 }
 
 .private-download-button {
@@ -2819,6 +2983,18 @@ input[type="date"] {
 
   .content-section-tabs > .tab-panel {
     padding: 0 1.5rem 1.5rem 1.5rem;
+  }
+
+  .cinema-pricing-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cinema-price-card {
+    padding: 26px 22px;
+  }
+
+  .cinema-price-card h4 {
+    font-size: 1.1rem;
   }
 }
 
@@ -2971,5 +3147,51 @@ input[type="date"] {
   .private-request-details .wide,
   .request-details-form-grid .wide {
     grid-column: auto;
+  }
+
+  .cinema-pricing {
+    margin: 48px auto;
+    padding: 0 16px;
+  }
+
+  .cinema-pricing-header {
+    margin-bottom: 26px;
+  }
+
+  .cinema-pricing-header h3 {
+    font-size: 1.8rem;
+  }
+
+  .cinema-pricing-header p {
+    font-size: 0.9rem;
+  }
+
+  .cinema-pricing-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .cinema-price-card {
+    padding: 24px 22px;
+  }
+
+  .cinema-price-card > p {
+    margin-bottom: 22px;
+  }
+
+  .cinema-price > strong {
+    font-size: 1.65rem;
+  }
+}
+
+/* Respeta las preferencias de movimiento del usuario */
+
+@media (prefers-reduced-motion: reduce) {
+  .cinema-price-card {
+    transition: none;
+  }
+
+  .cinema-price-card:hover {
+    transform: none;
   }
 }

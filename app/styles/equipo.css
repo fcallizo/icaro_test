@@ -74,12 +74,12 @@
 }
 
 .event-member-status {
-  color: #91d1a2;
+  color: var(--priv-success);
   font-size: 0.72rem;
 }
 
 .event-member-status.revoked {
-  color: #ff9898;
+  color: var(--priv-error-soft);
 }
 
 .event-member-actions {

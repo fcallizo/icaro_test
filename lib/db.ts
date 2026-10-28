@@ -297,7 +297,6 @@ export async function ensureTables() {
     numeric_value NUMERIC(10, 2),
     updated_at TIMESTAMPTZ DEFAULT NOW()
   );`;
-  await sql`ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS numeric_value NUMERIC(10, 2);`;
   await sql`INSERT INTO app_settings (setting_key, boolean_value)
     VALUES ('unify_calendars', FALSE)
     ON CONFLICT (setting_key) DO NOTHING;`;
@@ -313,6 +312,34 @@ export async function ensureTables() {
       ('wedding_discount_trio', 15)
     ON CONFLICT (setting_key) DO UPDATE
       SET numeric_value = COALESCE(app_settings.numeric_value, EXCLUDED.numeric_value);`;
+
+  await sql`CREATE TABLE IF NOT EXISTS cinema_offers (
+      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+      position INTEGER NOT NULL DEFAULT 5,
+      title TEXT NOT NULL,
+      description TEXT,
+      price INTEGER,
+      old_price INTEGER,
+      visible BOOLEAN NOT NULL DEFAULT FALSE,
+      updated_at TIMESTAMPTZ DEFAULT NOW(),
+
+      CONSTRAINT check_visible_position CHECK (
+        NOT visible OR (position IN (1, 2, 3, 4))
+      )
+    );`;
+
+    await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_visible_position 
+    ON cinema_offers (position) 
+    WHERE visible = TRUE;`;
+
+    await sql`INSERT INTO cinema_offers (id, position, title, price, old_price, visible, description)
+    VALUES
+      ('540a7d61-968c-4dcc-8151-9f99adb4bcfa', 1, 'Spot comercial', 200, 250, TRUE, 'Publicidad, branding y contenido premium para dar visibilidad a tu marca y conectar con tu público.'),
+      ('e2743d82-c4d7-41fb-9998-dfa9052fcdf1', 2, 'Videoclip cinematográfico', 150, NULL, TRUE, 'Dirección visual, narrativa creativa y edición avanzada para convertir tu música en imágenes.'),
+      ('d64598c9-b804-4798-bd97-ea540aff8a9a', 4, 'Producción completa', NULL, NULL, TRUE, 'Equipo técnico, planificación y coordinación para desarrollar tu proyecto de principio a fin.'),
+      ('0d51c652-5f6b-4fbe-a4f6-f0a289365ffa', 3, 'Sesión fotográfica', 100, 125, TRUE, 'Sesiones personalizadas para proyectos personales, retratos, marcas o necesidades profesionales.')
+    ON CONFLICT (id) DO NOTHING;`;
+
 }
 
 export async function getDbStatus() {

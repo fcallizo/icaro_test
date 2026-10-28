@@ -11,6 +11,7 @@ import { CinemaWorksTab } from './tabs/CinemaWorksTab';
 import { ReserveProductionForm } from './ProductionForm';
 import { TabMode } from '@/lib/properties';
 import { CinemaAboutMeTab } from './tabs/CinemaAboutMeTab';
+import { CinemaPrice } from '@/lib/cinema-forms';
 
 type CinemaScreenProps = {
   onBackToHome: () => void;
@@ -19,6 +20,7 @@ type CinemaScreenProps = {
   setProductionForm: Dispatch<SetStateAction<ReserveProductionForm>>;
   requests: CalendarRequest[];
   blockedRanges: CalendarBlockRange[];
+  cinemaPrices: CinemaPrice[],
   unifyCalendars: boolean;
   isSubmitting: boolean;
   onProductionSubmit: (event: FormEvent<HTMLFormElement>) => void;
@@ -29,6 +31,7 @@ export function CinemaScreen({
   onShowWedding,
   productionForm,
   setProductionForm,
+  cinemaPrices,
   requests,
   blockedRanges,
   unifyCalendars,
@@ -66,7 +69,10 @@ export function CinemaScreen({
         {activeTab === 'trabajos' && <CinemaWorksTab />}
 
         {activeTab === 'info' && (
-          <CinemaInfoTab onReserve={() => setActiveTab('reserva')} />
+          <CinemaInfoTab 
+            onReserve={() => setActiveTab('reserva')} 
+            cinemaPrices={cinemaPrices}
+          />
         )}
 
         {activeTab === 'reserva' && (

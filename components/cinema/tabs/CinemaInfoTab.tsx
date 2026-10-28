@@ -1,6 +1,7 @@
 'use client';
 import { CarouselPhoto } from '@/hooks/useCloudinaryPhotos';
 import { PhotoCarousel } from '@/components/common/PhotoCarousel';
+import { CinemaPrice, DEFAULT_CINEMA_PRICES } from '@/lib/cinema-forms';
 
 
 const CAROUSEL_TAG = 'carrusel';
@@ -14,9 +15,10 @@ const fallbackPhotos: CarouselPhoto[] = [
 
 type CinemaInfoTabProps = {
   onReserve: () => void;
+  cinemaPrices: CinemaPrice[];
 };
 
-export function CinemaInfoTab({onReserve}: CinemaInfoTabProps) {
+export function CinemaInfoTab({ onReserve, cinemaPrices }: CinemaInfoTabProps) {
   return (
     <div className="tab-panel" role="tabpanel">
       <div className="hero-block">
@@ -92,12 +94,74 @@ export function CinemaInfoTab({onReserve}: CinemaInfoTabProps) {
 
       <PhotoCarousel tag={CAROUSEL_TAG} fallback={fallbackPhotos} />
 
+      {/* TARIFAS ORIENTATIVAS */}
+      <div className="cinema-div">
+        <span className="eyebrow">NUESTROS SERVICIOS</span>
+        <h3>Algunas de nuestras tarifas</h3>
+        <p>
+          Cada proyecto es único. Estas tarifas son un punto de partida
+          para ayudarte a imaginar las posibilidades.
+        </p>
+      </div>
+
+      <div className="cinema-pricing-grid">
+  {cinemaPrices.map((service) => {
+    const hasOffer =
+      typeof service.originalPrice === 'number' &&
+      typeof service.price === 'number' &&
+      service.originalPrice > service.price;
+
+    const saving = hasOffer
+      ? (service.originalPrice ?? 0)- service.price!
+      : 0;
+
+    return (
+      <article
+        key={service.title}
+        className={`cinema-price-card${hasOffer ? ' cinema-price-offer' : ''}`}
+      >
+        {hasOffer && (
+          <span className="cinema-offer-badge">OFERTA</span>
+        )}
+
+        <h4>{service.title}</h4>
+        <p>{service.description}</p>
+
+        <div className="cinema-price">
+          {service.price === null ? (
+            <strong>A medida</strong>
+          ) : (
+            <>
+              {hasOffer ? (
+                <span>
+                  Antes <del>{service.originalPrice} €</del>
+                </span>
+              ) : 
+                <span>
+                  Desde
+                </span> }
+
+              <strong>{service.price} €</strong>
+
+              {hasOffer && (
+                <span className="cinema-offer-saving">
+                  ¡Ahorras {saving} €!
+                </span>
+              )}
+            </>
+          )}
+        </div>
+      </article>
+    );
+  })}
+</div>
+
       <div className="cinema-div">
         <h3>¿Tenéis algo en mente?</h3>
         <p>No hace falta tenerlo todo claro. Cuéntanos la fecha, el lugar y la idea, y te respondemos en menos de 24 horas con una propuesta sin compromiso.</p>
-        
+
         <button className="submit-btn" onClick={() => onReserve()}>Solicitar presupuesto</button>
-        
+
         <span className="eyebrow">Cumpleaños · Bautizos · Graduaciones · Eventos de empresa · Videoclips · Sesiones de marca</span>
       </div>
 

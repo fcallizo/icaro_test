@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ensureTables, sql } from '@/lib/db';
 import { sendRequestNotification, sendRequestWeddingNotification } from '@/lib/request-notifications';
 import { DEFAULT_WEDDING_PRICES, readWeddingPrices } from '@/lib/wedding-form';
+import { DEFAULT_CINEMA_PRICES, CinemaPrice } from '@/lib/cinema-forms';
 
 export async function GET() {
   if (!sql) {
@@ -11,6 +12,7 @@ export async function GET() {
       blockedRanges: [],
       unifyCalendars: false,
       weddingPrices: DEFAULT_WEDDING_PRICES,
+      cinemaPrices: DEFAULT_CINEMA_PRICES,
       dbConfigured: false,
     }, { status: 200 });
   }
@@ -24,7 +26,7 @@ export async function GET() {
     FROM calendar_blocks ORDER BY start_date;
   `;
   const [calendarSetting] = await sql`SELECT boolean_value FROM app_settings WHERE setting_key = 'unify_calendars' LIMIT 1;`;
-  const priceRows = (await sql`
+  const weddingPriceRows = (await sql`
     SELECT setting_key, numeric_value FROM app_settings WHERE setting_key IN (
       'wedding_photo_price',
       'wedding_video_price',
@@ -37,11 +39,18 @@ export async function GET() {
     )
   `) as Array<{ setting_key: string; numeric_value: number | string | null }>;
 
+  const cinemaPriceRows = (await sql`
+    SELECT title, price, old_price as "originalPrice", description 
+    FROM cinema_offers 
+    WHERE visible
+    ORDER BY position ASC`) as CinemaPrice[];
+
   return NextResponse.json({
     requests: eventRows,
     blockedRanges,
     unifyCalendars: Boolean(calendarSetting?.boolean_value),
-    weddingPrices: readWeddingPrices(priceRows),
+    weddingPrices: readWeddingPrices(weddingPriceRows),
+    cinemaPrices: cinemaPriceRows,
     dbConfigured: true,
   }, { status: 200 });
 }

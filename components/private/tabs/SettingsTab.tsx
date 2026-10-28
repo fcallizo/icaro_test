@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { WeddingPrices } from '@/lib/wedding-form';
 import { createFormFields } from '@/components/common/FormFields';
+import { CinemaOffersManager } from '@/components/private/tabs/CinemaOffersManager';
 
 type SettingsTabProps = {
   unifyCalendars: boolean;
@@ -40,8 +41,7 @@ export function SettingsTab({
     setDraft(toDraft(weddingPrices));
   }, [weddingPrices]);
 
-  // Mismos campos que en los otros formularios: el borrador de precios hace de `values`
-  const { input, inputSuffix } = createFormFields({
+  const { inputSuffix } = createFormFields({
     values: draft,
     idPrefix: 'settings',
     onChange: (field, value) => setDraft((current) => ({ ...current, [field]: value })),
@@ -62,8 +62,10 @@ export function SettingsTab({
       <section className="private-request-section">
         <h3>Panel de configuración</h3>
 
+        {/* Tu bloque actual de propiedades generales */}
         <div className="settings-tab-pannel">
           <h4>Propiedades generales</h4>
+
           <div className="private-calendar-controls">
             <label className="private-calendar-toggle">
               <input
@@ -71,51 +73,130 @@ export function SettingsTab({
                 role="switch"
                 checked={unifyCalendars}
                 disabled={isSavingCalendarSetting}
-                onChange={(event) => onCalendarUnificationChange(event.currentTarget.checked)}
+                onChange={(event) =>
+                  onCalendarUnificationChange(event.currentTarget.checked)
+                }
               />
               <span className="private-calendar-toggle-track" aria-hidden="true" />
               <span>Unificar calendarios</span>
             </label>
-            <p>Las fechas confirmadas de bodas y cine se bloquearán en ambos calendarios públicos.</p>
+
+            <p>
+              Las fechas confirmadas de bodas y cine se bloquearán en ambos
+              calendarios públicos.
+            </p>
           </div>
         </div>
 
-        <hr />
+        <hr className='setting-divider' />
 
-        <form onSubmit={savePrices}>
-          <div className="settings-tab-pannel">
-            <h4>Precios de boda</h4>
-            <div className="production-contract-grid-trio">
-              {inputSuffix('weddingPhoto', 'Reportaje fotográfico', true)}
-              {inputSuffix('weddingVideo', 'Película documental', true)}
-              {inputSuffix('weddingComplete', 'Pack completo', true)}
+        {/* NUEVO: tarifas cinematográficas */}
+        <CinemaOffersManager />
+
+        <hr className='setting-divider' />
+
+        <form className="wedding-prices-editor" onSubmit={savePrices}>
+          <div className="wedding-prices-admin-header">
+            <div>
+              <span className="eyebrow">BODAS</span>
+              <h4>Tarifas y descuentos</h4>
+              <p>
+                Define las tarifas de tus servicios y los descuentos que se
+                aplicarán al contratar varios servicios.
+              </p>
             </div>
           </div>
 
-          <div className="settings-tab-pannel">
-            <div className="private-calendar-controls">
-              <h4>Precios de preboda y postboda</h4>
-              <p>El mismo precio se aplica a ambas opciones.</p>
+          <section className="wedding-price-group">
+            <div className="wedding-price-group-heading">
+              <span className="wedding-price-group-number">01</span>
+              <div>
+                <h4>Servicios de boda</h4>
+                <p>Tarifas principales para el día de la boda.</p>
+              </div>
             </div>
-            
-            <div className="production-contract-grid-trio">
-              {inputSuffix('complementaryPhoto', 'Sesión fotográfica', true)}
-              {inputSuffix('complementaryVideo', 'Película documental', true)}
-              {inputSuffix('complementaryComplete', 'Pack completo', true)}
-            </div>
-          </div>
 
-          <div className="settings-tab-pannel">
-            <h4>Descuentos por Pack</h4>
-            <div className="production-contract-grid-trio">
-              {inputSuffix('discountDuo', 'Descuento DUO', true, false, false, '%')}
-              {inputSuffix('discountTrio', 'Descuento TRIO', true, false, false, '%')}
-            </div>
-          </div>
+            <div className="wedding-price-cards">
+              <article className="wedding-price-card">
+                {inputSuffix('weddingPhoto', 'Reportaje fotográfico', true)}
+              </article>
 
-          <button type="submit" className="private-material-save" disabled={isSavingWeddingPrices}>
-            {isSavingWeddingPrices ? 'Guardando precios...' : 'Guardar precios'}
-          </button>
+              <article className="wedding-price-card">
+                {inputSuffix('weddingVideo', 'Película documental', true)}
+              </article>
+
+              <article className="wedding-price-card">
+                {inputSuffix('weddingComplete', 'Pack completo', true)}
+              </article>
+            </div>
+          </section>
+
+          <section className="wedding-price-group">
+            <div className="wedding-price-group-heading">
+              <span className="wedding-price-group-number">02</span>
+              <div>
+                <h4>Preboda y postboda</h4>
+                <p>Los mismos precios para ambas opciones.</p>
+              </div>
+            </div>
+
+            <div className="wedding-price-cards">
+              <article className="wedding-price-card">
+                {inputSuffix('complementaryPhoto', 'Sesión fotográfica', true)}
+              </article>
+
+              <article className="wedding-price-card">
+                {inputSuffix('complementaryVideo', 'Película documental', true)}
+              </article>
+
+              <article className="wedding-price-card">
+                {inputSuffix('complementaryComplete', 'Pack completo', true)}
+              </article>
+            </div>
+          </section>
+
+          <section className="wedding-price-group wedding-discounts-group">
+            <div className="wedding-price-group-heading">
+              <span className="wedding-price-group-number">03</span>
+              <div>
+                <h4>Descuentos por pack</h4>
+              </div>
+            </div>
+
+            <div className="wedding-discount-cards">
+              <article className="wedding-discount-card">
+                <div>
+                  <span className="wedding-discount-label">PACK DUO</span>
+                  <h5>Dos servicios</h5>
+                  <p>Descuento al combinar dos servicios.</p>
+                </div>
+
+                {inputSuffix('discountDuo', 'Descuento DUO', true, false, false, '%')}
+              </article>
+
+              <article className="wedding-discount-card">
+                <div>
+                  <span className="wedding-discount-label">PACK TRÍO</span>
+                  <h5>Tres servicios</h5>
+                  <p>Descuento al contratar los tres servicios.</p>
+                </div>
+
+                {inputSuffix('discountTrio', 'Descuento TRÍO', true, false, false, '%')}
+              </article>
+            </div>
+          </section>
+
+          <div className="wedding-prices-footer">
+            <p>Los cambios se aplicarán cuando guardes la configuración.</p>
+
+            <button
+              type="submit"
+              className="private-material-save"
+              disabled={isSavingWeddingPrices}
+            >
+              {isSavingWeddingPrices ? 'Guardando precios...' : 'Guardar precios de boda'}
+            </button>
+          </div>
         </form>
       </section>
     </div>

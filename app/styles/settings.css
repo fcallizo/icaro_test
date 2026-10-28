@@ -1,0 +1,706 @@
+/* ========================================
+   CONFIGURACIÓN DE PRECIOS DE BODA
+   ======================================== */
+
+.setting-divider {
+    margin: 30px 5px;
+    border: solid 1px var(--muted);
+}
+
+.wedding-prices-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.wedding-price-group {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.wedding-price-group-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.wedding-price-group-number {
+  display: grid;
+  place-items: center;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--gold-soft);
+  border-radius: 10px;
+  color: var(--gold);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.wedding-price-group-heading h4 {
+  margin: 0 0 5px;
+  font-size: 1.1rem;
+}
+
+.wedding-price-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.wedding-price-card {
+  min-width: 0;
+  padding: 20px 30px 10px;
+  border: 1px solid rgba(128, 128, 128, 0.22);
+  background: #151617;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.wedding-price-card > p {
+  margin: 14px 0 0;
+  font-size: 0.83rem;
+  line-height: 1.7;
+  opacity: 0.65;
+}
+
+/* Descuentos */
+
+.wedding-discount-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.wedding-discount-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(130px, 0.8fr);
+  align-items: center;
+  gap: 20px;
+  padding: 22px;
+  border: 1px solid rgba(128, 128, 128, 0.22);
+  background: #151617;
+}
+
+.wedding-discount-label {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.wedding-discount-card h5 {
+  margin: 0 0 7px;
+  font-size: 1rem;
+}
+
+.wedding-discount-card p {
+  margin: 0;
+  font-size: 0.83rem;
+  line-height: 1.6;
+  opacity: 0.65;
+}
+
+/* Pie y guardado */
+
+.wedding-prices-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(128, 128, 128, 0.22);
+}
+
+.wedding-prices-footer > p {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  opacity: 0.65;
+}
+
+.wedding-prices-footer button {
+  flex-shrink: 0;
+}
+
+/* Responsive */
+
+@media (max-width: 900px) {
+  .wedding-price-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wedding-discount-card {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .wedding-price-cards,
+  .wedding-discount-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .wedding-price-card,
+  .wedding-discount-card {
+    padding: 18px;
+  }
+
+  .wedding-prices-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .wedding-prices-footer button {
+    width: 100%;
+  }
+}
+
+/* =========================================
+   CINEMA OFFERS — PANEL DE ADMINISTRACIÓN
+   ========================================= */
+
+.cinema-offers-admin {
+  --offers-text: var(--text-color, #f4f1eb);
+  --offers-border: var(--border-color, rgba(255, 255, 255, 0.12));
+  --offers-surface: var(--surface-color, #181818);
+  --offers-surface-hover: var(--surface-hover, #222222);
+
+  width: 100%;
+  min-width: 0;
+  color: var(--offers-text);
+}
+
+/* Cabeceras */
+
+.wedding-prices-admin-header,
+.cinema-offers-admin-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.wedding-prices-admin-header .eyebrow,
+.cinema-offers-admin-header .eyebrow,
+.cinema-offer-editor-heading .eyebrow {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: var(--gold-soft);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+}
+
+.wedding-prices-admin-header h4,
+.cinema-offers-admin-header h4 {
+  margin: 0;
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.wedding-prices-admin-header p,
+.cinema-offers-admin-header p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.cinema-offers-counter {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  padding: 12px 16px;
+  border: 1px solid var(--offers-border);
+  background: var(--offers-surface);
+}
+
+.cinema-offers-counter strong {
+  color: var(--offers-accent);
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.cinema-offers-counter span {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+/* Posiciones disponibles */
+
+.cinema-offers-slots {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.cinema-offer-slot {
+  display: flex;
+  min-width: 0;
+  min-height: 92px;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 15px;
+  border: 1px dashed var(--offers-border);
+  border-radius: 10px;
+  background: transparent;
+}
+
+.cinema-offer-slot.occupied {
+  border-style: solid;
+  border-color: color-mix(
+    in srgb,
+    var(--offers-accent) 45%,
+    transparent
+  );
+  background: color-mix(
+    in srgb,
+    var(--offers-accent) 7%,
+    transparent
+  );
+}
+
+.cinema-offer-slot > span {
+  color: var(--muted);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.cinema-offer-slot > strong {
+  overflow-wrap: anywhere;
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.cinema-offer-slot:not(.occupied) > strong {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* Mensajes */
+
+.cinema-offers-error,
+.cinema-offers-success,
+.cinema-offers-feedback {
+  padding: 13px 16px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.cinema-offers-error {
+  margin: 0 0 20px;
+  border: 1px solid rgba(239, 91, 91, 0.3);
+  background: rgba(239, 91, 91, 0.08);
+  color: var(--priv-error-soft);
+}
+
+.cinema-offers-success {
+  margin: 0 0 20px;
+  border: 1px solid rgba(75, 190, 130, 0.3);
+  background: rgba(75, 190, 130, 0.08);
+  color: var(--priv-success);
+}
+
+.cinema-offers-feedback {
+  margin: 0;
+  background: var(--offers-surface);
+  color: var(--muted);
+}
+
+/* Listado de ofertas */
+
+.cinema-offers-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.cinema-offer-admin-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px;
+  border: 1px solid var(--offers-border);
+  background: #151617;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.cinema-offer-admin-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cinema-offer-admin-title h5 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.offer-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 0px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.offer-status.visible {
+  color: var(--priv-success);
+}
+
+.cinema-offer-admin-info > p {
+  margin: 9px 0 14px;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.cinema-offer-admin-prices {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.cinema-offer-admin-prices strong {
+  color: var(--offers-accent);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.cinema-offer-admin-prices del {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.cinema-offer-admin-prices > span {
+  padding-left: 12px;
+  border-left: 1px solid var(--offers-border);
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+/* Botones */
+
+.cinema-offer-admin-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.cinema-offers-admin input:focus-visible,
+.cinema-offers-admin select:focus-visible,
+.cinema-offers-admin textarea:focus-visible {
+  outline: 2px solid var(--offers-accent);
+  outline-offset: 3px;
+}
+
+.cinema-offers-admin .private-material-edit:hover:not(:disabled) {
+  border-color: var(--offers-accent);
+  color: var(--offers-accent);
+}
+
+.cinema-offers-admin .cinema-offer-visibility {
+  border-color: color-mix(
+    in srgb,
+    var(--offers-accent) 55%,
+    transparent
+  );
+  color: var(--offers-accent);
+}
+
+.cinema-offers-admin .cinema-offer-visibility:hover:not(:disabled) {
+  background: color-mix(
+    in srgb,
+    var(--offers-accent) 12%,
+    transparent
+  );
+}
+
+/* Editor de ofertas */
+
+.cinema-offer-editor {
+  margin-top: 28px;
+  padding: 24px;
+  border: 1px solid var(--offers-border);
+  border-radius: 12px;
+  background: var(--offers-surface);
+  animation: cinema-offer-editor-in 180ms ease-out;
+}
+
+.cinema-offer-editor-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.cinema-offer-editor-heading h5 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.cinema-offer-editor-heading > button {
+  color: var(--muted);
+}
+
+.cinema-offer-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.cinema-offer-form-grid > label {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 9px;
+  color: var(--offers-text);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.cinema-offers-admin input:not([type="checkbox"]),
+.cinema-offers-admin select,
+.cinema-offers-admin textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 11px 12px;
+  border: 1px solid var(--offers-border);
+  border-radius: 7px;
+  background: var(--offers-surface-hover);
+  color: var(--offers-text);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 400;
+  line-height: 1.5;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.cinema-offers-admin input::placeholder,
+.cinema-offers-admin textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+.cinema-offers-admin input:hover:not(:disabled),
+.cinema-offers-admin select:hover:not(:disabled),
+.cinema-offers-admin textarea:hover:not(:disabled) {
+  border-color: color-mix(
+    in srgb,
+    var(--offers-accent) 45%,
+    var(--offers-border)
+  );
+}
+
+.cinema-offers-admin input:disabled,
+.cinema-offers-admin select:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.cinema-offers-admin textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.cinema-offers-admin select {
+  cursor: pointer;
+}
+
+.cinema-offers-admin select option {
+  background: var(--offers-surface);
+  color: var(--offers-text);
+}
+
+.cinema-offer-form-grid > .cinema-offer-description-field {
+  grid-column: 1 / -1;
+}
+
+.cinema-offer-form-grid > .cinema-offer-publish-toggle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-self: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.cinema-offer-publish-toggle input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  margin: 0;
+  accent-color: var(--offers-accent);
+  cursor: pointer;
+}
+
+.cinema-offer-draft-note {
+  margin: 20px 0;
+  padding: 12px 14px;
+  border-left: 3px solid var(--offers-accent);
+  background: color-mix(
+    in srgb,
+    var(--offers-accent) 7%,
+    transparent
+  );
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+/* Animaciones */
+
+@keyframes cinema-offer-editor-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tablet */
+
+@media (max-width: 900px) {
+  .cinema-offers-slots {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cinema-offer-admin-card {
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .cinema-offer-admin-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cinema-offer-admin-actions button {
+    min-width: 90px;
+  }
+}
+
+/* Móvil */
+
+@media (max-width: 600px) {
+  .cinema-offers-admin-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .cinema-offers-counter {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 13px;
+  }
+
+  .cinema-offers-counter strong {
+    font-size: 1.1rem;
+  }
+
+  .cinema-offers-slots {
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+
+  .cinema-offer-slot {
+    min-height: 78px;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .cinema-offer-admin-card {
+    flex-direction: column;
+    gap: 18px;
+    padding: 16px;
+  }
+
+  .cinema-offer-admin-info {
+    width: 100%;
+  }
+
+  .cinema-offer-admin-actions {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cinema-offer-admin-actions button {
+    width: 100%;
+  }
+
+  .cinema-offer-editor {
+    padding: 17px;
+  }
+
+  .cinema-offer-editor-heading {
+    margin-bottom: 20px;
+  }
+
+  .cinema-offer-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 17px;
+  }
+
+  .cinema-offer-form-grid > .cinema-offer-description-field {
+    grid-column: auto;
+  }
+
+  .cinema-offer-form-grid > .cinema-offer-publish-toggle {
+    align-items: flex-start;
+    line-height: 1.5;
+  }
+}
+
+/* Respeta las preferencias de accesibilidad */
+
+@media (prefers-reduced-motion: reduce) {
+  .cinema-offers-admin *,
+  .cinema-offers-admin *::before,
+  .cinema-offers-admin *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

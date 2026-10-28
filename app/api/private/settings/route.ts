@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
   await ensureTables();
   const [setting] = await sql`SELECT boolean_value FROM app_settings WHERE setting_key = 'unify_calendars' LIMIT 1;`;
-  const priceRows = (await sql`
+  const weddingPriceRows = (await sql`
   SELECT setting_key, numeric_value FROM app_settings WHERE setting_key IN (
       'wedding_photo_price',
       'wedding_video_price',
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
   `) as Array<{ setting_key: string; numeric_value: number | string | null }>;
   return NextResponse.json({
     unifyCalendars: Boolean(setting?.boolean_value),
-    weddingPrices: readWeddingPrices(priceRows),
+    weddingPrices: readWeddingPrices(weddingPriceRows),
   });
 }
 
