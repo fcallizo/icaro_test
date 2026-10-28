@@ -76,7 +76,7 @@ export function ProductionMaterialsTab({
             Precio base (€)
             <input type="number" min="0" step="0.01" value={basePrice} onChange={(event) => setBasePrice(event.target.value)} placeholder="Opcional" />
           </label>
-          <button type="submit" className="private-material-save" disabled={isCreating}>
+          <button type="submit" className="private-gold-button" disabled={isCreating}>
             {isCreating ? 'Añadiendo...' : 'Añadir material'}
           </button>
         </form>
@@ -108,7 +108,7 @@ export function ProductionMaterialsTab({
                         Precio base (€)
                         <input type="number" min="0" step="0.01" value={draft?.basePrice ?? String(material.basePrice ?? '')} onChange={(event) => updateDraft(material, 'basePrice', event.target.value)} placeholder="Sin precio" />
                       </label>
-                      <button type="submit" className="private-material-save" disabled={busyId === material.id}>
+                      <button type="submit" className="private-gold-button" disabled={busyId === material.id}>
                         {busyId === material.id ? 'Guardando...' : 'Guardar'}
                       </button>
                       <button type="button" className="private-material-toggle" disabled={busyId === material.id} onClick={() => onSetActive(material.id, !material.active)}>

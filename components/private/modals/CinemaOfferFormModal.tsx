@@ -1,16 +1,9 @@
 'use client';
 
+import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
+import { PageTheme } from '@/lib/properties';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-
-/* ==========================================================================
- * Modal de creación/edición de ofertas.
- *
- * Es 100% autocontenido: se inyecta su propio <style> y se monta en una capa
- * propia añadida al final de <body>, como hermana del root de la app. Así es
- * un overlay real aunque algún ancestro tenga transform/filter/contain o un
- * z-index alto, y no dependes de copiar ningún archivo CSS.
- * ======================================================================== */
 
 export type CinemaOffer = {
   id: string;
@@ -89,6 +82,7 @@ function draftFromOffer(offer: CinemaOffer, fallbackPosition: number): OfferDraf
   };
 }
 
+/** '' => null (sin precio). Nº entero >= 0, o 'invalid'. */
 function parsePriceInput(raw: string): number | null | 'invalid' {
   if (raw.trim() === '') return null;
   const value = Number(raw);
@@ -135,13 +129,9 @@ const MODAL_CSS = `
 :root{
   --cof-ink:#f4f1ea;
   --cof-muted:#9aa3ae;
-  --cof-accent:#f0b429;
-  --cof-accent-strong:#d99a12;
   --cof-surface:#15181d;
   --cof-surface-2:#1d222a;
   --cof-line:rgba(244,241,234,.14);
-  --cof-danger:#ff6b6b;
-  --cof-ok:#4ecb8f;
   --cof-shadow:0 40px 90px -30px rgba(0,0,0,.8);
 }
 #cinema-offer-modal-layer{position:static;z-index:auto}
@@ -157,7 +147,7 @@ const MODAL_CSS = `
   animation:cofm-fade .22s ease-out both}
 .cofm__panel{position:relative;outline:none;display:flex;flex-direction:column;
   width:min(1020px,100%);max-height:min(92vh,880px);overflow:hidden;
-  border:1px solid var(--cof-line);border-radius:20px;
+  border:1px solid var(--cof-line);
   background:linear-gradient(180deg,#1a1e24,#101318);box-shadow:var(--cof-shadow);
   animation:cofm-rise .26s cubic-bezier(.22,1,.36,1) both}
 .cofm--closing .cofm__panel{animation:cofm-leave .19s ease-in both}
@@ -170,30 +160,29 @@ const MODAL_CSS = `
 .cofm__head{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;
   padding:22px 24px 16px;border-bottom:1px solid var(--cof-line);
   background:linear-gradient(180deg,rgba(240,180,41,.07),transparent)}
-.cofm__eyebrow{display:block;margin-bottom:6px;color:var(--cof-accent);
+.cofm__eyebrow{display:block;margin-bottom:6px;color:var(--gold);
   font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
 .cofm__title{display:flex;gap:8px;align-items:center;margin:0;font-size:21px;letter-spacing:-.02em}
-.cofm__dirty{color:var(--cof-accent);font-size:26px;line-height:.4}
+.cofm__dirty{color:var(--gold);font-size:26px;line-height:.4}
 .cofm__subtitle{margin:6px 0 0;color:var(--cof-muted);font-size:13px}
 .cofm__close{display:grid;place-items:center;width:38px;height:38px;flex:0 0 auto;
-  border:1px solid var(--cof-line);border-radius:11px;background:rgba(255,255,255,.04);
+  border:1px solid var(--cof-line);background:rgba(255,255,255,.04);
   color:inherit;cursor:pointer;transition:background .18s ease,transform .18s ease}
 .cofm__close:hover{background:rgba(255,107,107,.16);transform:rotate(90deg)}
 .cofm__close svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
-.cofm__body{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(240px,.85fr);
-  gap:22px;align-content:start;padding:22px 24px 0;overflow-y:auto;overscroll-behavior:contain}
+.cofm__body{align-content:start;padding:22px 24px 0;overflow-y:auto;overscroll-behavior:contain}
 .cofm__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 .cofm__field{display:grid;gap:7px;margin:0;padding:0;border:0}
 .cofm__field>span{color:var(--cof-muted);font-size:11px;font-weight:600;
   letter-spacing:.1em;text-transform:uppercase}
 .cofm__field--wide{grid-column:1/-1}
 .cofm__field input,.cofm__field textarea{width:100%;padding:11px 13px;
-  border:1px solid var(--cof-line);border-radius:11px;background:rgba(255,255,255,.04);
+  border:1px solid var(--cof-line);background:rgba(255,255,255,.04);
   color:var(--cof-ink);font:inherit;font-size:14px;
   transition:border-color .18s ease,background .18s ease,box-shadow .18s ease}
 .cofm__field textarea{min-height:92px;resize:vertical;line-height:1.55}
 .cofm__field input:focus-visible,.cofm__field textarea:focus-visible{
-  border-color:var(--cof-accent);background:rgba(255,255,255,.07);
+  border-color:var(--gold);background:rgba(255,255,255,.07);
   box-shadow:0 0 0 3px rgba(240,180,41,.16);outline:none}
 .cofm__field input::placeholder,.cofm__field textarea::placeholder{color:rgba(154,163,174,.65)}
 .cofm__field em{align-self:end;color:rgba(154,163,174,.8);font-size:11px;font-style:normal}
@@ -202,50 +191,33 @@ const MODAL_CSS = `
 .cofm__slots>div{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));
   gap:8px;margin-top:7px}
 .cofm__slot{display:grid;gap:2px;padding:10px 8px;border:1px solid var(--cof-line);
-  border-radius:11px;background:rgba(255,255,255,.03);color:inherit;cursor:pointer;
+  background:rgba(255,255,255,.03);color:inherit;cursor:pointer;
   font:inherit;text-align:center;transition:border-color .18s ease,background .18s ease,opacity .18s ease}
 .cofm__slot strong{font-size:17px}
 .cofm__slot span{color:var(--cof-muted);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
-.cofm__slot:hover:not(:disabled){border-color:var(--cof-accent)}
-.cofm__slot.is-selected{border-color:var(--cof-accent);background:rgba(240,180,41,.16)}
-.cofm__slot.is-selected span{color:var(--cof-accent)}
+.cofm__slot:hover:not(:disabled){border-color:var(--gold)}
+.cofm__slot.is-selected{border-color:var(--gold);background:rgba(240,180,41,.16)}
+.cofm__slot.is-selected span{color:var(--gold)}
 .cofm__slot:disabled{cursor:not-allowed;opacity:.42}
 .cofm__publish{display:flex;gap:11px;align-items:flex-start;grid-column:1/-1;
-  padding:13px 15px;border:1px solid var(--cof-line);border-radius:12px;
+  padding:13px 15px;border:1px solid var(--cof-line);
   background:rgba(255,255,255,.03);cursor:pointer;font-size:13px}
 .cofm__publish:hover{border-color:rgba(240,180,41,.4)}
-.cofm__publish input{width:17px;height:17px;margin-top:2px;accent-color:var(--cof-accent);cursor:pointer}
+.cofm__publish input{width:17px;height:17px;margin-top:2px;accent-color:var(--gold);cursor:pointer}
 .cofm__publish>span{display:grid;gap:3px}
 .cofm__publish small{color:var(--cof-muted);line-height:1.45}
 .cofm__note{grid-column:1/-1;margin:0;padding:12px 15px;
-  border-left:2px solid var(--cof-accent);border-radius:0 10px 10px 0;
+  border-left:2px solid var(--gold);border-radius:0 10px 10px 0;
   background:rgba(240,180,41,.07);color:var(--cof-muted);font-size:13px;line-height:1.5}
-.cofm__note strong{color:var(--cof-accent)}
-.cofm__preview{display:grid;gap:9px;align-content:start;padding:16px;
-  border:1px dashed var(--cof-line);border-radius:14px;background:rgba(0,0,0,.22)}
-.cofm__preview-label{color:var(--cof-muted);font-size:10px;font-weight:700;
-  letter-spacing:.16em;text-transform:uppercase}
-.cofm__preview-card{display:grid;gap:8px;padding:16px;border:1px solid var(--cof-line);
-  border-radius:12px;background:linear-gradient(160deg,rgba(240,180,41,.1),rgba(255,255,255,.02))}
-.cofm__preview-card h6{margin:0;font-size:15px;line-height:1.3;overflow-wrap:anywhere}
-.cofm__preview-card p{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;
-  margin:0;overflow:hidden;color:var(--cof-muted);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
-.cofm__preview-prices{display:flex;gap:9px;align-items:baseline;margin-top:2px}
-.cofm__preview-prices strong{color:var(--cof-accent);font-size:19px}
-.cofm__preview-prices del{color:var(--cof-muted);font-size:12px}
-.cofm__preview-badge{justify-self:start;padding:4px 10px;border:1px solid var(--cof-line);
-  border-radius:999px;color:var(--cof-muted);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
-.cofm__preview-badge.is-live{border-color:rgba(78,203,143,.45);
-  background:rgba(78,203,143,.12);color:var(--cof-ok)}
+.cofm__note strong{color:var(--gold)}
 .cofm__error{grid-column:1/-1;margin:4px 0 0;padding:11px 14px;
-  border:1px solid rgba(255,107,107,.45);border-radius:11px;
+  border:1px solid rgba(255,107,107,.45);
   background:rgba(255,107,107,.12);color:#ffc2c2;font-size:13px}
-.cofm__confirm{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:12px;align-items:center;
-  justify-content:space-between;margin:4px 0 0;padding:12px 14px;
-  border:1px solid rgba(240,180,41,.4);border-radius:11px;
-  background:rgba(240,180,41,.09);font-size:13px}
+.cofm__confirm{position: absolute;top: 100px;left: 210px;display: flex;gap: 15px;
+    align-items: center;justify-content: space-between;padding: 30px;font-size: 14px;
+    border: 1px solid var(--cof-line); background: linear-gradient(180deg, #1a1e24, #101318);}
 .cofm__confirm>div{display:flex;gap:8px}
-.cofm__confirm button{padding:8px 13px;border:1px solid var(--cof-line);border-radius:9px;
+.cofm__confirm button{padding:8px 13px;border:1px solid var(--cof-line);
   background:transparent;color:inherit;font:inherit;font-size:12px;cursor:pointer}
 .cofm__confirm button:hover{background:rgba(255,255,255,.07)}
 .cofm__confirm-danger{border-color:rgba(255,107,107,.5)!important;color:#ffc2c2!important}
@@ -256,14 +228,14 @@ const MODAL_CSS = `
 .cofm__hint{color:var(--cof-muted);font-size:12px}
 .cofm__foot-actions{display:flex;gap:9px}
 .cofm__foot-actions button{display:inline-flex;gap:8px;align-items:center;padding:11px 18px;
-  border:1px solid var(--cof-line);border-radius:11px;background:transparent;color:inherit;
+  border:1px solid var(--cof-line);background:transparent;color:inherit;
   font:inherit;font-size:13px;cursor:pointer;
   transition:background .18s ease,opacity .18s ease,box-shadow .18s ease}
 .cofm__foot-actions button:disabled{cursor:not-allowed;opacity:.5}
 .cofm__foot-actions button:not(.cofm__submit):hover{background:rgba(255,255,255,.06)}
-.cofm__submit{border-color:var(--cof-accent)!important;background:var(--cof-accent)!important;
-  color:#171305!important;font-weight:700}
-.cofm__submit:hover{background:var(--cof-accent-strong)!important}
+.cofm__submit{border-color:var(--gold)!important; background: rgba(212, 175, 55, 0.08)!important;
+  color:var(--gold)!important;font-weight:700}
+.cofm__submit:hover{background: rgba(212, 175, 55, 0.16)!important;outline: none;;}
 .cofm__submit[data-dirty]{box-shadow:0 0 0 3px rgba(240,180,41,.2)}
 .cofm__submit svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;
   stroke-linecap:round;stroke-linejoin:round}
@@ -324,7 +296,6 @@ export function CinemaOfferFormModal({
   );
 
   const [draft, setDraft] = useState<OfferDraft>(initialDraft);
-  const [error, setError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
@@ -336,6 +307,7 @@ export function CinemaOfferFormModal({
   const titleRef = useRef<HTMLInputElement>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [toast, setToast] = useState<{ message: string; tone: StatusToastTone; surface?: PageTheme } | null>(null);
 
   useInjectedStyles();
 
@@ -344,12 +316,12 @@ export function CinemaOfferFormModal({
     [draft, initialDraft],
   );
 
-  const availablePositions = useMemo(
+  const freePositions = useMemo(
     () => OFFER_POSITIONS.filter((position) => !occupiedPositions.includes(position)),
     [occupiedPositions],
   );
 
-  const positionFull = visibleCount >= maxVisible;
+  const hasFreePosition = freePositions.length > 0;
 
   /* --- Montaje en la capa superior + bloqueo del fondo ------------------- */
 
@@ -432,7 +404,6 @@ export function CinemaOfferFormModal({
 
     if (isDirty) {
       setConfirmDiscard(true);
-      setError('');
       return;
     }
 
@@ -498,18 +469,16 @@ export function CinemaOfferFormModal({
 
   const updateDraft = <K extends keyof OfferDraft>(key: K, value: OfferDraft[K]) => {
     setDraft((current) => ({ ...current, [key]: value }));
-    if (error) setError('');
     if (confirmDiscard) setConfirmDiscard(false);
   };
 
   /* --- Guardado -------------------------------------------------------- */
 
   const saveOffer = async () => {
-    setError('');
     setConfirmDiscard(false);
 
     if (!draft.title.trim()) {
-      setError('Escribe un título para la oferta.');
+			setToast({ message: 'Escribe un título para la oferta.', tone: 'error' });
       titleRef.current?.focus();
       return;
     }
@@ -518,19 +487,17 @@ export function CinemaOfferFormModal({
     const oldPrice = parsePriceInput(draft.oldPrice);
 
     if (price === 'invalid' || oldPrice === 'invalid') {
-      setError('Los precios deben ser números enteros positivos o estar vacíos.');
+      setToast({ message: 'Los precios deben ser números enteros positivos o estar vacíos.', tone: 'error' });
       return;
     }
 
     if (price !== null && oldPrice !== null && oldPrice <= price) {
-      setError('El precio anterior debe ser superior al precio actual.');
+      setToast({ message: 'El precio anterior debe ser superior al precio actual.', tone: 'error' });
       return;
     }
 
-    if (!isCreate && draft.visible && availablePositions.length === 0) {
-      setError(
-        `Ya hay ${maxVisible} ofertas visibles. Oculta una antes de activar otra.`,
-      );
+    if (!isCreate && draft.visible && !hasFreePosition) {
+      setToast({ message: `Ya hay ${maxVisible} ofertas visibles. Oculta una antes de activar otra.`, tone: 'error' });
       return;
     }
 
@@ -569,7 +536,7 @@ export function CinemaOfferFormModal({
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'No se pudo guardar la oferta.';
-      setError(message);
+      setToast({ message: message, tone: 'error' });
       onServerError?.(message);
       setIsSaving(false);
     }
@@ -578,9 +545,6 @@ export function CinemaOfferFormModal({
   /* --- Render ---------------------------------------------------------- */
 
   if (!mounted || !target) return null;
-
-  const previewPrice = parsePriceInput(draft.price);
-  const previewOldPrice = parsePriceInput(draft.oldPrice);
 
   return createPortal(
     <div
@@ -618,7 +582,7 @@ export function CinemaOfferFormModal({
               {isCreate ? 'Crear oferta' : 'Editar oferta'}
               {isDirty && (
                 <span className="cofm__dirty" title="Cambios sin guardar">
-                  ·
+                  *
                 </span>
               )}
             </h5>
@@ -714,9 +678,7 @@ export function CinemaOfferFormModal({
                       <button
                         key={position}
                         type="button"
-                        className={`cofm__slot${selected ? ' is-selected' : ''}${
-                          occupied && !selected ? ' is-occupied' : ''
-                        }`}
+                        className={`cofm__slot${selected ? ' is-selected' : ''}`}
                         disabled={!draft.visible || occupied}
                         onClick={() => updateDraft('position', position)}
                         title={
@@ -728,7 +690,7 @@ export function CinemaOfferFormModal({
                         }
                       >
                         <strong>{position}</strong>
-                        <span>{occupied && !selected ? 'Ocupada' : 'Libre'}</span>
+                        <span>{occupied ? 'Ocupada' : 'Libre'}</span>
                       </button>
                     );
                   })}
@@ -746,9 +708,9 @@ export function CinemaOfferFormModal({
                 <span>
                   <strong>Mostrar esta oferta en la web pública</strong>
                   <small>
-                    {positionFull && !draft.visible
-                      ? `Ya hay ${maxVisible} ofertas visibles: libera una posición antes de publicar.`
-                      : 'Desmárcala para conservarla como borrador privado.'}
+                    {hasFreePosition
+                      ? 'Desmárcala para conservarla como borrador privado.'
+                      : `Ya hay ${maxVisible} ofertas visibles: libera una posición antes de publicar.`}
                   </small>
                 </span>
               </label>
@@ -762,46 +724,6 @@ export function CinemaOfferFormModal({
               </p>
             )}
           </div>
-
-          <aside className="cofm__preview" aria-hidden="true">
-            <span className="cofm__preview-label">Vista previa</span>
-            <article className="cofm__preview-card">
-              <h6>{draft.title.trim() || 'Título de la oferta'}</h6>
-              <p>
-                {draft.description.trim() ||
-                  'Sin descripción. Este es el texto secundario de la tarjeta.'}
-              </p>
-              <div className="cofm__preview-prices">
-                {previewOldPrice !== null && previewOldPrice !== 'invalid' && (
-                  <del>{previewOldPrice} €</del>
-                )}
-                <strong>
-                  {previewPrice === 'invalid'
-                    ? '—'
-                    : previewPrice === null
-                      ? 'A medida'
-                      : `${previewPrice} €`}
-                </strong>
-              </div>
-              <span
-                className={`cofm__preview-badge${
-                  !isCreate && draft.visible ? ' is-live' : ''
-                }`}
-              >
-                {isCreate
-                  ? 'Borrador'
-                  : draft.visible
-                    ? `Visible · Posición ${draft.position}`
-                    : 'Oculta'}
-              </span>
-            </article>
-          </aside>
-
-          {error && (
-            <p className="cofm__error" role="alert">
-              {error}
-            </p>
-          )}
 
           {confirmDiscard && (
             <div className="cofm__confirm" role="alertdialog" aria-live="assertive">
@@ -848,6 +770,7 @@ export function CinemaOfferFormModal({
           </footer>
         </form>
       </div>
+      <StatusToast message={toast?.message || ''} tone={toast?.tone || 'success'} surface={toast?.surface} onDismiss={() => setToast(null)} />
     </div>,
     target,
   );

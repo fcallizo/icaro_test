@@ -7,6 +7,7 @@ import {
   type CinemaOffer,
   OFFER_POSITIONS,
 } from '../modals/CinemaOfferFormModal';
+import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
 
 
 export type { CinemaOffer };
@@ -34,8 +35,7 @@ export function CinemaOffersManager() {
   const [offers, setOffers] = useState<CinemaOffer[]>([]);
   const [editor, setEditor] = useState<EditorState>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [toast, setToast] = useState<{ message: string; tone: StatusToastTone } | null>(null);
 
   const reloadOffers = async () => {
     setOffers(await fetchOffers());
@@ -50,11 +50,10 @@ export function CinemaOffersManager() {
       })
       .catch((err: unknown) => {
         if (!cancelled) {
-          setError(
-            err instanceof Error
-              ? err.message
-              : 'No se pudieron cargar las ofertas.',
-          );
+          setToast({ message: err instanceof Error
+            ? err.message : 'No se pudieron cargar las ofertas.', 
+            tone: 'error' });
+
         }
       })
       .finally(() => {
@@ -76,23 +75,16 @@ export function CinemaOffersManager() {
     setEditor(null);
 
     try {
-      await reloadOffers();
-      setError('');
-      setSuccess(message);
+      await reloadOffers();      
+      setToast({ message: message, tone: 'success' });
     } catch (err) {
-      setSuccess('');
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'No se pudieron recargar las ofertas.',
-      );
+      setToast({ message: err instanceof Error
+            ? err.message : 'No se pudieron recargar las ofertas.', 
+            tone: 'error' });
     }
   };
 
   const toggleVisibility = async (offer: CinemaOffer) => {
-    setError('');
-    setSuccess('');
-
     const newVisibility = !offer.visible;
 
     let position = offer.position;
@@ -104,9 +96,8 @@ export function CinemaOffersManager() {
       );
 
       if (!freePosition) {
-        setError(
-          `Ya hay ${OFFER_POSITIONS.length} ofertas visibles. Oculta una antes de mostrar otra.`,
-        );
+        setToast({ message: `Ya hay ${OFFER_POSITIONS.length} ofertas visibles. Oculta una antes de mostrar otra.`, 
+            tone: 'error' });
         return;
       }
 
@@ -135,13 +126,11 @@ export function CinemaOffersManager() {
       }
 
       await reloadOffers();
-      setSuccess(newVisibility ? 'Oferta publicada.' : 'Oferta ocultada.');
+      setToast({ message: newVisibility ? 'Oferta publicada.' : 'Oferta ocultada.', tone: 'success' });
     } catch (err) {
-      setError(
-        err instanceof Error
+      setToast({ message: err instanceof Error
           ? err.message
-          : 'No se pudo cambiar la visibilidad.',
-      );
+          : 'No se pudo cambiar la visibilidad.', tone: 'error' });
     }
   };
 
@@ -192,12 +181,6 @@ export function CinemaOffersManager() {
         })}
       </div>
 
-      {error && <p className="cinema-offers-error" role="alert">{error}</p>}
-
-      {success && (
-        <p className="cinema-offers-success" role="status">{success}</p>
-      )}
-
       <div className="cinema-offers-list">
         {offers.map((offer) => (
           <article className="cinema-offer-admin-card" key={offer.id}>
@@ -207,7 +190,8 @@ export function CinemaOffersManager() {
                 <span
                   className={offer.visible ? 'offer-status visible' : 'offer-status'}
                 >
-                  {offer.visible ? 'Activa' : 'Oculta'}
+                  {offer.visible ? 'Visible ' : 'Oculta'}
+                  {offer.visible && <span>&nbsp;· Posición {offer.position}</span>}
                 </span>
               </div>
 
@@ -219,20 +203,14 @@ export function CinemaOffersManager() {
                 </strong>
 
                 {offer.oldPrice !== null && <del>{offer.oldPrice} €</del>}
-
-                {offer.visible && <span>Posición {offer.position}</span>}
               </div>
             </div>
 
             <div className="cinema-offer-admin-actions">
               <button
                 type="button"
-                className="private-material-save"
-                onClick={() => {
-                  setError('');
-                  setSuccess('');
-                  setEditor({ mode: 'edit', offer });
-                }}
+                className="private-gold-button"
+                onClick={() => { setEditor({ mode: 'edit', offer }); }}
               >
                 Editar
               </button>
@@ -257,12 +235,8 @@ export function CinemaOffersManager() {
 
       <button
         type="button"
-        className="private-material-save"
-        onClick={() => {
-          setError('');
-          setSuccess('');
-          setEditor({ mode: 'create' });
-        }}
+        className="private-gold-button"
+        onClick={() => {setEditor({ mode: 'create' });}}
       >
         + Nueva oferta
       </button>
@@ -279,6 +253,7 @@ export function CinemaOffersManager() {
           onSaved={(message) => void handleSaved(message)}
         />
       )}
+      <StatusToast message={toast?.message || ''} tone={toast?.tone || 'success'} onDismiss={() => setToast(null)} />
     </section>
   );
 }

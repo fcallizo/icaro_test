@@ -191,7 +191,7 @@ export function SettingsTab({
 
             <button
               type="submit"
-              className="private-material-save"
+              className="private-gold-button"
               disabled={isSavingWeddingPrices}
             >
               {isSavingWeddingPrices ? 'Guardando precios...' : 'Guardar precios de boda'}

@@ -161,7 +161,7 @@ export function EventManagementTab() {
             maxLength={100}
             required
           />
-          <button type="submit" className="private-confirm-button" disabled={isCreating}>
+          <button type="submit" className="private-gold-button" disabled={isCreating}>
             {isCreating ? 'Creando...' : 'Crear colaborador'}
           </button>
         </form>
@@ -246,7 +246,7 @@ export function EventManagementTab() {
                           ))}
                         </div>
                       )}
-                      <button type="submit" className="private-confirm-button" disabled={busyId === member.id}>
+                      <button type="submit" className="private-gold-button" disabled={busyId === member.id}>
                         {busyId === member.id ? 'Guardando...' : `Guardar asignaciones (${assignedIds.length})`}
                       </button>
                     </form>

@@ -54,7 +54,7 @@ export function CalendarBlocksTab({ blocks, busyId, isCreating, onCreate, onDele
             Motivo interno (opcional)
             <input type="text" value={reason} onChange={(event) => setReason(event.target.value)} maxLength={500} placeholder="Vacaciones, viaje..." />
           </label>
-          <button type="submit" className="private-material-save" disabled={isCreating}>
+          <button type="submit" className="private-gold-button" disabled={isCreating}>
             {isCreating ? 'Guardando...' : 'Bloquear fechas'}
           </button>
         </form>
