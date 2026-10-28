@@ -1,24 +1,13 @@
 'use client';
 
-import { EventType } from '@/lib/properties';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 
-type TeamMember = {
-  id: string;
-  name: string;
-  companieros:string;
-  createdAt: string;
-  revokedAt: string | null;
-};
-
-type ManagedEvent = {
-  id: string;
-  type: EventType;
-  date: string;
-  clientName: string;
-  location: string | null;
-  collaboratorIds: string[];
-};
+import {
+  EventMemberEditModal,
+  eventTypeLabel,
+  type ManagedEvent,
+  type TeamMember,
+} from '../modals/EventMemberEditModal';
 
 type ManagementData = {
   members: TeamMember[];
@@ -37,39 +26,33 @@ async function requestManagement<T>(method = 'GET', body?: object): Promise<T> {
   return data as T;
 }
 
-function eventTypeLabel(type: ManagedEvent['type']) {
-  return {
-    wedding: 'Boda',
-    production: 'Producción',
-    prewedding: 'Preboda',
-    postwedding: 'Postboda',
-  }[type];
-}
-
 export function EventManagementTab() {
   const [data, setData] = useState<ManagementData>({ members: [], events: [] });
-  const [assignments, setAssignments] = useState<Record<string, string[]>>({});
   const [name, setName] = useState('');
   const [freshLink, setFreshLink] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [busyId, setBusyId] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const loadManagementData = useCallback(async () => {
-    const loaded = await requestManagement<ManagementData>();
-    setData(loaded);
-    setAssignments(Object.fromEntries(
-      loaded.members.map((member) => [
-        member.id,
-        loaded.events.filter((event) => event.collaboratorIds.includes(member.id)).map((event) => event.id),
-      ]),
-    ));
+    setData(await requestManagement<ManagementData>());
+  }, []);
+
+  /** Aviso breve y autodisciplinado: evita dejar un éxito colgado en la pantalla. */
+  const flashSuccess = useCallback((message: string) => {
+    setSuccess(message);
+    setError('');
+    window.setTimeout(() => setSuccess(''), 4500);
   }, []);
 
   useEffect(() => {
     loadManagementData()
-      .catch((loadError: unknown) => setError(loadError instanceof Error ? loadError.message : 'No se pudo cargar la gestión de eventos.'))
+      .catch((loadError: unknown) =>
+        setError(loadError instanceof Error ? loadError.message : 'No se pudo cargar la gestión de eventos.'),
+      )
       .finally(() => setIsLoading(false));
   }, [loadManagementData]);
 
@@ -77,6 +60,7 @@ export function EventManagementTab() {
     event.preventDefault();
     setIsCreating(true);
     setError('');
+    setSuccess('');
     setFreshLink('');
     try {
       const result = await requestManagement<{ link: string }>('POST', { name });
@@ -90,42 +74,14 @@ export function EventManagementTab() {
     }
   };
 
-  const handleSaveAssignments = async (memberId: string) => {
-    setBusyId(memberId);
-    setError('');
-    try {
-      await requestManagement('PATCH', {
-        action: 'assign',
-        memberId,
-        eventIds: assignments[memberId] || [],
-      });
-      await loadManagementData();
-    } catch (saveError) {
-      setError(saveError instanceof Error ? saveError.message : 'No se pudieron guardar las asignaciones.');
-    } finally {
-      setBusyId('');
-    }
-  };
-
-  const handleRotateLink = async (memberId: string) => {
-    setBusyId(memberId);
-    setError('');
-    try {
-      const result = await requestManagement<{ link: string }>('PATCH', { action: 'rotate', memberId });
-      setFreshLink(result.link);
-    } catch (rotateError) {
-      setError(rotateError instanceof Error ? rotateError.message : 'No se pudo renovar el enlace.');
-    } finally {
-      setBusyId('');
-    }
-  };
-
   const handleRevoke = async (member: TeamMember) => {
     if (!window.confirm(`¿Revocar el enlace de ${member.name}? Ya no podrá acceder a su calendario.`)) return;
     setBusyId(member.id);
     setError('');
+    setSuccess('');
     try {
       await requestManagement('DELETE', { memberId: member.id });
+      if (editingId === member.id) setEditingId(null);
       setFreshLink('');
       await loadManagementData();
     } catch (revokeError) {
@@ -135,22 +91,18 @@ export function EventManagementTab() {
     }
   };
 
-  const toggleAssignment = (memberId: string, eventId: string, checked: boolean) => {
-    setAssignments((current) => {
-      const currentIds = current[memberId] || [];
-      const nextIds = checked
-        ? [...currentIds, eventId]
-        : currentIds.filter((id) => id !== eventId);
-      return { ...current, [memberId]: nextIds };
-    });
-  };
+  const memberEvents = (memberId: string) =>
+    data.events.filter((managedEvent) => managedEvent.collaboratorIds.includes(memberId));
+
+  const editingMember = editingId ? data.members.find((member) => member.id === editingId) ?? null : null;
 
   return (
     <div className="private-tab-panel event-management-panel" role="tabpanel">
       <section className="private-request-section">
         <h3>Gestionar colaboradores</h3>
         <p className="event-management-intro">
-          Crea enlaces personales para compartir calendarios con los eventos asignados. Quien tenga el enlace podrá consultar todos los datos de esos eventos.
+          Crea enlaces personales para compartir calendarios con los eventos asignados. Quien tenga el
+          enlace podrá consultar todos los datos de esos eventos.
         </p>
         <form className="event-member-create" onSubmit={handleCreate}>
           <label htmlFor="event-member-name">Nombre del colaborador</label>
@@ -179,19 +131,21 @@ export function EventManagementTab() {
           </div>
         )}
         {error && <p className="private-error-message" role="alert">{error}</p>}
+        {success && <p className="private-success-message" role="status">{success}</p>}
       </section>
 
       <section className="private-request-section">
-        <h3>Colaboradores y eventos</h3>
+        <h3>Colaboradores</h3>
         {isLoading ? (
-          <p className="private-empty-state">Cargando colaboradores y eventos...</p>
+          <p className="private-empty-state">Cargando colaboradores...</p>
         ) : data.members.length === 0 ? (
           <p className="private-empty-state">Todavía no hay colaboradores.</p>
         ) : (
           <div className="event-member-list">
             {data.members.map((member) => {
               const isRevoked = Boolean(member.revokedAt);
-              const assignedIds = assignments[member.id] || [];
+              const assigned = memberEvents(member.id);
+
               return (
                 <article className="event-member-card" key={member.id}>
                   <div className="event-member-heading">
@@ -200,63 +154,71 @@ export function EventManagementTab() {
                       <span className={isRevoked ? 'event-member-status revoked' : 'event-member-status'}>
                         {isRevoked ? 'Enlace revocado' : 'Enlace activo'}
                       </span>
+                      <p className="event-member-summary">
+                        {isRevoked
+                          ? 'Sin acceso desde la revocación.'
+                          : assigned.length === 0
+                            ? 'Todavía sin eventos asignados.'
+                            : `${assigned.length} ${assigned.length === 1 ? 'evento asignado' : 'eventos asignados'}: ${assigned
+                                .slice(0, 2)
+                                .map((managedEvent) => `${eventTypeLabel(managedEvent.type)} · ${managedEvent.clientName}`)
+                                .join(', ')}${assigned.length > 2 ? ` +${assigned.length - 2}` : ''}`}
+                      </p>
                     </div>
+
                     <div className="event-member-actions">
                       {!isRevoked && (
                         <>
-                          <button type="button" className="private-discard-button" disabled={busyId === member.id} onClick={() => void handleRotateLink(member.id)}>
-                            Renovar enlace
+                          <button
+                            type="button"
+                            className="private-gold-button"
+                            disabled={busyId === member.id}
+                            onClick={() => setEditingId(member.id)}
+                          >
+                            Editar
                           </button>
-                          <button type="button" className="private-discard-button" disabled={busyId === member.id} onClick={() => void handleRevoke(member)}>
+                          <button
+                            type="button"
+                            className="private-discard-button"
+                            disabled={busyId === member.id}
+                            onClick={() => void handleRevoke(member)}
+                          >
                             Revocar
                           </button>
                         </>
                       )}
                     </div>
                   </div>
-
-                  {!isRevoked && (
-                    <form
-                      className="event-assignment-form"
-                      onSubmit={(submitEvent) => {
-                        submitEvent.preventDefault();
-                        void handleSaveAssignments(member.id);
-                      }}
-                    >
-                      <h5>Eventos confirmados</h5>
-                      {data.events.length === 0 ? (
-                        <p className="private-empty-state">No hay eventos confirmados para asignar.</p>
-                      ) : (
-                        <div className="event-assignment-list">
-                          {data.events.map((managedEvent) => (
-                            <label className="event-assignment-option" key={managedEvent.id}>
-                              <input
-                                type="checkbox"
-                                checked={assignedIds.includes(managedEvent.id)}
-                                onChange={(changeEvent) => toggleAssignment(member.id, managedEvent.id, changeEvent.currentTarget.checked)}
-                              />
-                              <span>
-                                <strong>{eventTypeLabel(managedEvent.type)} · {managedEvent.clientName}</strong>
-                                <small>
-                                  {new Date(`${managedEvent.date}T00:00:00`).toLocaleDateString('es-ES')}
-                                  {managedEvent.location ? ` · ${managedEvent.location}` : ''}
-                                </small>
-                              </span>
-                            </label>
-                          ))}
-                        </div>
-                      )}
-                      <button type="submit" className="private-gold-button" disabled={busyId === member.id}>
-                        {busyId === member.id ? 'Guardando...' : `Guardar asignaciones (${assignedIds.length})`}
-                      </button>
-                    </form>
-                  )}
                 </article>
               );
             })}
           </div>
         )}
       </section>
+
+      {editingMember && (
+        <EventMemberEditModal
+          key={editingMember.id}
+          member={editingMember}
+          events={data.events}
+          onClose={() => setEditingId(null)}
+          onSaved={async (message, extra) => {
+            setEditingId(null);
+            if (extra?.link) setFreshLink(extra.link);
+
+            try {
+              await loadManagementData();
+            } catch {
+              setError('Guardado, pero no se pudo recargar la lista.');
+              return;
+            }
+
+            flashSuccess(message);
+          }}
+        />
+      )}
     </div>
   );
 }
+
+export default EventManagementTab;
