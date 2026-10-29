@@ -1,5 +1,7 @@
 'use client';
 
+import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
+import { PageTheme } from '@/lib/properties';
 import {
   forwardRef,
   useCallback,
@@ -106,13 +108,13 @@ export const SHELL_CSS = `
 .pvm__form{display:flex;flex-direction:column;min-height:0}
 .pvm__body{display:grid;gap:16px;padding:22px 24px 4px;overflow-y:auto;overscroll-behavior:contain}
 .pvm__error{margin:12px 24px 0;padding:11px 14px;
-  border:1px solid var(--cof-danger-line);border-radius:11px;
+  border:1px solid var(--cof-danger-line);
   background:var(--cof-danger-soft);color:var(--cof-danger-ink);font-size:13px}
 .pvm__confirm{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;
-  margin:12px 24px 0;padding:12px 14px;border:1px solid var(--cof-tint-40);border-radius:11px;
+  margin:12px 24px 0;padding:12px 14px;border:1px solid var(--cof-tint-40);
   background:var(--cof-tint-09);font-size:13px}
 .pvm__confirm>div{display:flex;gap:8px}
-.pvm__confirm button{padding:8px 13px;border:1px solid var(--cof-line);border-radius:9px;
+.pvm__confirm button{padding:8px 13px;border:1px solid var(--cof-line);
   background:transparent;color:inherit;font-size:12px;cursor:pointer}
 .pvm__confirm button:hover{background:rgba(255,255,255,.07)}
 .pvm__confirm-danger{border-color:var(--cof-danger-line)!important;color:var(--cof-danger-ink)!important}
@@ -260,6 +262,7 @@ export const PrivateModalShell = forwardRef<PrivateModalShellHandle, PrivateModa
     const formRef = useRef<HTMLFormElement>(null);
     const previouslyFocused = useRef<HTMLElement | null>(null);
     const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [toast, setToast] = useState<{ message: string; tone: StatusToastTone; surface?: PageTheme } | null>(null);
 
     useInjectedStyles(STYLE_ID, SHELL_CSS);
 
@@ -333,6 +336,14 @@ export const PrivateModalShell = forwardRef<PrivateModalShellHandle, PrivateModa
       },
       [],
     );
+
+    useEffect(() => {
+      const mensajeLimpio = error?.trim();
+
+      if (mensajeLimpio) {
+        setToast({ message: mensajeLimpio, tone: 'error' });
+      }
+    }, [error]);
 
     const handleClose = useCallback(() => {
       const restore = previouslyFocused.current;
@@ -438,12 +449,6 @@ export const PrivateModalShell = forwardRef<PrivateModalShellHandle, PrivateModa
     const body = (
       <>
         <div className="pvm__body">{children}</div>
-
-        {error && (
-          <p className="pvm__error" role="alert">
-            {error}
-          </p>
-        )}
 
         {confirmDiscard && (
           <div className="pvm__confirm" role="alertdialog" aria-live="assertive">
@@ -571,6 +576,7 @@ export const PrivateModalShell = forwardRef<PrivateModalShellHandle, PrivateModa
             <div className="pvm__form">{body}</div>
           )}
         </div>
+        <StatusToast message={toast?.message || ''} tone={toast?.tone || 'success'} surface={toast?.surface} onDismiss={() => setToast(null)} />
       </div>,
       target,
     );

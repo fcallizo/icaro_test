@@ -228,7 +228,7 @@
 }
 
 .cinema-offers-counter strong {
-  color: var(--offers-accent);
+  color: var(--gold);
   font-size: 1.4rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -257,7 +257,7 @@
   gap: 14px;
   padding: 15px;
   border: 1px dashed var(--offers-border);
-  border-radius: 10px;
+  border-radius: 5px;
   background: transparent;
 }
 
@@ -265,12 +265,12 @@
   border-style: solid;
   border-color: color-mix(
     in srgb,
-    var(--offers-accent) 45%,
+    var(--gold) 45%,
     transparent
   );
   background: color-mix(
     in srgb,
-    var(--offers-accent) 7%,
+    var(--gold) 7%,
     transparent
   );
 }
@@ -390,7 +390,7 @@
 }
 
 .cinema-offer-admin-prices strong {
-  color: var(--offers-accent);
+  color: var(--gold);
   font-size: 1rem;
   font-weight: 700;
 }
@@ -419,28 +419,28 @@
 .cinema-offers-admin input:focus-visible,
 .cinema-offers-admin select:focus-visible,
 .cinema-offers-admin textarea:focus-visible {
-  outline: 2px solid var(--offers-accent);
+  outline: 2px solid var(--gold);
   outline-offset: 3px;
 }
 
 .cinema-offers-admin .private-material-edit:hover:not(:disabled) {
-  border-color: var(--offers-accent);
-  color: var(--offers-accent);
+  border-color: var(--gold);
+  color: var(--gold);
 }
 
 .cinema-offers-admin .cinema-offer-visibility {
   border-color: color-mix(
     in srgb,
-    var(--offers-accent) 55%,
+    var(--gold) 55%,
     transparent
   );
-  color: var(--offers-accent);
+  color: var(--gold);
 }
 
 .cinema-offers-admin .cinema-offer-visibility:hover:not(:disabled) {
   background: color-mix(
     in srgb,
-    var(--offers-accent) 12%,
+    var(--gold) 12%,
     transparent
   );
 }
@@ -522,7 +522,7 @@
 .cinema-offers-admin textarea:hover:not(:disabled) {
   border-color: color-mix(
     in srgb,
-    var(--offers-accent) 45%,
+    var(--gold) 45%,
     var(--offers-border)
   );
 }
@@ -565,17 +565,17 @@
   height: 17px;
   flex-shrink: 0;
   margin: 0;
-  accent-color: var(--offers-accent);
+  accent-color: var(--gold);
   cursor: pointer;
 }
 
 .cinema-offer-draft-note {
   margin: 20px 0;
   padding: 12px 14px;
-  border-left: 3px solid var(--offers-accent);
+  border-left: 3px solid var(--gold);
   background: color-mix(
     in srgb,
-    var(--offers-accent) 7%,
+    var(--gold) 7%,
     transparent
   );
   color: var(--muted);
