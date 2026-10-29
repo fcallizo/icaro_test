@@ -42,9 +42,6 @@ export function CinemaScreen({
 
   return (
     <div className="page-shell page-shell-tabs">
-      <div className="grain-layer" />
-      <div className="cursor-dot" />
-
       <PageHeader
         view="cinema"
         theme="dark"

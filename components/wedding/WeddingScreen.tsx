@@ -42,9 +42,6 @@ export function WeddingScreen({
 
   return (
     <div className="page-shell page-shell-tabs page-shell-bodas">
-      <div className="grain-layer" />
-      <div className="cursor-dot" />
-
       <PageHeader
         view="wedding"
         theme="light"

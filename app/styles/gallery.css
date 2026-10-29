@@ -60,8 +60,8 @@
 }
 
 .works-back-button:hover {
-  color: var(--gold-soft);
-  border: solid 2px var(--gold-soft);
+  color: var(--gold-dark);
+  border: solid 2px var(--gold-dark);
 }
 
 .works-back-text {
@@ -85,14 +85,13 @@
   opacity: 0;
 }
 
-
 @media (max-width: 900px) {
   .works-project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .works-mosaic { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: clamp(105px, 22vw, 180px); }
   .works-mosaic-item-5 { grid-column: span 2; }
-  .works-back-container { display: hidden; }
-
+  .works-back-container { display: none; }
 }
+
 @media (max-width: 560px) {
   .works-gallery { padding-top: .5rem; }
   .works-heading { margin-bottom: 1.3rem; text-align: left; }

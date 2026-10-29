@@ -64,7 +64,7 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
         if (!controller.signal.aborted) setLoading(false);
       });
 
-    return () => controller.abort();
+    return;
   }, [kind]);
 
   // Cargar las fotos únicamente al abrir una carpeta.

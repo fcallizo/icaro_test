@@ -53,7 +53,9 @@ export function PhotoCarousel({ tag, fallback = [], interval = 5000 }: PhotoCaro
       aria-busy={loading}
     >
       {count > 1 && (
-        <button className="nav prev" onClick={prev} aria-label="Anterior">‹</button>
+        <button className="nav prev" onClick={prev} aria-label="Anterior">
+          <span className="icon-mask icon-arrow" aria-hidden="true" />
+        </button>
       )}
 
       <div className="slide">
@@ -75,7 +77,9 @@ export function PhotoCarousel({ tag, fallback = [], interval = 5000 }: PhotoCaro
       </div>
 
       {count > 1 && (
-        <button className="nav next" onClick={next} aria-label="Siguiente">›</button>
+        <button className="nav next" onClick={next} aria-label="Siguiente">
+          <span className="icon-mask icon-arrow icon-inverted" aria-hidden="true" />
+        </button>
       )}
 
       {count > 1 && (

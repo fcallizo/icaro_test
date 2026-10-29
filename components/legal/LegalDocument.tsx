@@ -8,7 +8,7 @@ export function LegalDocument({ title, children }: { title: string; children: Re
       <div className="grain-layer" />
       <header className="legal-page-header">
         <Link href="/" className="private-brand">
-          <img src="/logo_transparente.png" alt="Ícaro Studio" />
+          <img src="/logo_sf_c.png" alt="Ícaro Studio" />
           <span>ÍCARO <strong>STUDIO</strong></span>
         </Link>
         <Link href="/" className="legal-back-link">Volver a la web</Link>

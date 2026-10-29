@@ -48,7 +48,7 @@ export const SHELL_CSS = `
 
   /* Color de marca: hereda del tema (--gold) y cae en ámbar si no existe. */
   --cof-gold:var(--gold,#f0b429);
-  --cof-gold-soft:var(--gold-soft,rgba(212,175,55,.08));
+  --cof-gold-soft:var(--gold-dark,rgba(212,175,55,.08));
   --cof-tint-07:rgba(240,180,41,.07);
   --cof-tint-09:rgba(240,180,41,.09);
   --cof-tint-16:rgba(240,180,41,.16);

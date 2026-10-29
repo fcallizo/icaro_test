@@ -66,9 +66,13 @@ export function AvailabilityCalendar({
       <h3>{title}</h3>
       <div className={calendarBoxClass}>
         <div className="calendar-header">
-          <button type="button" aria-label="Mes anterior" onClick={() => setDisplayedMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1))}>❮</button>
+          <button type="button" aria-label="Mes anterior" onClick={() => setDisplayedMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1))}>
+            <span className="icon-mask icon-arrow " aria-hidden="true" />
+          </button>
           <span>{monthLabel.charAt(0).toLocaleUpperCase('es-ES') + monthLabel.slice(1)}</span>
-          <button type="button" aria-label="Mes siguiente" onClick={() => setDisplayedMonth((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1))}>❯</button>
+          <button type="button" aria-label="Mes siguiente" onClick={() => setDisplayedMonth((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1))}>
+            <span className="icon-mask icon-arrow icon-inverted" aria-hidden="true" />
+          </button>
         </div>
         <div className="weekday-row"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
         <div className="days-grid">

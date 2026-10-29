@@ -19,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <meta charSet="UTF-8" />
         <title>{title}</title>
-        <link rel="icon" type="image/png" href="public/icono_2_gr.png" />
+        <link rel="icon" type="image/png" href="public/icono_2.png" />
       </head>
 
       <body>{children}</body>

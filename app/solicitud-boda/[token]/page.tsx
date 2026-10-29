@@ -126,7 +126,7 @@ export default function CustomerWeddingFormPage({ params }: { params: { token: s
     <main className="customer-wedding-page page-shell-bodas">
       <section className="customer-wedding-card">
         <div className="brand">
-          <img src="/logo_transparente.png" alt="Ícaro Logo" className="brand-logo" />
+          <img src="/logo_sf_c.png" alt="Ícaro Logo" className="brand-logo" />
           <span className="brand-name">ÍCARO <span className="brand-accent">STUDIO</span></span>
         </div>
         <p className="customer-wedding-eyebrow">Vuestra historia, en buenas manos</p>

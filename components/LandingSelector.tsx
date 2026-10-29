@@ -9,12 +9,9 @@ type LandingSelectorProps = {
 export function LandingSelector({ onSelect }: LandingSelectorProps) {
   return (
     <div className="page-shell home-page">
-      <div className="grain-layer" />
-      <div className="cursor-dot" />
-
       <div className="intro-screen">
         <div className="intro-inner">
-          <img src="/logo_transparente.png" alt="Ícaro Studio" className="intro-logo flicker-anim" />
+          <img src="/logo_sf_c.png" alt="Ícaro Studio" className="intro-logo flicker-anim" />
           <h1 className="intro-title">ÍCARO STUDIO</h1>
           <div className="intro-progress" />
         </div>

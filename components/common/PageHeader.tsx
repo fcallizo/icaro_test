@@ -13,7 +13,7 @@ export function PageHeader({ view, theme, onHome, onCinema, onWedding }: PageHea
     <header className={`topbar topbar-${theme}`}>
       <div className="nav-container">
         <div className="brand" onClick={onHome}>
-          <img src="/logo_transparente.png" alt="Ícaro Logo" className="brand-logo" />
+          <img src="/logo_sf_c.png" alt="Ícaro Logo" className="brand-logo" />
           <span className="brand-name brand-name-reduce">ÍCARO <span className="brand-accent">STUDIO</span></span>
         </div>
 

@@ -115,7 +115,7 @@ export function TeamCalendar({ token }: { token: string }) {
   return (
     <main className="page-shell team-calendar-page">
       <header className="team-calendar-header">
-        <img src="/logo_transparente.png" alt="Ícaro Studio" />
+        <img src="/logo_sf_c.png" alt="Ícaro Studio" />
         <div>
           <span className="eyebrow">CALENDARIO DE EQUIPO</span>
           <h1>{data ? `Hola, ${data.memberName}` : 'Eventos asignados'}</h1>

@@ -155,7 +155,7 @@
    Campos: etiquetas, inputs, textarea y select
    ========================================================= */
 .customer-wedding-form .field-group label {
-  color: var(--gold-soft);
+  color: var(--gold-dark);
   font-family: 'Montserrat', sans-serif;
 }
 
@@ -180,8 +180,8 @@
 .customer-wedding-form .field-group textarea:focus,
 .customer-wedding-form .field-group select:focus {
   background: var(--field-bg-focus);
-  border-color: var(--gold-soft);
-  outline: 1px solid var(--gold-soft);
+  border-color: var(--gold-dark);
+  outline: 1px solid var(--gold-dark);
 }
 
 .customer-wedding-form .field-group input::placeholder,
@@ -265,8 +265,8 @@
 
 /* Mismo anillo de foco que el resto de inputs */
 .customer-wedding-form .field-group > .international-phone-input:focus-within {
-  border-color: var(--gold-soft);
-  outline: 1px solid var(--gold-soft);
+  border-color: var(--gold-dark);
+  outline: 1px solid var(--gold-dark);
 }
 
 .customer-wedding-form .field-group > .international-phone-input .PhoneInputInput:hover {

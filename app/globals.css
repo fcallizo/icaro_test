@@ -6,12 +6,13 @@
 @import './styles/settings.css';
 
 :root {
-  --gold: #d4af37;
-  --gold-soft: #bfa02c;
+  --gold: #F5C31F;
+  --gold-dark: color-mix(in srgb, var(--gold) 70%, black);
+  --gold-light: color-mix(in srgb, var(--gold) 60%, white);
   --bg-dark: #191a1b;
-  --bg-panel: #222324;
-  --bg-panel-raised: #292a2b;
-  --bg-light: #faf9f6;
+  --bg-dark-raised: #222324;
+  --bg-light: #f3f0ea;
+  --bg-light-raised: #F4F4EE;
   --text-light: #ffffff;
   --text-dark: #111111;
   --muted: #8b8b8b;
@@ -31,7 +32,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  scrollbar-color: var(--gold-soft) var(--bg-dark);
+  scrollbar-color: var(--gold) var(--bg-dark);
   scrollbar-width: thin;
 }
 
@@ -47,7 +48,7 @@
 *::-webkit-scrollbar-thumb {
   border: 2px solid var(--bg-dark);
   border-radius: 8px;
-  background: var(--gold-soft);
+  background: var(--gold-dark);
 }
 
 *::-webkit-scrollbar-thumb:hover {
@@ -59,7 +60,7 @@ html {
 }
 
 html:has(.page-shell-bodas) {
-  scrollbar-color: var(--gold-soft) var(--bg-light);
+  scrollbar-color: var(--gold) var(--bg-light);
 }
 
 html:has(.page-shell-bodas)::-webkit-scrollbar-track {
@@ -136,7 +137,7 @@ textarea {
 }
 
 .page-shell-bodas .content-section-tabs > .tab-panel {
-  scrollbar-color: var(--gold-soft) var(--bg-light);
+  scrollbar-color: var(--gold) var(--bg-light);
 }
 
 .page-shell-bodas .content-section-tabs > .tab-panel::-webkit-scrollbar-track {
@@ -259,6 +260,10 @@ textarea {
 
 .icon-arrow {
   --icon-image: url("/flecha.svg");
+}
+
+.icon-inverted {
+  transform: scaleX(-1);
 }
 
 span.nav-label > a {
@@ -389,18 +394,6 @@ span.nav-label > a {
   mix-blend-mode: soft-light;
 }
 
-.cursor-dot {
-  position: fixed;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--gold);
-  box-shadow: 0 0 12px rgba(212, 175, 55, 0.9);
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 30;
-}
-
 .intro-screen {
   position: fixed;
   inset: 0;
@@ -480,7 +473,7 @@ span.nav-label > a {
   --header-text: #444;
   --header-contact: #333;
   --header-border: rgba(17,17,17,0.12);
-  background: rgba(250, 249, 246, 0.9);
+  background: var(--bg-light-raised);
   border-bottom: 1px solid var(--header-border);
 }
 
@@ -496,19 +489,20 @@ span.nav-label > a {
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
   cursor: pointer;
+  margin-right: 10px;
 }
 
 .brand-logo {
   height: 45px;
+  margin-right: 5px;
 }
 
 .brand-name {
   font-family: Georgia, 'Times New Roman', serif;
-  letter-spacing: 0.2rem;
+  letter-spacing: 0.15rem;
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 
 .nav-link {
@@ -518,9 +512,12 @@ span.nav-label > a {
   gap: 4px;
 }
 
-.brand-selected,
+.brand-selected {
+  color: var(--gold) !important;
+}
+
 .nav-link:hover {
-  color: var(--gold-soft) !important;
+  color: var(--gold-dark) !important;
 }
 
 .brand-accent {
@@ -536,9 +533,9 @@ span.nav-label > a {
 
 .main-nav a {
   color: var(--header-text);
-  font-size: 0.72rem;
+  font-size: 0.71rem;
   text-transform: uppercase;
-  letter-spacing: 0.12rem;
+  letter-spacing: 0.1rem;
   font-weight: 600;
 }
 
@@ -602,15 +599,31 @@ span.nav-label > a {
   place-items: center;
   cursor: pointer;
   min-height: 520px;
+  border: solid 1px var(--bg-dark);
 }
 
-.panel-cine {
-  background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1605501492805-f5699f0718d5?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') center/cover no-repeat;
+.panel-cine { 
+  background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.7)), url('/cinema.png'); 
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  
+}
+
+.panel-weddings { 
+  background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.7)), url('/wedding.png'); 
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* .panel-cine {
+  background: url('https://res.cloudinary.com/sp5ywaxz/image/upload/v1793285097/Rodaje_cinematogr%C3%A1fico_en_estudio.png') center/cover no-repeat;
 }
 
 .panel-weddings {
-  background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
-}
+  background: url('https://res.cloudinary.com/sp5ywaxz/image/upload/v1793285093/Manos_entrelazadas_con_alianzas_doradas.png') center/cover no-repeat;
+} */
 
 .panel-overlay {
   position: absolute;
@@ -716,7 +729,6 @@ span.nav-label > a {
   .submit-btn{
     margin-top: 2rem;
     width: 330px;
-    
   }
 
   .divider-title {
@@ -750,7 +762,6 @@ span.nav-label > a {
 .tabs {
   display: flex;
   justify-content: center;
-  gap: 1rem;
   flex-wrap: wrap;
   margin-bottom: 2.5rem;
 }
@@ -760,12 +771,16 @@ span.nav-label > a {
   background: transparent;
   color: #707070;
   border-bottom: 2px solid transparent;
-  padding: 0.9rem 1.2rem;
+  padding: 0.7rem 1rem;
   text-transform: uppercase;
   letter-spacing: 0.08rem;
   font-size: 0.72rem;
   font-weight: 700;
   cursor: pointer;
+}
+
+.tab:hover {
+  color: var(--gold-dark);
 }
 
 .tab.active {
@@ -828,7 +843,7 @@ span.nav-label > a {
 
 .card-one-wedding { background-image: url('https://images.unsplash.com/photo-1672758748153-1f13fd8d2eed?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
 .card-two-wedding { background-image: url('https://res.cloudinary.com/sp5ywaxz/image/upload/v1792704737/Anillos_dorados_y_bordado_nupcial.png'); }
-.card-three-wedding { background-image: url('https://images.unsplash.com/photo-1460978812857-470ed1c77af0?q=80&w=1295&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
+.card-three-wedding { background-image: url('https://res.cloudinary.com/sp5ywaxz/image/upload/v1793023101/Beso_nupcial_bajo_la_lluvia_1.png'); }
 .card-four-wedding { background-image: url('https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
 
 .tech-header {
@@ -857,7 +872,7 @@ span.nav-label > a {
 }
 
 .stat-card {
-  background: linear-gradient(145deg, rgba(255,255,255,0.035), transparent 60%), var(--bg-panel);
+  background: linear-gradient(145deg, rgba(255,255,255,0.035), transparent 60%), var(--bg-dark-raised);
   border: 1px solid rgba(212,175,55,0.2);
   border-radius: 12px;
   padding: 1.15rem;
@@ -942,7 +957,7 @@ span.nav-label > a {
 
 .cinema-price-card:hover {
   transform: translateY(-5px);
-  border-color: var(--gold-soft);
+  border-color: var(--gold-dark);
   background: rgba(128, 128, 128, 0.07);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
 }
@@ -1006,7 +1021,7 @@ span.nav-label > a {
 
 /* La tarjeta sirve de referencia para colocar la etiqueta */
 .cinema-price-offer {
-  border-color: var(--gold-soft);
+  border-color: var(--gold-dark);
   background: rgba(180, 150, 105, 0.07);
 }
 
@@ -1087,7 +1102,7 @@ span.nav-label > a {
 }
 
 .info-card {
-  background: linear-gradient(145deg, rgba(255,255,255,0.03), transparent 60%), var(--bg-panel);
+  background: linear-gradient(145deg, rgba(255,255,255,0.03), transparent 60%), var(--bg-dark-raised);
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 14px;
   padding: 1.4rem;
@@ -1206,7 +1221,7 @@ span.nav-label > a {
 
 .calendar-block,
 .booking-form {
-  background: linear-gradient(145deg, rgba(255,255,255,0.03), transparent 60%), var(--bg-panel);
+  background: linear-gradient(145deg, rgba(255,255,255,0.03), transparent 60%), var(--bg-dark-raised);
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 12px;
   padding: 1.5rem;
@@ -1242,11 +1257,15 @@ span.nav-label > a {
 .calendar-header button {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  border-radius: 5px;
   border: 1px solid rgba(255,255,255,0.1);
   background: transparent;
   color: var(--gold);
   cursor: pointer;
+  padding: 7px 5px;
+  span {
+    height: 15px;
+  }
 }
 
 .weekday-row,
@@ -1350,8 +1369,8 @@ span.nav-label > a {
   align-items: stretch;
   gap: 0.5rem;
   width: 100%;
-  --PhoneInputCountrySelectArrow-color--focus: var(--gold-soft);
-  --PhoneInputCountryFlag-borderColor--focus: var(--gold-soft);
+  --PhoneInputCountrySelectArrow-color--focus: var(--gold-dark);
+  --PhoneInputCountryFlag-borderColor--focus: var(--gold-dark);
 }
 
 .international-phone-input .PhoneInputCountry {
@@ -1424,10 +1443,9 @@ input[type="date"] {
 
 .submit-btn {
   width: 100%;
-  background: var(--gold);
-  color: #000;
-  border: 0;
-  border-radius: 8px;
+  background-color: color-mix(in srgb, var(--gold) 20%, transparent);
+  color: var(--gold);
+  border: solid 1px var(--gold);
   padding: 0.9rem 1.1rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -1560,9 +1578,8 @@ input[type="date"] {
   justify-self: center;
   padding: 2rem 2.5rem;
   border: 1px solid rgba(17,17,17,0.1);
-  border-top: 2px solid var(--gold-soft);
-  background: rgba(255,255,255,0.72);
-}
+  border-top: 2px solid var(--gold-light);
+  background: var(--bg-light-raised)}
 
 .weddings-mode .wedding-story-row h4 {
   margin-top: 0.55rem;
@@ -1612,9 +1629,8 @@ input[type="date"] {
   min-width: 0;
   padding: 1rem;
   border: 1px solid rgba(17,17,17,0.1);
-  border-top: 2px solid var(--gold-soft);
-  background: rgba(255,255,255,0.72);
-}
+  border-top: 2px solid var(--gold-dark);
+  background: var(--bg-light-raised)}
 
 .wedding-planning-number {
   color: #806719;
@@ -1645,7 +1661,7 @@ input[type="date"] {
 }
 
 .weddings-mode .wedding-calendar {
-  background: #fff;
+  background: var(--bg-light-raised);
   border-color: rgba(0,0,0,0.08);
   color: var(--text-dark);
 }
@@ -1745,7 +1761,7 @@ input[type="date"] {
 }
 
 .wedding-panel {
-  background: #fff;
+  background: var(--bg-light-raised);
   border: 1px solid rgba(0,0,0,0.08);
   color: var(--text-dark);
   max-width: 840px;
@@ -1812,7 +1828,7 @@ input[type="date"] {
 }
 
 .package-price { 
-  color: var(--gold-soft);
+  color: var(--gold);
   font-size: 1.5rem;
   font-weight: 600;
 }
@@ -1843,7 +1859,7 @@ input[type="date"] {
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
   background: #f3f0e3;
-  color: #66520f;
+  color: var(--gold-dark);
   font-size: 0.9rem;
   font-weight: 700;
 }
@@ -2093,7 +2109,7 @@ input[type="date"] {
   flex: 0 0 auto;
   border: 1px solid #555;
   border-radius: 999px;
-  background: #292a2b;
+  background: var(--bg-dark-raised);
   transition: background 0.18s ease, border-color 0.18s ease;
 }
 
@@ -2856,25 +2872,62 @@ input[type="date"] {
   height: 60vh;
   max-height: 520px;
   overflow: hidden;
-  border-radius: 16px;
+  z-index: 5;
 }
-.slide-img { object-fit: cover; object-position: center; }
+.slide-img { 
+  object-fit: cover;
+  object-position: center;
+ mask-image: linear-gradient(to right, transparent 0%, black 2%, black 98%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 2%, black 98%, transparent 100%);
+}
 
 .nav {
   position: absolute;
-  top: 50%; transform: translateY(-50%);
-  z-index: 2;
-  width: 44px; height: 44px;
-  border: none; border-radius: 50%;
-  background: rgba(255,255,255,.85);
-  color: var(--gold); font-size: 1.5rem; cursor: pointer;
+  top: 47.1%;
+  transform: translateY(-50%);
+  width: 57.8%;
+  height: 60.4vh;
+  border: none;
+  color: var(--gold); 
+  font-size: 1.5rem; 
+  cursor: pointer;
 }
-.nav.prev { left: -50px; }
-.nav.next { right: -50px; }
+.nav.next:hover > span,
+.nav.prev:hover > span {
+  color: var(--gold-dark);
+}
+
+.nav.prev { 
+  left: -70px;
+  text-align: left;
+  padding-left: 40px;
+  background: linear-gradient(90deg, rgba(0,0,0, 0), rgb(191, 160, 44, .7), rgba(191, 160, 44, .7));
+}
+.nav.next { 
+  right: -70px; 
+  text-align: right;
+  padding-right: 40px;
+  background: linear-gradient(270deg, rgba(0,0,0, 0), rgb(191, 160, 44, .7), rgba(191, 160, 44, .7));
+}
 
 .dots { display: flex; justify-content: center; gap: .5rem; margin-top: 1rem; }
 .dot { width: 10px; height: 10px; border-radius: 50%; border: none; background: #d9ccd1; cursor: pointer; }
 .dot.active { background: var(--gold); }
+
+@media (max-width: 1000px) {
+  .main-nav {
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    gap: 2.5rem;
+    padding-top: 0;
+  }
+
+  .main-nav a {
+    font-size: 0.7rem;
+    letter-spacing: 0.04rem;
+  }
+
+}
 
 @media (max-width: 900px) {
   .nav-container {
@@ -2884,30 +2937,8 @@ input[type="date"] {
     padding: 0.75rem 0;
   }
 
-  .brand {
-    gap: 0;
-  }
-
-  .brand-logo {
-    height: 36px;
-  }
-
-  .brand-name-reduce,
-  .nav-home-link,
   .nav-contact {
     display: none;
-  }
-
-  .main-nav {
-    justify-content: flex-end;
-    flex-wrap: nowrap;
-    gap: 0.5rem;
-    padding-top: 0;
-  }
-
-  .main-nav a {
-    font-size: 0.62rem;
-    letter-spacing: 0.04rem;
   }
 
   .nav-icon {
@@ -2931,11 +2962,6 @@ input[type="date"] {
   .tech-header,
   .gallery-grid {
     grid-template-columns: 1fr;
-  }
-
-  .main-nav {
-    justify-content: flex-start;
-    padding-top: 0.8rem;
   }
 
   .two-col {
@@ -3001,30 +3027,32 @@ input[type="date"] {
   .cinema-price-card h4 {
     font-size: 1.1rem;
   }
+
+  .slide {
+    width: 95%;
+    margin: auto;
+  }
+  .nav {
+    width: 61.3%;
+  }
+  .nav.prev { 
+    left: -50px;
+  }
+  .nav.next { 
+    right: -50px; 
+  }
 }
 
 @media (max-width: 600px) {
+
+  .brand-name-reduce,
+  .nav-home-link,
+  .nav-contact {
+    display: none;
+  }
+
   .nav-container {
     padding: 0.6rem 0;
-  }
-
-  .brand-logo {
-    height: 32px;
-  }
-
-  .main-nav a {
-    font-size: 0.58rem;
-    letter-spacing: 0.02rem;
-  }
-
-  .main-nav {
-    gap: 2.5rem;
-  }
-
-  .nav-icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 0;
   }
 
   .nav-admin-btn {

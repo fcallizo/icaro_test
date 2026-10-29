@@ -382,7 +382,7 @@ export function PrivateArea() {
       <div className="grain-layer" />
       <header className="private-page-header">
         <Link href="/" className="private-brand">
-          <img src="/logo_transparente.png" alt="Ícaro Studio" />
+          <img src="/logo_sf_c.png" alt="Ícaro Studio" />
           <span>ÍCARO <strong>STUDIO</strong></span>
         </Link>
         <div className="private-page-title">
