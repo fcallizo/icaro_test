@@ -8,7 +8,7 @@
 :root {
   --gold: #F5C31F;
   --gold-dark: color-mix(in srgb, var(--gold) 70%, black);
-  --gold-light: color-mix(in srgb, var(--gold) 60%, white);
+  --gold-light: color-mix(in srgb, var(--gold) 40%, white);
   --bg-dark: #191a1b;
   --bg-dark-raised: #222324;
   --bg-light: #f3f0ea;
@@ -26,6 +26,8 @@
   --priv-error: #ff5555;
   --priv-error-soft: #ff8a8a;
 
+  --PhoneInput-color--focus: var(--gold);
+  --PhoneInputCountrySelectArrow-color--focus:var(--gold);
 }
 
 * {
@@ -2883,10 +2885,10 @@ input[type="date"] {
 
 .nav {
   position: absolute;
-  top: 47.1%;
+  top: 47.5%;
   transform: translateY(-50%);
   width: 57.8%;
-  height: 60.4vh;
+  height: 96%;
   border: none;
   color: var(--gold); 
   font-size: 1.5rem; 

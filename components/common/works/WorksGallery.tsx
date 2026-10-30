@@ -1,6 +1,8 @@
 
 "use client";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+const photNumber = 7;
 
 type Photo = {
   id: string;
@@ -20,6 +22,16 @@ type WorksGalleryProps = {
   isCompact: boolean;
 };
 
+function getPlaceholderCount(photoCount: number): number {
+  if (photoCount === 0) return 0;
+
+  const remainder = photoCount % photNumber;
+
+  if (remainder === 0) return 0;
+
+  return photNumber - remainder;
+}
+
 export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
   const [folders, setFolders] = useState<Folder[]>([]);
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -27,6 +39,10 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const placeholderCount = useMemo(
+    () => getPlaceholderCount(photos.length),
+    [photos.length]
+  );
 
   function modifyCardName(name: string) {
     return name.replace(/_/g, " ").toUpperCase();
@@ -218,7 +234,7 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
             {photos.map((photo, index) => (
               <button
                 key={photo.id}
-                className={`works-mosaic-item works-mosaic-item-${index % 7}`}
+                className={`works-mosaic-item works-mosaic-item-${index % photNumber}`}
                 onClick={() => setLightboxIndex(index)}
                 aria-label={`Ampliar fotografía ${index + 1}`}
               >
@@ -227,7 +243,6 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
                   alt={`${selectedFolder.name}, fotografía ${index + 1}`}
                   loading={index < 6 ? "eager" : "lazy"}
                 />
-
               </button>
             ))}
           </div>
@@ -259,7 +274,7 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
               }}
               aria-label="Fotografía anterior"
             >
-              ‹
+              <span className="icon-mask icon-arrow" aria-hidden="true" />
             </button>
           )}
 
@@ -282,7 +297,7 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
               }}
               aria-label="Fotografía siguiente"
             >
-              ›
+              <span className="icon-mask icon-arrow icon-inverted" aria-hidden="true" />
             </button>
           )}
         </div>
