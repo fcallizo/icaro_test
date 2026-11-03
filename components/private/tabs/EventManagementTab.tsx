@@ -105,14 +105,16 @@ export function EventManagementTab() {
           enlace podrá consultar todos los datos de esos eventos.
         </p>
         <form className="event-member-create" onSubmit={handleCreate}>
-          <label htmlFor="event-member-name">Nombre del colaborador</label>
-          <input
-            id="event-member-name"
-            value={name}
-            onChange={(inputEvent) => setName(inputEvent.target.value)}
-            maxLength={100}
-            required
-          />
+          <div className="field-group">
+            <label htmlFor="event-member-name">Nombre del colaborador</label>
+            <input
+              id="event-member-name"
+              value={name}
+              onChange={(inputEvent) => setName(inputEvent.target.value)}
+              maxLength={100}
+              required
+            />
+          </div>
           <button type="submit" className="private-gold-button" disabled={isCreating}>
             {isCreating ? 'Creando...' : 'Crear colaborador'}
           </button>

@@ -240,13 +240,11 @@
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.12);
   cursor: pointer;
-  width: 3rem;
-  height: 3rem;
 }
 
 .works-lightbox-close {
   top: 5rem;
-  right: 1.4rem;
+  right: 1rem;
 
   display: flex;
   align-items: center;
@@ -255,9 +253,11 @@
 
   color: var(--muted);
   font-family: Arial, sans-serif;
-  font-size: 2.8rem;
+  font-size: 2.5rem;
   font-weight: 300;
   line-height: 1;
+  width: 2rem;
+  height: 2rem;
 }
 
 .works-lightbox-arrow {
@@ -265,6 +265,8 @@
   place-items: center;
   top: 50%;
   transform: translateY(-50%);
+  width: 3rem;
+  height: 3rem;
 }
 
 .works-lightbox-arrow:hover {

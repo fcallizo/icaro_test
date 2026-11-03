@@ -1,6 +1,6 @@
 'use client';
 
-import type { InputHTMLAttributes } from 'react';
+import type { InputHTMLAttributes, ReactNode, Ref } from 'react';
 import { InternationalPhoneInput } from './InternationalPhoneInput';
 
 type StringKey<Values> = Extract<{
@@ -15,6 +15,8 @@ type FieldProps<Field extends string> = {
   onChange: (field: Field, value: string) => void;
   wrapperClassName?: string;
   suffix?: string;
+  hint?: ReactNode;
+  inputRef?: Ref<HTMLInputElement>;
 };
 
 type FormFieldsOptions<Values extends { [Field in keyof Values]: string }> = {
@@ -45,6 +47,10 @@ export function FormInputField<Field extends string>({
   placeholder,
   autoComplete,
   dateInputWrapper = false,
+  inputRef,
+  inputMode,
+  maxLength,
+  hint,
 }: FieldProps<Field> & {
   type?: InputHTMLAttributes<HTMLInputElement>['type'];
   required?: boolean;
@@ -53,11 +59,14 @@ export function FormInputField<Field extends string>({
   step?: InputHTMLAttributes<HTMLInputElement>['step'];
   placeholder?: InputHTMLAttributes<HTMLInputElement>['placeholder'];
   autoComplete?: InputHTMLAttributes<HTMLInputElement>['autoComplete'];
+  inputMode?: InputHTMLAttributes<HTMLInputElement>['inputMode'];
+  maxLength?: InputHTMLAttributes<HTMLInputElement>['maxLength'];
   dateInputWrapper?: boolean;
 }) {
   const id = `${idPrefix}-${field}`;
   const input = (
     <input
+      ref={inputRef}
       id={id}
       name={field}
       type={type}
@@ -69,6 +78,8 @@ export function FormInputField<Field extends string>({
       step={step}
       placeholder={placeholder}
       autoComplete={autoComplete}
+      inputMode={inputMode}
+      maxLength={maxLength}
     />
   );
 
@@ -76,6 +87,7 @@ export function FormInputField<Field extends string>({
     <div className={wrapperClassName} key={field}>
       <label htmlFor={id}>{label}</label>
       {dateInputWrapper && type === 'date' ? <div className="date-input">{input}</div> : input}
+      {hint != null && <small className="field-hint">{hint}</small>}
     </div>
   );
 }
@@ -90,7 +102,9 @@ export function FormTextareaField<Field extends string>({
   disabled = false,
   rows = 3,
   placeholder,
-}: FieldProps<Field> & { disabled?: boolean; rows?: number; placeholder?: string }) {
+  maxLength,
+  hint,
+}: FieldProps<Field> & { disabled?: boolean; rows?: number; placeholder?: string; maxLength?: number }) {
   const id = `${idPrefix}-${field}`;
 
   return (
@@ -104,7 +118,9 @@ export function FormTextareaField<Field extends string>({
         onChange={(event) => onChange(field, event.target.value)}
         disabled={disabled}
         placeholder={placeholder}
+        maxLength={maxLength}
       />
+      {hint != null && <small className="field-hint">{hint}</small>}
     </div>
   );
 }
@@ -191,23 +207,35 @@ export function FormPriceField<Field extends string>({
   required = false,
   disabled = false,
   wrapperClassName = 'field-group',
-  suffix
+  suffix,
+  inputRef,
+  min = '0',
+  step = '0.01',
+  placeholder,
+  inputMode,
 }: FieldProps<Field> & {
   required?: boolean;
   disabled?: boolean;
+  min?: InputHTMLAttributes<HTMLInputElement>['min'];
+  step?: InputHTMLAttributes<HTMLInputElement>['step'];
+  placeholder?: InputHTMLAttributes<HTMLInputElement>['placeholder'];
+  inputMode?: InputHTMLAttributes<HTMLInputElement>['inputMode'];
 }) {
   const id = `${idPrefix}-${field}`;
   const input = (
     <input
+      ref={inputRef}
       id={id}
       name={field}
       type='number'
-      min="0"
-      step="0.01"
+      min={min}
+      step={step}
       value={value}
       onChange={(event) => onChange(field, event.target.value)}
       required={required}
       disabled={disabled}
+      placeholder={placeholder}
+      inputMode={inputMode}
     />
   );
 
@@ -245,7 +273,8 @@ export function createFormFields<Values extends { [Field in keyof Values]: strin
       required = false,
       wide = false,
       disabled = false,
-      placeholder: string,
+      placeholder?: string,
+      maxLength?: number,
     ) => (
       <FormInputField
         field={field}
@@ -260,6 +289,7 @@ export function createFormFields<Values extends { [Field in keyof Values]: strin
         step={type === 'number' ? 'any' : undefined}
         readOnly={readOnlyFields.includes(field)}
         placeholder={placeholder}
+        maxLength={maxLength}
         dateInputWrapper={dateInputWrapper}
       />
     ),
@@ -285,7 +315,8 @@ export function createFormFields<Values extends { [Field in keyof Values]: strin
       required = false,
       disabled = false,
       wide = false,
-      suffix = "€"
+      suffix = "€",
+      placeholder?: string,
     ) => (
       <FormPriceField
         field={field}
@@ -297,6 +328,7 @@ export function createFormFields<Values extends { [Field in keyof Values]: strin
         value={values[field]}
         onChange={onChange}
         suffix={suffix}
+        placeholder={placeholder}
       />
     ),
     textarea: (

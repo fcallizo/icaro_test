@@ -6,7 +6,6 @@ import type { EventType } from '@/lib/properties';
 
 import {
   PrivateModalShell,
-  useInjectedStyles,
   type PrivateModalShellHandle,
 } from './PrivateModalShell';
 
@@ -51,77 +50,8 @@ const EVENT_TYPE_LABELS: Record<EventType, string> = {
   postwedding: 'Postboda',
 };
 
-const STYLE_ID = 'event-member-modal-styles';
-
 type Filter = 'all' | 'assigned' | 'pending';
 
-const MODAL_CSS = `
-.eem__toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
-.eem__count{display:flex;gap:8px;align-items:baseline;font-size:13px;color:var(--cof-muted)}
-.eem__count strong{color:var(--cof-gold);font-size:20px}
-.eem__filters{display:flex;gap:6px}
-.eem__filters button{padding:7px 12px;border:1px solid var(--cof-line);background:transparent;
-  color:var(--cof-muted);font-size:12px;cursor:pointer;
-  transition:border-color .18s ease,color .18s ease,background .18s ease}
-.eem__filters button:hover{color:var(--cof-ink)}
-.eem__filters button.is-active{border-color:var(--cof-gold);color:var(--cof-gold);
-  background:var(--cof-tint-07)}
-.eem__search{display:grid;gap:7px}
-.eem__search input{width:170%;padding:11px 13px;border:1px solid var(--cof-line);
-  background:rgba(255,255,255,.04);color:var(--cof-ink);font-size:14px;
-  transition:border-color .18s ease,box-shadow .18s ease}
-.eem__search input:focus-visible{border-color:var(--cof-gold);
-  box-shadow:0 0 0 3px var(--cof-tint-16);outline:none}
-.eem__list{display:grid;gap:8px;max-height:min(46vh,380px);overflow-y:auto;
-  padding:12px;border:1px solid var(--cof-line);background:rgba(0,0,0,.18);
-  overscroll-behavior:contain;height: 300px;margin: 0px 13px;}
-.eem__option{display:flex;gap:11px;align-items:flex-start;padding:11px 13px;
-  border:1px solid var(--cof-line);background:rgba(255,255,255,.02);cursor:pointer;
-  transition:border-color .16s ease,background .16s ease}
-.eem__option:hover{border-color:var(--cof-tint-40)}
-.eem__option.is-assigned{border-color:var(--cof-gold);background:var(--cof-tint-07)}
-.eem__option input{width:17px;height:17px;margin-top:2px;flex:0 0 auto;
-  accent-color:var(--cof-gold);cursor:pointer}
-.eem__option-text{display:grid;gap:3px;width:100%}
-.eem__option-text strong{font-size:14px;font-weight:600}
-.eem__option-text small{color:var(--cof-muted);font-size:12px}
-.eem__option-text-header {display: flex;flex-wrap: wrap;gap: 10px;align-items: center;justify-content: space-between;}
-.eem__badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px}
-.eem__badge{padding:2px 8px;border:1px solid var(--cof-line);border-radius:999px;
-  color:var(--cof-muted);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
-.eem__badge.type{border-color:var(--cof-tint-40);color:var(--cof-gold)}
-.eem__empty{margin:0;padding:18px;color:var(--cof-muted);font-size:13px;text-align:center}
-.eem__section-title{display:flex;gap:10px;align-items:center;justify-content:space-between;
-  margin:6px 0 0;padding-top:16px;border-top:1px solid var(--cof-line)}
-.eem__section-title h6{margin:0;font-size:13px;font-weight:700;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--cof-muted)}
-.eem__link-box{display:grid;gap:10px;padding:14px;border:1px solid var(--cof-line);
-  background:rgba(255,255,255,.02)}
-.eem__link-box p{margin:0;color:var(--cof-muted);font-size:12px;line-height:1.5}
-.eem__link-row{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
-.eem__link-row code{flex:1 1 220px;min-width:0;overflow:hidden;padding:9px 11px;
-  border:1px solid var(--cof-line);background:rgba(0,0,0,.3);
-  color:var(--cof-ink);font-size:12px;text-overflow:ellipsis;white-space:nowrap}
-.eem__pending{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
-  padding:11px 13px;border:1px dashed var(--cof-gold);background:var(--cof-tint-07);
-  color:var(--cof-ink);font-size:12.5px;line-height:1.45}
-.eem__pending button{padding:7px 12px;border:1px solid var(--cof-line);background:transparent;
-  color:var(--cof-muted);font-size:12px;cursor:pointer}
-.eem__pending button:hover{color:var(--cof-ink);border-color:var(--cof-tint-40)}
-.eem__ghost{padding:11px 16px;border:1px solid var(--cof-gold);background:rgba(212, 175, 55, 0.08);
-  color:var(--cof-gold)!important;font-size:13px;font-weight:600;cursor:pointer;
-  transition:background .18s ease}
-.eem__ghost:hover{background:var(--cof-tint-16)}
-.eem__fresh{display:grid;gap:9px;margin:12px 24px 0;padding:14px;
-  border:1px solid var(--cof-gold);background:var(--cof-tint-07)}
-.eem__fresh strong{font-size:13px;color:var(--cof-gold);letter-spacing:.06em;text-transform:uppercase}
-.eem__fresh input{width:100%;padding:10px 12px;border:1px solid var(--cof-line);
-  background:rgba(0,0,0,.35);color:var(--cof-ink);font-size:12.5px}
-.eem__fresh small{color:var(--cof-muted);font-size:12px}
-@media (max-width:640px){
-  .eem__list{max-height:none}
-  .eem__fresh{margin-inline:0;padding-inline:16px}}
-`;
 
 /** Etiqueta legible del tipo de evento (misma tabla que usaba el tab). */
 export function eventTypeLabel(type: EventType) {
@@ -162,8 +92,6 @@ export function EventMemberEditModal({
   onClose,
   onSaved,
 }: EventMemberEditModalProps) {
-  useInjectedStyles(STYLE_ID, MODAL_CSS);
-
   const assignedInitially = useMemo(
     () =>
       new Set(

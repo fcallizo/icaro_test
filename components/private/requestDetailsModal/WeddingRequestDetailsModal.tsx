@@ -224,7 +224,7 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
         <>
           <button
             type="button"
-            className="private-download-button"
+            className="pvm__submit"
             disabled={props.busy || generating}
             onClick={() => void handleDownload()}
           >

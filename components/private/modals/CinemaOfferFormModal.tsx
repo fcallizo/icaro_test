@@ -4,9 +4,13 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 
 import {
   PrivateModalShell,
-  useInjectedStyles,
   type PrivateModalShellHandle,
 } from './PrivateModalShell';
+import {
+  FormInputField,
+  FormPriceField,
+  FormTextareaField,
+} from '@/components/common/FormFields';
 
 /* ==========================================================================
  * Modal de creación/edición de ofertas de cine.
@@ -50,8 +54,6 @@ export type CinemaOfferFormModalProps = {
 
 export const OFFER_POSITIONS = [1, 2, 3, 4] as const;
 
-const FIELD_STYLE_ID = 'cinema-offer-modal-styles';
-
 type OfferDraft = {
   title: string;
   description: string;
@@ -69,50 +71,6 @@ const EMPTY_DRAFT: OfferDraft = {
   visible: false,
   position: 1,
 };
-
-/** CSS propio de los campos. La paleta y el armazón viven en PrivateModalShell. */
-const FIELD_CSS = `
-.cofm__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.cofm__field{display:grid;gap:7px;margin:0;padding:0;border:0}
-.cofm__field>span{color:var(--cof-muted);font-size:11px;font-weight:600;
-  letter-spacing:.1em;text-transform:uppercase}
-.cofm__field--wide{grid-column:1/-1}
-.cofm__field input,.cofm__field textarea{width:100%;padding:11px 13px;
-  border:1px solid var(--cof-line);background:rgba(255,255,255,.04);
-  color:var(--cof-ink);font-size:14px;
-  transition:border-color .18s ease,background .18s ease,box-shadow .18s ease}
-.cofm__field textarea{min-height:92px;resize:vertical;line-height:1.55}
-.cofm__field input:focus-visible,.cofm__field textarea:focus-visible{
-  border-color:var(--cof-gold);background:rgba(255,255,255,.07);
-  box-shadow:0 0 0 3px var(--cof-tint-16);outline:none}
-.cofm__field input::placeholder,.cofm__field textarea::placeholder{color:rgba(154,163,174,.65)}
-.cofm__field em{align-self:end;color:rgba(154,163,174,.8);font-size:11px;font-style:normal}
-.cofm__slots legend{padding:0;color:var(--cof-muted);font-size:11px;font-weight:600;
-  letter-spacing:.1em;text-transform:uppercase}
-.cofm__slots>div{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));
-  gap:8px;margin-top:7px}
-.cofm__slot{display:grid;gap:2px;padding:10px 8px;border:1px solid var(--cof-line);
-  background:rgba(255,255,255,.03);color:inherit;cursor:pointer;
-  text-align:center;transition:border-color .18s ease,background .18s ease,opacity .18s ease}
-.cofm__slot strong{font-size:17px}
-.cofm__slot span{color:var(--cof-muted);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
-.cofm__slot:hover:not(:disabled){border-color:var(--cof-gold)}
-.cofm__slot.is-selected{border-color:var(--cof-gold);background:var(--cof-tint-16)}
-.cofm__slot.is-selected span{color:var(--cof-gold)}
-.cofm__slot:disabled{cursor:not-allowed;opacity:.42}
-.cofm__publish{display:flex;gap:11px;align-items:flex-start;grid-column:1/-1;
-  padding:13px 15px;border:1px solid var(--cof-line);
-  background:rgba(255,255,255,.03);cursor:pointer;font-size:13px}
-.cofm__publish:hover{border-color:var(--cof-tint-40)}
-.cofm__publish input{width:17px;height:17px;margin-top:2px;accent-color:var(--cof-gold);cursor:pointer}
-.cofm__publish>span{display:grid;gap:3px}
-.cofm__publish small{color:var(--cof-muted);line-height:1.45}
-.cofm__note{grid-column:1/-1;margin:0;padding:12px 15px;
-  border-left:2px solid var(--cof-gold);background:var(--cof-tint-07);
-  color:var(--cof-muted);font-size:13px;line-height:1.5}
-.cofm__note strong{color:var(--cof-gold)}
-@media (max-width:640px){.cofm__grid{grid-template-columns:minmax(0,1fr)}}
-`;
 
 /* --- Helpers ------------------------------------------------------------- */
 
@@ -172,8 +130,6 @@ export function CinemaOfferFormModal({
   const shellRef = useRef<PrivateModalShellHandle>(null);
   const titleRef = useRef<HTMLInputElement>(null);
 
-  useInjectedStyles(FIELD_STYLE_ID, FIELD_CSS);
-
   const isDirty = useMemo(
     () => JSON.stringify(draft) !== JSON.stringify(initialDraft),
     [draft, initialDraft],
@@ -201,7 +157,7 @@ export function CinemaOfferFormModal({
 
     if (!draft.title.trim()) {
       setError('Escribe un título para la oferta.');
-      titleRef.current?.focus();
+      document.getElementById('cinema-offer-title')?.focus();
       return;
     }
 
@@ -287,56 +243,60 @@ export function CinemaOfferFormModal({
       submitLabel={isCreate ? 'Crear oferta' : 'Guardar oferta'}
     >
       <div className="cofm__grid">
-        <label className="cofm__field cofm__field--wide">
-          <span>Título</span>
-          <input
-            ref={titleRef}
-            value={draft.title}
-            onChange={(event) => updateDraft('title', event.target.value)}
-            maxLength={120}
-            placeholder="Abono trimestral Cine+Book"
-            required
-          />
-          <em>{draft.title.trim().length}/120</em>
-        </label>
+        <FormInputField
+          field="title"
+          idPrefix="cinema-offer"
+          label="Título"
+          wrapperClassName="field-group wide"
+          value={draft.title}
+          onChange={(_, value) => updateDraft('title', value)}
+          maxLength={120}
+          placeholder="Abono trimestral Cine+Book"
+          required
+          hint={`${draft.title.trim().length}/120`}
+          inputRef={titleRef}
+        />
 
-        <label className="cofm__field">
-          <span>Precio actual (€)</span>
-          <input
-            type="number"
-            min="0"
-            step="1"
-            inputMode="numeric"
-            value={draft.price}
-            onChange={(event) => updateDraft('price', event.target.value)}
-            placeholder="Vacío si es a medida"
-          />
-        </label>
+        <FormPriceField
+          field="price"
+          idPrefix="cinema-offer"
+          label="Precio actual"
+          wrapperClassName="field-group"
+          value={draft.price}
+          onChange={(_, value) => updateDraft('price', value)}
+          min="0"
+          step="1"
+          inputMode="numeric"
+          placeholder="Vacío si es a medida"
+          suffix="€"
+        />
 
-        <label className="cofm__field">
-          <span>Precio anterior (€)</span>
-          <input
-            type="number"
-            min="0"
-            step="1"
-            inputMode="numeric"
-            value={draft.oldPrice}
-            onChange={(event) => updateDraft('oldPrice', event.target.value)}
-            placeholder="Solo si hay oferta"
-          />
-        </label>
+        <FormPriceField
+          field="oldPrice"
+          idPrefix="cinema-offer"
+          label="Precio anterior"
+          wrapperClassName="field-group"
+          value={draft.oldPrice}
+          onChange={(_, value) => updateDraft('oldPrice', value)}
+          min="0"
+          step="1"
+          inputMode="numeric"
+          placeholder="Solo si hay oferta"
+          suffix="€"
+        />
 
-        <label className="cofm__field cofm__field--wide">
-          <span>Descripción</span>
-          <textarea
-            value={draft.description}
-            onChange={(event) => updateDraft('description', event.target.value)}
-            rows={4}
-            maxLength={2000}
-            placeholder="Qué incluye, condiciones y duración de la promoción."
-          />
-          <em>{draft.description.length}/2000</em>
-        </label>
+        <FormTextareaField
+          field="description"
+          idPrefix="cinema-offer"
+          label="Descripción"
+          wrapperClassName="field-group wide"
+          value={draft.description}
+          onChange={(_, value) => updateDraft('description', value)}
+          rows={4}
+          maxLength={2000}
+          placeholder="Qué incluye, condiciones y duración de la promoción."
+          hint={`${draft.description.length}/2000`}
+        />
 
         {!isCreate && (
           <fieldset className="cofm__field cofm__field--wide cofm__slots">

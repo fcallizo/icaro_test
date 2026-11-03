@@ -38,11 +38,6 @@
   font-weight: 700;
 }
 
-.wedding-price-group-heading h4 {
-  margin: 0 0 5px;
-  font-size: 1.1rem;
-}
-
 .wedding-price-cards {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -65,6 +60,11 @@
   font-size: 0.83rem;
   line-height: 1.7;
   opacity: 0.65;
+}
+
+.wedding-discount-card label,
+.wedding-price-card label {
+  margin-bottom: 0.4rem;
 }
 
 /* Descuentos */
@@ -189,8 +189,7 @@
 }
 
 .wedding-prices-admin-header .eyebrow,
-.cinema-offers-admin-header .eyebrow,
-.cinema-offer-editor-heading .eyebrow {
+.cinema-offers-admin-header .eyebrow {
   display: inline-block;
   margin-bottom: 8px;
   color: var(--gold-dark);
@@ -198,14 +197,6 @@
   font-weight: 700;
   letter-spacing: 0.16em;
   line-height: 1.4;
-}
-
-.wedding-prices-admin-header h4,
-.cinema-offers-admin-header h4 {
-  margin: 0;
-  font-size: clamp(1.35rem, 2vw, 1.8rem);
-  font-weight: 600;
-  line-height: 1.25;
 }
 
 .wedding-prices-admin-header p,
@@ -416,13 +407,6 @@
   gap: 8px;
 }
 
-.cinema-offers-admin input:focus-visible,
-.cinema-offers-admin select:focus-visible,
-.cinema-offers-admin textarea:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 3px;
-}
-
 .cinema-offers-admin .private-material-edit:hover:not(:disabled) {
   border-color: var(--gold);
   color: var(--gold);
@@ -443,158 +427,6 @@
     var(--gold) 12%,
     transparent
   );
-}
-
-/* Editor de ofertas */
-
-.cinema-offer-editor {
-  margin-top: 28px;
-  padding: 24px;
-  border: 1px solid var(--offers-border);
-  border-radius: 12px;
-  background: var(--offers-surface);
-  animation: cinema-offer-editor-in 180ms ease-out;
-}
-
-.cinema-offer-editor-heading {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.cinema-offer-editor-heading h5 {
-  margin: 0;
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-.cinema-offer-editor-heading > button {
-  color: var(--muted);
-}
-
-.cinema-offer-form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
-}
-
-.cinema-offer-form-grid > label {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 9px;
-  color: var(--offers-text);
-  font-size: 0.82rem;
-  font-weight: 600;
-}
-
-.cinema-offers-admin input:not([type="checkbox"]),
-.cinema-offers-admin select,
-.cinema-offers-admin textarea {
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-  min-height: 44px;
-  padding: 11px 12px;
-  border: 1px solid var(--offers-border);
-  border-radius: 7px;
-  background: var(--offers-surface-hover);
-  color: var(--offers-text);
-  font: inherit;
-  font-size: 0.88rem;
-  font-weight: 400;
-  line-height: 1.5;
-  transition:
-    border-color 180ms ease,
-    background-color 180ms ease;
-}
-
-.cinema-offers-admin input::placeholder,
-.cinema-offers-admin textarea::placeholder {
-  color: var(--muted);
-  opacity: 0.8;
-}
-
-.cinema-offers-admin input:hover:not(:disabled),
-.cinema-offers-admin select:hover:not(:disabled),
-.cinema-offers-admin textarea:hover:not(:disabled) {
-  border-color: color-mix(
-    in srgb,
-    var(--gold) 45%,
-    var(--offers-border)
-  );
-}
-
-.cinema-offers-admin input:disabled,
-.cinema-offers-admin select:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.cinema-offers-admin textarea {
-  min-height: 110px;
-  resize: vertical;
-}
-
-.cinema-offers-admin select {
-  cursor: pointer;
-}
-
-.cinema-offers-admin select option {
-  background: var(--offers-surface);
-  color: var(--offers-text);
-}
-
-.cinema-offer-form-grid > .cinema-offer-description-field {
-  grid-column: 1 / -1;
-}
-
-.cinema-offer-form-grid > .cinema-offer-publish-toggle {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  align-self: center;
-  gap: 10px;
-  cursor: pointer;
-}
-
-.cinema-offer-publish-toggle input[type="checkbox"] {
-  width: 17px;
-  height: 17px;
-  flex-shrink: 0;
-  margin: 0;
-  accent-color: var(--gold);
-  cursor: pointer;
-}
-
-.cinema-offer-draft-note {
-  margin: 20px 0;
-  padding: 12px 14px;
-  border-left: 3px solid var(--gold);
-  background: color-mix(
-    in srgb,
-    var(--gold) 7%,
-    transparent
-  );
-  color: var(--muted);
-  font-size: 0.84rem;
-  line-height: 1.6;
-}
-
-/* Animaciones */
-
-@keyframes cinema-offer-editor-in {
-  from {
-    opacity: 0;
-    transform: translateY(5px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* Tablet */
@@ -669,38 +501,4 @@
     width: 100%;
   }
 
-  .cinema-offer-editor {
-    padding: 17px;
-  }
-
-  .cinema-offer-editor-heading {
-    margin-bottom: 20px;
-  }
-
-  .cinema-offer-form-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 17px;
-  }
-
-  .cinema-offer-form-grid > .cinema-offer-description-field {
-    grid-column: auto;
-  }
-
-  .cinema-offer-form-grid > .cinema-offer-publish-toggle {
-    align-items: flex-start;
-    line-height: 1.5;
-  }
-}
-
-/* Respeta las preferencias de accesibilidad */
-
-@media (prefers-reduced-motion: reduce) {
-  .cinema-offers-admin *,
-  .cinema-offers-admin *::before,
-  .cinema-offers-admin *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
 }

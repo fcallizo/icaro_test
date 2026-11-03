@@ -1,5 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { ProductionMaterial, ProductionMaterialCategory } from '@/components/private/private-types';
+import { createFormFields } from '@/components/common/FormFields';
 
 const categories: Array<{ value: ProductionMaterialCategory; label: string }> = [
   { value: 'camera', label: 'Cámaras' },
@@ -30,6 +31,15 @@ export function ProductionMaterialsTab({
   const [name, setName] = useState('');
   const [basePrice, setBasePrice] = useState('');
   const [drafts, setDrafts] = useState<Record<string, { name: string; basePrice: string }>>({});
+
+  const createFields = createFormFields({
+    values: { name, basePrice },
+    idPrefix: 'production-material-new',
+    onChange: (field, value) => {
+      if (field === 'name') setName(value);
+      else setBasePrice(value);
+    },
+  });
 
   const handleCreate = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -68,14 +78,8 @@ export function ProductionMaterialsTab({
               {categories.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
             </select>
           </label>
-          <label>
-            Material
-            <input value={name} onChange={(event) => setName(event.target.value)} maxLength={120} required placeholder="Nombre del material" />
-          </label>
-          <label>
-            Precio base (€)
-            <input type="number" min="0" step="0.01" value={basePrice} onChange={(event) => setBasePrice(event.target.value)} placeholder="Opcional" />
-          </label>
+          {createFields.input('name', 'Material', 'text', true, false, false, 'Nombre del material', 120)}
+          {createFields.inputSuffix('basePrice', 'Precio base', false, false, false, '€', 'Opcional')}
           <button type="submit" className="private-gold-button" disabled={isCreating}>
             {isCreating ? 'Añadiendo...' : 'Añadir material'}
           </button>
@@ -90,6 +94,15 @@ export function ProductionMaterialsTab({
               <div className="production-material-list">
                 {group.materials.map((material) => {
                   const draft = drafts[material.id];
+                  const materialFields = createFormFields({
+                    values: {
+                      name: draft?.name ?? material.name,
+                      basePrice: draft?.basePrice ?? String(material.basePrice ?? ''),
+                    },
+                    idPrefix: `production-material-${material.id}`,
+                    onChange: (field, value) => updateDraft(material, field, value),
+                  });
+
                   return (
                     <form
                       className={`production-material-row${material.active ? '' : ' inactive'}`}
@@ -100,14 +113,8 @@ export function ProductionMaterialsTab({
                       }}
                     >
                       <span className="production-material-state">{material.active ? 'Activo' : 'Retirado'}</span>
-                      <label>
-                        Nombre
-                        <input value={draft?.name ?? material.name} onChange={(event) => updateDraft(material, 'name', event.target.value)} maxLength={120} required />
-                      </label>
-                      <label>
-                        Precio base (€)
-                        <input type="number" min="0" step="0.01" value={draft?.basePrice ?? String(material.basePrice ?? '')} onChange={(event) => updateDraft(material, 'basePrice', event.target.value)} placeholder="Sin precio" />
-                      </label>
+                      {materialFields.input('name', 'Nombre', 'text', true, false, false, undefined, 120)}
+                      {materialFields.inputSuffix('basePrice', 'Precio base', false, false, false, '€', 'Sin precio')}
                       <button type="submit" className="private-gold-button" disabled={busyId === material.id}>
                         {busyId === material.id ? 'Guardando...' : 'Guardar'}
                       </button>

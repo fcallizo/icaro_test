@@ -157,6 +157,7 @@
 .customer-wedding-form .field-group label {
   color: var(--gold-dark);
   font-family: 'Montserrat', sans-serif;
+  margin-bottom: 0.4rem;
 }
 
 .customer-wedding-form .field-group input,

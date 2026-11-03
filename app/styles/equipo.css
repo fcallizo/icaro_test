@@ -1,4 +1,3 @@
-
 .event-management-intro {
   margin: -0.25rem 0 1rem;
   color: #aaa;
@@ -13,23 +12,14 @@
   gap: 0.65rem 0.9rem;
 }
 
-.event-member-create label,
+.event-member-create button {
+  height: 44px !important;
+}
+
 .event-member-link label {
   grid-column: 1 / -1;
   color: #bbb;
   font-size: 0.72rem;
-}
-
-.event-member-create input,
-.event-member-link input {
-  width: 100%;
-  min-width: 0;
-  min-height: 40px;
-  padding: 0.6rem 0.7rem;
-  border: 1px solid rgba(255,255,255,0.16);
-  background: #101112;
-  color: #fff;
-  font-size: 0.8rem;
 }
 
 .event-member-link {
