@@ -1231,6 +1231,22 @@ span.nav-label > a {
   margin-bottom: 0.4rem;
 }
 
+.booking-form .international-phone-input {
+  background: #111;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+}
+
+
+.booking-form .PhoneInputInput,
+.booking-form .PhoneInputCountry,
+.booking-form .PhoneInputInput:focus,
+.booking-form .PhoneInputInput:focus-visible,
+.booking-form .PhoneInputInput:active {
+  border: none !important;
+  outline: none !important;
+}
+
 .calendar-block {
   align-self: start;
 }
@@ -1767,6 +1783,7 @@ input[type="date"] {
   background: var(--bg-light-raised);
   color: var(--text-dark);
   max-width: 840px;
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 .wedding-panel .field-group input,
@@ -1777,20 +1794,30 @@ input[type="date"] {
   color: var(--text-dark);
 }
 
-.wedding-panel .field-group input:focus,
-.wedding-panel .field-group textarea:focus,
-.wedding-panel .field-group select:focus{
-  border: 1px solid var(--gold) !important;
-  border-color: var(--gold-dark) !important;
+
+
+.reservation-layout .booking-form .field-group input:focus,
+.reservation-layout .booking-form .field-group textarea:focus,
+.reservation-layout .booking-form .field-group select:focus {
+  border-color: var(--gold-dark);
+  outline: 1px solid var(--gold-dark);
+}
+
+.reservation-layout .booking-form .international-phone-input:focus-within {
+  border-color: var(--gold-dark);
+  outline: 1.5px solid var(--gold-dark);
 }
 
 .wedding-panel .field-group input[type="date"] {
   color-scheme: light;
 }
 
+.wedding-panel .international-phone-input {
+  background: #f5f5f5;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
 .wedding-panel .international-phone-input .PhoneInputCountry {
   background: #f5f5f5;
-  border-color: rgba(0,0,0,0.08);
 }
 
 /* Bloque combinado */
