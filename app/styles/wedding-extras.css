@@ -89,18 +89,18 @@
 }
 
 .wedding-extras-close {
-    width: 35px;
-    height: 35px;
-    padding-top: 2px;
-    place-items: center;
-    border: 1px solid rgba(41, 37, 33, 0.18);
-    border-radius: 5px;
-    background: transparent;
-    color: var(--muted);
-    font-size: 1.6rem;
-    line-height: 1;
-    cursor: pointer;
-    transition: background-color 160ms ease, color 160ms ease;
+  width: 35px;
+  height: 35px;
+  padding-top: 2px;
+  place-items: center;
+  border: 1px solid rgba(41, 37, 33, 0.18);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
 }
 
 .wedding-extras-close:hover {
@@ -136,8 +136,8 @@
 }
 
 .wedding-extra-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
 }
 
 .offer-card {
@@ -261,6 +261,10 @@
 @media (max-width: 700px) {
   .wedding-album-grid {
     grid-template-columns: 1fr;
+  }
+
+  .wedding-extras-cta {
+    width: 100%;
   }
 }
 
