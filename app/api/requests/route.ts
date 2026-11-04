@@ -13,6 +13,7 @@ export async function GET() {
       unifyCalendars: false,
       weddingPrices: DEFAULT_WEDDING_PRICES,
       cinemaPrices: DEFAULT_CINEMA_PRICES,
+      weddingOffers: [],
       dbConfigured: false,
     }, { status: 200 });
   }
@@ -45,12 +46,33 @@ export async function GET() {
     WHERE visible
     ORDER BY position ASC`) as CinemaPrice[];
 
+  const weddingOffers = await sql`
+    SELECT
+      id,
+      kind,
+      category,
+      title,
+      NULLIF(variant, '') AS variant,
+      description,
+      NULLIF(page_range, '') AS "pageRange",
+      price,
+      old_price AS "oldPrice"
+    FROM wedding_offers
+    WHERE visible = TRUE
+    ORDER BY sort_order ASC, title ASC, variant ASC;
+  `;
+
   return NextResponse.json({
     requests: eventRows,
     blockedRanges,
     unifyCalendars: Boolean(calendarSetting?.boolean_value),
     weddingPrices: readWeddingPrices(weddingPriceRows),
     cinemaPrices: cinemaPriceRows,
+    weddingOffers: weddingOffers.map((offer) => ({
+      ...offer,
+      price: offer.price === null ? null : Number(offer.price),
+      oldPrice: offer.oldPrice === null ? null : Number(offer.oldPrice),
+    })),
     dbConfigured: true,
   }, { status: 200 });
 }

@@ -410,6 +410,7 @@
   font-size: 0.72rem;
   font-weight: 700;
   cursor: pointer;
+  height: 44px;
 }
 
 .private-material-toggle {
@@ -534,7 +535,7 @@
 
 .private-notification-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
   gap: 0.75rem;
   align-items: start;
 }
@@ -551,6 +552,9 @@
   border-left: 3px solid var(--gold);
   background: #111213;
   min-height: -webkit-fill-available;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .private-request-card.production {
@@ -571,6 +575,12 @@
   background: #302b1e;
 }
 
+.private-request-card > .private-view-button {
+  margin-top: auto;
+  align-self: flex-end;
+  text-align: right;
+}
+
 .private-request-heading {
   margin-bottom: 0.55rem;
   color: #999;
@@ -585,6 +595,12 @@
 .private-request-heading time.date-conflict-pending {
   color: var(--priv-warning);
   font-weight: 800;
+}
+
+.private-request-summary {
+    margin-bottom: 10px;
+    line-height: 20px;
+    font-size: 0.9rem;
 }
 
 .private-request-kind {

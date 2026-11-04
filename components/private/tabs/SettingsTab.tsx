@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { WeddingPrices } from '@/lib/wedding-form';
 import { createFormFields } from '@/components/common/FormFields';
 import { CinemaOffersManager } from '@/components/private/tabs/CinemaOffersManager';
+import { WeddingOffersManager } from '@/components/private/tabs/WeddingOffersManager';
 
 type SettingsTabProps = {
   unifyCalendars: boolean;
@@ -198,6 +199,10 @@ export function SettingsTab({
             </button>
           </div>
         </form>
+
+        <hr className='setting-divider' />
+
+        <WeddingOffersManager />
       </section>
     </div>
   );

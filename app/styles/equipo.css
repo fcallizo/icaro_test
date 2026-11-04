@@ -12,10 +12,6 @@
   gap: 0.65rem 0.9rem;
 }
 
-.event-member-create button {
-  height: 44px !important;
-}
-
 .event-member-link label {
   grid-column: 1 / -1;
   color: #bbb;

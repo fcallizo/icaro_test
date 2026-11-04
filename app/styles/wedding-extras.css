@@ -1,0 +1,293 @@
+.wedding-offers-admin {
+  width: 100%;
+  min-width: 0;
+  color: var(--text-color, #f4f1eb);
+}
+
+.wedding-offer-page-range {
+  margin-bottom: 0 !important;
+  color: var(--gold-light) !important;
+  font-size: 0.78rem !important;
+}
+
+.wedding-offer-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.wedding-offer-form-grid .wide {
+  grid-column: 1 / -1;
+}
+
+.wedding-extras-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 2rem auto 0;
+  text-align: center;
+  width: 525px;
+}
+
+.wedding-extras-cta p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.wedding-extras-overlay {
+  position: fixed;
+  z-index: 2147482000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: clamp(12px, 3vw, 32px);
+  overflow-y: auto;
+  background: rgba(15, 15, 15, 0.72);
+  backdrop-filter: blur(7px);
+}
+
+.wedding-extras-dialog {
+  width: min(90vw, 100%);
+  max-height: min(88vh, 900px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(181, 139, 112, 0.36);
+  border-radius: 18px;
+  background: var(--bg-light);
+  color: #292521;
+  box-shadow: 0 25px 90px rgba(0, 0, 0, 0.35);
+}
+
+.wedding-extras-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 50px 5px 50px
+}
+
+.wedding-extras-eyebrow {
+  color: var(--gold-dark);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.wedding-extras-dialog-body h2 {
+  margin: 8px 0 6px;
+  font-family: 'Allura', 'Segoe Script', cursive;
+  font-size: clamp(3.3rem, 4vw, 3.3rem);
+  font-weight: 500;
+}
+
+.wedding-extras-dialog-body p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
+.wedding-extras-close {
+    width: 35px;
+    height: 35px;
+    padding-top: 2px;
+    place-items: center;
+    border: 1px solid rgba(41, 37, 33, 0.18);
+    border-radius: 5px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 160ms ease, color 160ms ease;
+}
+
+.wedding-extras-close:hover {
+  background: var(--bg-light-raised);
+  color: var(--gold-dark);
+  border: 1px solid var(--gold-dark);
+}
+
+.wedding-extras-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 26px clamp(22px, 5vw, 48px);
+  overflow-y: auto;
+  scrollbar-color: var(--gold) var(--bg-light);
+}
+
+.wedding-extras-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.wedding-extra-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 20px;
+  border-radius: 12px;
+  background: var(--bg-light-raised);
+}
+
+.wedding-extra-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+.offer-card {
+  border: 2px solid var(--gold);
+
+  .wedding-extra-price strong {
+    color: var(--gold);
+    font-size: 1.2rem;
+  }
+}
+
+.no-offer-card {
+  border: 1px solid var(--gold-light);
+}
+
+.wedding-extra-card-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.wedding-extra-offer {
+  z-index: 1;
+  padding: 6px 10px;
+  border-radius: 5px;
+  background: var(--gold);
+  font-family: Georgia, 'Times New Roman', italic, serif;
+  font-style: italic;
+  color: #fff;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.wedding-extra-card h3,
+.wedding-extras-section-title {
+  margin: 0;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.wedding-extra-card>p {
+  margin: 0;
+  color: #6d6660;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.wedding-extra-price {
+  display: grid;
+  margin-top: auto;
+  padding-top: 6px;
+  font-family: Georgia, 'Times New Roman', italic, serif;
+  font-style: italic;
+}
+
+.wedding-extra-price strong {
+  color: var(--gold-dark);
+  font-size: 1.2rem;
+}
+
+
+.wedding-extra-old-price {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+
+.wedding-extras-section-title {
+  margin-bottom: 14px;
+}
+
+.wedding-extras-empty {
+  padding: 28px;
+  border: 1px solid rgba(88, 70, 57, 0.14);
+  border-radius: 12px;
+  background: #fffefa;
+  text-align: center;
+}
+
+.wedding-extras-empty h3 {
+  margin: 0 0 8px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.wedding-extras-empty p {
+  max-width: 440px;
+  margin: 0 auto;
+  color: #6d6660;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.wedding-album-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.wedding-album-card {
+  min-height: 170px;
+}
+
+.wedding-album-variant {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--muted);
+  font-weight: 700;
+  font-style: italic;
+  font-size: 1.3rem;
+}
+
+.wedding-album-card .wedding-album-pages {
+  color: #302c28;
+  font-weight: 600;
+}
+
+@media (max-width: 700px) {
+  .wedding-album-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+
+  .wedding-offer-form-grid,
+  .wedding-extras-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wedding-extras-overlay {
+    padding: 0;
+  }
+
+  .wedding-extras-dialog {
+    width: 100%;
+    min-height: 100%;
+    max-height: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .wedding-extras-dialog-header {
+    padding: 22px 18px 18px;
+  }
+
+  .wedding-extras-dialog-body {
+    padding: 20px 18px;
+  }
+}

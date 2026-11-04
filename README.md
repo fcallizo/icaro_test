@@ -43,6 +43,8 @@ Puedes ejecutar el script SQL incluido en Neon para preparar las tablas:
 \i scripts/init-db.sql
 ```
 
+Las ofertas extra de boda se guardan en `wedding_offers`. Se crean con tarifas vacías y ocultas para que puedas configurarlas y publicarlas desde **Área privada → Configuración → Extras y álbumes**.
+
 También hay endpoints API disponibles:
 
 - `GET /api/health`

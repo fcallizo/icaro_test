@@ -9,6 +9,7 @@ import { CalendarBlockRange } from '@/components/private/private-types';
 import { DEFAULT_WEDDING_PRICES, WeddingPrices } from '@/lib/wedding-form';
 import { DEFAULT_CINEMA_PRICES, CinemaPrice } from '@/lib/cinema-forms';
 import { EventType, PageTheme, PageView } from '@/lib/properties';
+import type { WeddingOffer } from '@/lib/wedding-offers';
 
 type RequestItem = {
   id: string;
@@ -54,6 +55,7 @@ export default function HomePage() {
   const [unifyCalendars, setUnifyCalendars] = useState(false);
   const [weddingPrices, setWeddingPrices] = useState<WeddingPrices>(DEFAULT_WEDDING_PRICES);
   const [cinemaPrices, setCinemaPrices] = useState<CinemaPrice[]>(DEFAULT_CINEMA_PRICES);
+  const [weddingOffers, setWeddingOffers] = useState<WeddingOffer[]>([]);
   const [toast, setToast] = useState<{ message: string; tone: StatusToastTone; surface?: PageTheme } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -71,6 +73,7 @@ export default function HomePage() {
         setUnifyCalendars(Boolean(data.unifyCalendars));
         if (data.weddingPrices) setWeddingPrices(data.weddingPrices as WeddingPrices);
         if (data.cinemaPrices) setCinemaPrices(data.cinemaPrices as CinemaPrice[]);
+        if (Array.isArray(data.weddingOffers)) setWeddingOffers(data.weddingOffers as WeddingOffer[]);
       } catch (error) {
         console.warn('No se pudieron cargar las solicitudes:', error);
       }
@@ -170,6 +173,7 @@ export default function HomePage() {
         blockedRanges={blockedRanges}
         unifyCalendars={unifyCalendars}
         weddingPrices={weddingPrices}
+        weddingOffers={weddingOffers}
         isSubmitting={isSubmitting}
         onWeddingSubmit={handleWeddingSubmit}
       />

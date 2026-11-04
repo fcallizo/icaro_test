@@ -1,11 +1,17 @@
 import { WeddingPrices } from '@/lib/wedding-form';
+import { useCallback, useState } from 'react';
+import type { WeddingOffer } from '@/lib/wedding-offers';
+import { WeddingExtrasModal } from '../WeddingExtrasModal';
 
 type WeddingInfoTabProps = {
   prices: WeddingPrices;
+  offers: WeddingOffer[];
   onReserve: () => void;
 };
 
-export function WeddingInfoTab({ prices, onReserve }: WeddingInfoTabProps) {
+export function WeddingInfoTab({ prices, offers, onReserve }: WeddingInfoTabProps) {
+  const [showExtras, setShowExtras] = useState(false);
+  const closeExtras = useCallback(() => setShowExtras(false), []);
 
   const duoBasePrice = prices.complementaryComplete + prices.weddingComplete;
   const trioBasePrice = 2 * prices.complementaryComplete + prices.weddingComplete;
@@ -60,6 +66,7 @@ export function WeddingInfoTab({ prices, onReserve }: WeddingInfoTabProps) {
             </article>
           </div>
         </div>
+
       </section>
 
       <section>
@@ -185,6 +192,13 @@ export function WeddingInfoTab({ prices, onReserve }: WeddingInfoTabProps) {
           <p className="pricing-note">Descuento aplicado sobre el precio de los packs completos de cada servicio.</p>
           <p className="pricing-note">Los precios son orientativos: las horas adicionales, el desplazamiento y las necesidades de cada pareja pueden modificar el presupuesto final. Consultadnos para una propuesta personalizada.</p>
         </div>
+
+        <div className="wedding-extras-cta">
+          <p>¿Queréis personalizar aún más vuestro día?</p>
+          <button type="button" className="submit-btn" onClick={() => setShowExtras(true)}>
+            Qué extras podéis incluir en vuestra boda
+          </button>
+        </div>
       </section>
 
       <div className="divider-block light">
@@ -194,6 +208,7 @@ export function WeddingInfoTab({ prices, onReserve }: WeddingInfoTabProps) {
         <p> Contadnos la fecha y el lugar y os respondemos en menos de 24 h con una propuesta sin compromiso. </p>
         <button className="submit-btn" onClick={() => onReserve()}>Consultar Disponibilidad</button>
       </div>
+      {showExtras && <WeddingExtrasModal offers={offers} onClose={closeExtras} />}
     </div>
   );
 }

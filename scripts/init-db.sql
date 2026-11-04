@@ -330,4 +330,58 @@ VALUES
   ('0d51c652-5f6b-4fbe-a4f6-f0a289365ffa', 3, 'Sesión fotográfica', 100, 125, TRUE, 'Sesiones personalizadas para proyectos personales, retratos, marcas o necesidades profesionales.')
 ON CONFLICT (id) DO NOTHING; 
 
+CREATE TABLE IF NOT EXISTS wedding_offers (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  kind TEXT NOT NULL CHECK (kind IN ('extra', 'album')),
+  category TEXT NOT NULL DEFAULT 'celebration'
+    CHECK (category IN ('coverage', 'celebration', 'delivery')),
+  title TEXT NOT NULL,
+  variant TEXT NOT NULL DEFAULT '',
+  description TEXT NOT NULL DEFAULT '',
+  page_range TEXT NOT NULL DEFAULT '',
+  price NUMERIC(12, 2) CHECK (price IS NULL OR price >= 0),
+  old_price NUMERIC(12, 2) CHECK (old_price IS NULL OR (price IS NOT NULL AND old_price > price)),
+  visible BOOLEAN NOT NULL DEFAULT TRUE,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (kind, title, variant)
+);
+
+INSERT INTO wedding_offers (id, sort_order, kind, category, title, variant, page_range, price, old_price, description)
+VALUES
+  -- tecnicos y horas extra
+  ('6bc20ad1-91d1-4b72-a233-000000000001', 1, 'extra', 'coverage', 'Técnico Auxiliar Fotográfico', '', '',
+    150, Null, 'Un segundo fotógrafo se une al equipo y se encarga de la fotografía durante toda la celebración, para que ningún momento se quede sin capturar.'),
+  ('6bc20ad1-91d1-4b72-a233-000000000002', 2, 'extra', 'coverage', 'Técnico Auxiliar de Video', '', '',
+    150, Null, 'Un segundo videógrafo se incorpora al equipo y se encarga del vídeo durante toda la celebración, cubriendo los ángulos que quedan fuera del plano principal.'),
+  ('6bc20ad1-91d1-4b72-a233-000000000003', 3, 'extra', 'coverage', 'Hora extra de cobertura', '', 'por hora',
+    120, NULL, 'Una hora más de cámara donde os haga falta: el aperitivo que se alarga, la entrada de la banda o las últimas canciones de la noche.'),
+  -- Durante la celebración
+  ('6bc20ad1-91d1-4b72-a233-000000000006', 6, 'extra', 'celebration', 'Same-day edit en el banquete', '', '',
+    150, NULL, 'Vídeo resumen del día, listo para proyectarse durante el banquete. Recoge lo ocurrido hasta ese momento.'),
+  ('6bc20ad1-91d1-4b72-a233-000000000007', 7, 'extra', 'celebration', 'entrevistas a invitados', '', '',
+    150, NULL, 'Un rincón con micrófono donde familiares y amigos cuentan lo que nadie más graba. Las mejores respuestas las entrelazamos en el montaje del día.'),
+  ('6bc20ad1-91d1-4b72-a233-000000000008', 8, 'extra', 'celebration', 'Tomas aéreas con dron', '', '',
+    0, 150, 'Planos generales de la finca, la ceremonia al aire libre y la fiesta vista desde arriba. Lo volamos siempre que el espacio, la normativa y el tiempo lo permitan.'),
+  ('6bc20ad1-91d1-4b72-a233-000000000009', 9, 'extra', 'celebration', 'Photocall personalizado', '', '',
+  NULL, NULL, 'Photocall montado y atendido durante toda la celebración, con atrezzo y una decoración adaptada al estilo de la boda.'),
+  ('6bc20ad1-91d1-4b72-a233-000000000010', 10, 'extra', 'celebration', 'Guestbox: cámaras para invitados', '', '6 cámaras',
+  130, NULL, 'Cámaras desechables en las mesas para que los invitados fotografíen su propia boda. Sus copias reveladas llegan con el reportaje.'),
+  -- Albumes de fotos
+  ('6bc20ad1-91d1-4b72-a233-000000000011', 11, 'album', 'celebration', 'Álbum de fotos', 'Essential', '70-80 páginas',
+    300, NULL, 'Un album fotografico de 70 a 80 páginas con las imágenes más importantes del día, maquetado con cuidado para dejar en el salón, no en el trastero.'),
+  ('6bc20ad1-91d1-4b72-a233-000000000012', 12, 'album', 'celebration', 'Álbum de fotos', 'Premium', '100-110 páginas',
+    400, 500, 'El relato casi completo: también invitados, detalles y esos momentos que en el Essential quedan fuera. 100-110 páginas que recoge el día completo, con un montaje más elaborado y una terminación más cuidada.'),
+  ('6bc20ad1-91d1-4b72-a233-000000000013', 13, 'album', 'celebration', 'Álbum de fotos', 'Delux', '140-150 páginas',
+    700, NULL, 'Nuestro álbum más largo: 140-150 páginas para guardar la boda entera con sus repeticiones, el baile y las conversaciones de sobremesa. Encuadernación artesanal y diseño cerrado contigo.'),
+  -- Entregables
+  ('6bc20ad1-91d1-4b72-a233-000000000019', 14, 'extra', 'delivery', 'Vídeo de ceremonia', '', '',
+    80, 200, 'Grabación completa de la ceremonia con el audio original, lista para volver a verla las veces que queráis.'),
+  ('6bc20ad1-91d1-4b72-a233-000000000014', 4, 'extra', 'delivery', 'Adelanto en 48 horas', '', '30-50 fotos',
+    90, NULL, 'Una selección de 30-50 fotos editada y entregada en los dos días siguientes, para compartir el día mientras el reportaje final se termina.'),
+  ('6bc20ad1-91d1-4b72-a233-000000000015', 5, 'extra', 'delivery', 'Edición exprés', '', '',
+    300, NULL, 'Recepción de las fotografías editadas en 15 días en lugar del plazo habitual. Para cuando hay prisa por verlas.')
+ON CONFLICT (kind, title, variant) DO NOTHING;
+
 SELECT 'Base de datos lista para Ícaro Studio.' AS status;
