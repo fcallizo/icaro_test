@@ -1,6 +1,6 @@
 import { WeddingPrices } from '@/lib/wedding-form';
 import { useCallback, useState } from 'react';
-import type { WeddingOffer } from '@/lib/wedding-offers';
+import type { WeddingOffer } from '@/lib/wedding-form';
 import { WeddingExtrasModal } from '../WeddingExtrasModal';
 
 type WeddingInfoTabProps = {

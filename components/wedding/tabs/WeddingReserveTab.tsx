@@ -1,11 +1,10 @@
 import { Dispatch, FormEvent, SetStateAction } from 'react';
 import { AvailabilityCalendar, CalendarRequest } from '@/components/common/AvailabilityCalendar';
 import { PrivacyFormNotice } from '@/components/common/PrivacyFormNotice';
-import { CalendarBlockRange } from '@/components/private/private-types';
+import { CalendarBlockRange } from '@/lib/private-types';
 import { ContactPanel } from '@/components/common/ContactPanel';
 import { createFormFields } from '@/components/common/FormFields';
-import { ReserveWeddingForm } from '../WeddingForm';
-import { PACK_OPTIONS } from '@/lib/wedding-form';
+import { PACK_OPTIONS, ReserveWeddingForm } from '@/lib/wedding-form';
 
 type WeddingReserveTabProps = {
   weddingForm: ReserveWeddingForm;

@@ -16,7 +16,7 @@ import {
   WEDDING_OFFER_CATEGORY_LABELS,
   type WeddingOffer,
   type WeddingOfferCategory,
-} from '@/lib/wedding-offers';
+} from '@/lib/wedding-form';
 
 type OfferDraft = {
   kind: 'extra' | 'album';

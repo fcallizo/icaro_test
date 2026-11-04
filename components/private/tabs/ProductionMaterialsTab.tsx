@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { ProductionMaterial, ProductionMaterialCategory } from '@/components/private/private-types';
+import { ProductionMaterial, ProductionMaterialCategory } from '@/lib/private-types';
 import { createFormFields } from '@/components/common/FormFields';
 
 const categories: Array<{ value: ProductionMaterialCategory; label: string }> = [

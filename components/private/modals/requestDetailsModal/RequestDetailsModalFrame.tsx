@@ -1,8 +1,8 @@
 'use client';
 
 import { FormEvent, ReactNode } from 'react';
-import { PrivateRequestUpdate, RequestDetailsModalProps } from '../private-types';
-import { PrivateModalShell } from '../modals/PrivateModalShell';
+import { PrivateRequestUpdate, RequestDetailsModalProps } from '@/lib/private-types';
+import { PrivateModalShell } from '../PrivateModalShell';
 
 type RequestDetailsModalFrameProps = Omit<RequestDetailsModalProps, 'onSave'> & {
   title: string;

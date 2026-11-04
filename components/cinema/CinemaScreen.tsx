@@ -2,16 +2,15 @@ import { Dispatch, FormEvent, SetStateAction, useState } from 'react';
 import { CalendarRequest } from '@/components/common/AvailabilityCalendar';
 import { PageHeader } from '@/components/common/PageHeader';
 import { PublicLegalFooter } from '@/components/common/PublicLegalFooter';
-import { CalendarBlockRange } from '@/components/private/private-types';
+import { CalendarBlockRange } from '@/lib/private-types';
 
 import { CinemaVideoTab } from './tabs/CinemaVideoTab';
 import { CinemaInfoTab } from './tabs/CinemaInfoTab';
 import { CinemaReserveTab } from './tabs/CinemaReserveTab';
 import { CinemaWorksTab } from './tabs/CinemaWorksTab';
-import { ReserveProductionForm } from './ProductionForm';
 import { TabMode } from '@/lib/properties';
 import { CinemaAboutMeTab } from './tabs/CinemaAboutMeTab';
-import { CinemaPrice } from '@/lib/cinema-forms';
+import { CinemaPrice, ReserveProductionForm } from '@/lib/cinema-forms';
 
 type CinemaScreenProps = {
   onBackToHome: () => void;

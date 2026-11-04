@@ -1,5 +1,5 @@
 import { RequestCard } from '@/components/private/RequestCard';
-import { PrivateRequest } from '@/components/private/private-types';
+import { PrivateRequest } from '@/lib/private-types';
 
 type NotificationsTabProps = {
   requests: PrivateRequest[];

@@ -4,7 +4,7 @@ import { PRIVATE_SESSION_COOKIE, readPrivateSession } from '@/lib/private-auth';
 import {
   WEDDING_OFFER_CATEGORIES,
   type WeddingOfferCategory,
-} from '@/lib/wedding-offers';
+} from '@/lib/wedding-form';
 
 type OfferKind = 'extra' | 'album';
 

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ensureTables, sql } from '@/lib/db';
 import { PRIVATE_SESSION_COOKIE, readPrivateSession } from '@/lib/private-auth';
-import { ProductionMaterialCategory } from '@/components/private/private-types';
+import { ProductionMaterialCategory } from '@/lib/private-types';
 
 const categories: ProductionMaterialCategory[] = ['camera', 'drone', 'lighting', 'sound', 'format'];
 

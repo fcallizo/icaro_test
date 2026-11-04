@@ -5,11 +5,10 @@ import { LandingSelector } from '@/components/LandingSelector';
 import { CinemaScreen } from '@/components/cinema/CinemaScreen';
 import { WeddingScreen } from '@/components/wedding/WeddingScreen';
 import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
-import { CalendarBlockRange } from '@/components/private/private-types';
-import { DEFAULT_WEDDING_PRICES, WeddingPrices } from '@/lib/wedding-form';
+import { CalendarBlockRange } from '@/lib/private-types';
+import { DEFAULT_WEDDING_PRICES, WeddingOffer, WeddingPrices } from '@/lib/wedding-form';
 import { DEFAULT_CINEMA_PRICES, CinemaPrice } from '@/lib/cinema-forms';
 import { EventType, PageTheme, PageView } from '@/lib/properties';
-import type { WeddingOffer } from '@/lib/wedding-offers';
 
 type RequestItem = {
   id: string;

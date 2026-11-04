@@ -1,5 +1,5 @@
 import { RequestCard } from '@/components/private/RequestCard';
-import { PrivateRequest } from '@/components/private/private-types';
+import { PrivateRequest } from '@/lib/private-types';
 
 export function ConfirmedTab({ requests, selectedDate, onView }: { requests: PrivateRequest[]; selectedDate: string | null; onView: (request: PrivateRequest) => void }) {
   const confirmedRequests = requests.filter((request) => request.status === 'confirmed');

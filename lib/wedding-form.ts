@@ -1,4 +1,14 @@
 
+export type ReserveWeddingForm = {
+  nombre: string;
+  email: string;
+  telNovia: string;
+  fecha: string;
+  tipoPack: string;
+  ceremonia: string;
+  detalles: string;
+};
+
 export type WeddingFormValues = {
   nombre: string;
   email: string;
@@ -47,7 +57,8 @@ export const SERVICE_OPTIONS = [
   { value: 'duo', label: 'Sesión fotográfica + vídeo documental' },
 ];
 
-// Precios Boda
+
+/* ---------- Precios Boda ---------- */
 
 export type WeddingPrices = {
   weddingPhoto: number;
@@ -99,3 +110,34 @@ export function readWeddingPrices(rows: SettingRow[]): WeddingPrices {
 
   return prices;
 }
+
+
+/* ---------- Ofertas Boda ---------- */
+
+export const WEDDING_OFFER_CATEGORIES = [
+  'coverage',
+  'celebration',
+  'delivery',
+] as const;
+
+export type WeddingOfferCategory = (typeof WEDDING_OFFER_CATEGORIES)[number];
+
+export const WEDDING_OFFER_CATEGORY_LABELS: Record<WeddingOfferCategory, string> = {
+  coverage: 'Equipo y cobertura',
+  celebration: 'Durante la celebración',
+  delivery: 'Entrega y edición',
+};
+
+export type WeddingOffer = {
+  id: string;
+  kind: 'extra' | 'album';
+  category: WeddingOfferCategory;
+  title: string;
+  variant: string | null;
+  description: string;
+  pageRange: string | null;
+  price: number | null;
+  oldPrice: number | null;
+  visible?: boolean;
+};
+

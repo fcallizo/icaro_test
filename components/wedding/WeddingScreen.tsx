@@ -2,17 +2,15 @@ import { Dispatch, FormEvent, SetStateAction, useState } from 'react';
 import { CalendarRequest } from '@/components/common/AvailabilityCalendar';
 import { PageHeader } from '@/components/common/PageHeader';
 import { PublicLegalFooter } from '@/components/common/PublicLegalFooter';
-import { CalendarBlockRange } from '@/components/private/private-types';
+import { CalendarBlockRange } from '@/lib/private-types';
 
 import { WeddingVideoTab } from './tabs/WeddingVideoTab';
 import { WeddingInfoTab } from './tabs/WeddingInfoTab';
 import { WeddingReserveTab } from './tabs/WeddingReserveTab';
 import { WeddingWorksTab } from './tabs/WeddingWorksTab';
-import { ReserveWeddingForm } from './WeddingForm';
-import { WeddingPrices } from '@/lib/wedding-form';
+import { ReserveWeddingForm, WeddingPrices, WeddingOffer } from '@/lib/wedding-form';
 import { TabMode } from '@/lib/properties';
 import { WeddingAboutMeTab } from './tabs/WeddingAboutMeTab';
-import type { WeddingOffer } from '@/lib/wedding-offers';
 
 type WeddingScreenProps = {
   onBackToHome: () => void;

@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { CalendarBlock } from '@/components/private/private-types';
+import { CalendarBlock } from '@/lib/private-types';
 
 type CalendarBlocksTabProps = {
   blocks: CalendarBlock[];

@@ -1,4 +1,4 @@
-import { PrivateRequest } from './private-types';
+import { PrivateRequest } from '@/lib/private-types';
 
 export function RequestCard({
   request,

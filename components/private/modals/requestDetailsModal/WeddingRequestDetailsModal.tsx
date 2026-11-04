@@ -1,9 +1,9 @@
 import { FormEvent, useState } from 'react';
 import { formatPhoneNumberIntl } from 'react-phone-number-input';
-import { PrivateRequestUpdate, RequestDetailsModalProps, setDefaultFormValues } from '../private-types';
+import { PrivateRequestUpdate, RequestDetailsModalProps, setDefaultFormValues } from '@/lib/private-types';
 import { RequestDetailsModalFrame } from './RequestDetailsModalFrame';
 import { createFormFields } from '@/components/common/FormFields';
-import type { WeddingSheetBlock, WeddingSheetData } from '../pdfs/WeddingContractPdf';
+import type { WeddingSheetBlock, WeddingSheetData } from '../../pdfs/WeddingContractPdf';
 import { PACK_OPTIONS, SERVICE_OPTIONS, WeddingPrices } from '@/lib/wedding-form';
 
 
@@ -38,7 +38,7 @@ function getPackDiscount(tipoPack: string, prices: WeddingPrices) {
 async function downloadWeddingSheet(data: WeddingSheetData) {
   const [{ pdf }, { WeddingSheetPdf }] = await Promise.all([
     import('@react-pdf/renderer'),
-    import('../pdfs/WeddingContractPdf'),
+    import('../../pdfs/WeddingContractPdf'),
   ]);
 
   const blob = await pdf(<WeddingSheetPdf data={data} />).toBlob();

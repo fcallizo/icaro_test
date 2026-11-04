@@ -7,10 +7,10 @@ import { ConfirmedTab } from '@/components/private/tabs/ConfirmedTab';
 import { ProductionMaterialsTab } from '@/components/private/tabs/ProductionMaterialsTab';
 import { CalendarBlocksTab } from '@/components/private/tabs/CalendarBlocksTab';
 import { EventManagementTab } from '@/components/private/tabs/EventManagementTab';
-import { CalendarBlock, ProductionMaterial, ProductionMaterialCategory, PrivateRequest, PrivateRequestUpdate, RequestAction } from '@/components/private/private-types';
+import { CalendarBlock, ProductionMaterial, ProductionMaterialCategory, PrivateRequest, PrivateRequestUpdate, RequestAction } from '@/lib/private-types';
 import { AvailabilityCalendar } from '@/components/common/AvailabilityCalendar';
 import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
-import { RequestDetailsModal } from '@/components/private/requestDetailsModal/RequestDetailsModal';
+import { RequestDetailsModal } from '@/components/private/modals/requestDetailsModal/RequestDetailsModal';
 import { SettingsTab } from './tabs/SettingsTab';
 import { DEFAULT_WEDDING_PRICES, WeddingPrices } from '@/lib/wedding-form';
 

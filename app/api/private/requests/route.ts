@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ensureTables, sql } from '@/lib/db';
 import { PRIVATE_SESSION_COOKIE, readPrivateSession } from '@/lib/private-auth';
 import { sendRequestDecisionNotification } from '@/lib/request-notifications';
-import { setNullValue } from '@/lib/form-values';
+import { setNullValue } from '@/lib/properties';
 
 type RequestType = 'wedding' | 'production';
 

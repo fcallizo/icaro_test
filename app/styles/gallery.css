@@ -330,6 +330,9 @@
 .works-back-button:hover {
   color: var(--gold-dark);
   border-color: var(--gold-dark);
+  .icon-mask {
+    color: var(--gold-dark);
+  }
 }
 
 .works-back-text {

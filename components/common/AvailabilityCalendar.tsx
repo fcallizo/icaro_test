@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { CalendarBlockRange } from '@/components/private/private-types';
+import { CalendarBlockRange } from '@/lib/private-types';
 import { EventType, PageTheme } from '@/lib/properties';
 
 export type CalendarRequest = {

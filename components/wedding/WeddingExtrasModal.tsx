@@ -2,11 +2,11 @@
 
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import type { WeddingOffer } from '@/lib/wedding-offers';
+import type { WeddingOffer } from '@/lib/wedding-form';
 import {
   WEDDING_OFFER_CATEGORIES,
   WEDDING_OFFER_CATEGORY_LABELS,
-} from '@/lib/wedding-offers';
+} from '@/lib/wedding-form';
 
 type WeddingExtrasModalProps = {
   offers: WeddingOffer[];

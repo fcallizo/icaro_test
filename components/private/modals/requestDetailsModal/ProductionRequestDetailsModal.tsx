@@ -1,8 +1,8 @@
 import { FormEvent, useState } from 'react';
-import { PrivateRequestUpdate, ProductionMaterialCategory, RequestDetailsModalProps, setDefaultFormValues } from '../private-types';
+import { PrivateRequestUpdate, ProductionMaterialCategory, RequestDetailsModalProps, setDefaultFormValues } from '@/lib/private-types';
 import { RequestDetailsModalFrame } from './RequestDetailsModalFrame';
 import { createFormFields } from '@/components/common/FormFields';
-import type { ProductionContractData } from '../pdfs/ProductionContractPdf';
+import type { ProductionContractData } from '../../pdfs/ProductionContractPdf';
 
 const productionItems = [
   { setup: 'setupCamara', price: 'precioCamara', label: 'Cámara principal' },
@@ -32,7 +32,7 @@ async function downloadProductionContract(data: ProductionContractData) {
   // Import dinámico: la librería solo se descarga al pulsar el botón
   const [{ pdf }, { ProductionContractPdf }] = await Promise.all([
     import('@react-pdf/renderer'),
-    import('../pdfs/ProductionContractPdf'),
+    import('../../pdfs/ProductionContractPdf'),
   ]);
 
   const blob = await pdf(<ProductionContractPdf data={data} />).toBlob();

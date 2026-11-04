@@ -1,9 +1,9 @@
 import { Dispatch, FormEvent, SetStateAction } from 'react';
 import { AvailabilityCalendar, CalendarRequest } from '@/components/common/AvailabilityCalendar';
 import { PrivacyFormNotice } from '@/components/common/PrivacyFormNotice';
-import { CalendarBlockRange } from '@/components/private/private-types';
+import { CalendarBlockRange } from '@/lib/private-types';
 import { ContactPanel } from '@/components/common/ContactPanel';
-import { ReserveProductionForm } from '../ProductionForm';
+import { ReserveProductionForm } from '@/lib/cinema-forms';
 import { createFormFields } from '@/components/common/FormFields';
 
 type CinemaReserveTabProps = {

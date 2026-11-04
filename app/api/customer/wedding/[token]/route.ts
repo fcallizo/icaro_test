@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { ensureTables, sql } from '@/lib/db';
-import { setNullValue } from '@/lib/form-values';
+import { setNullValue } from '@/lib/properties';
 
 type RouteContext = {
   params: { token: string };

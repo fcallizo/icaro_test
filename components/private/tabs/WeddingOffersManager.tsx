@@ -1,8 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import type { WeddingOffer } from '@/lib/wedding-offers';
-import { WEDDING_OFFER_CATEGORY_LABELS } from '@/lib/wedding-offers';
+import type { WeddingOffer } from '@/lib/wedding-form';
+import { WEDDING_OFFER_CATEGORY_LABELS } from '@/lib/wedding-form';
 import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
 import { WeddingOfferFormModal } from '@/components/private/modals/WeddingOfferFormModal';
 
