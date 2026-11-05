@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ensureTables, sql } from '@/lib/db';
+import { sql } from '@/lib/db';
 import { PRIVATE_SESSION_COOKIE, readPrivateSession } from '@/lib/private-auth';
 import {
   WEDDING_OFFER_CATEGORIES,
@@ -123,7 +123,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'La base de datos no está configurada.' }, { status: 503 });
   }
 
-  await ensureTables();
   const offers = await sql`
     SELECT id, kind, category, title, variant, description,
       page_range AS "pageRange", price, old_price AS "oldPrice",
@@ -153,7 +152,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: validated.error }, { status: 400 });
   }
 
-  await ensureTables();
+
   const offer = validated.value;
   const [duplicate] = await sql`
     SELECT id FROM wedding_offers
@@ -207,7 +206,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: validated.error }, { status: 400 });
   }
 
-  await ensureTables();
+
   const offer = validated.value;
   const [duplicate] = await sql`
     SELECT id FROM wedding_offers

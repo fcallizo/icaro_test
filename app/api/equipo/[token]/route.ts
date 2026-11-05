@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
-import { ensureTables, sql } from '@/lib/db';
+import { sql } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,7 +16,7 @@ export async function GET(
     return NextResponse.json({ error: 'La base de datos no está configurada.' }, { status: 503 });
   }
 
-  await ensureTables();
+
   const tokenHash = createHash('sha256').update(token).digest('hex');
   const [member] = await sql`
     SELECT id, name FROM team_members

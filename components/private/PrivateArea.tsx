@@ -409,7 +409,7 @@ export function PrivateArea() {
             )}
             {setupRequired && (
               <p className="private-setup-message">
-                Configura ADMIN_USERNAME, ADMIN_PASSWORD y PRIVATE_SESSION_SECRET en .env.local para crear el primer usuario privado. La contraseña debe tener al menos 12 caracteres y el secreto de sesión 32.
+                No hay usuarios privados configurados. Ejecuta scripts/provision-private-user.mjs con PROVISION_USERNAME y PROVISION_PASSWORD para crear el primero.
               </p>
             )}
             <form className="private-login-form" onSubmit={handleLogin}>

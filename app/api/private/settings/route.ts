@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ensureTables, sql } from '@/lib/db';
+import { sql } from '@/lib/db';
 import { PRIVATE_SESSION_COOKIE, readPrivateSession } from '@/lib/private-auth';
 import { DEFAULT_WEDDING_PRICES, readWeddingPrices, WeddingPrices, WEDDING_PRICE_SETTING_KEYS } from '@/lib/wedding-form';
 
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'La base de datos no está configurada.' }, { status: 503 });
   }
 
-  await ensureTables();
+
   const [setting] = await sql`SELECT boolean_value FROM app_settings WHERE setting_key = 'unify_calendars' LIMIT 1;`;
   const weddingPriceRows = (await sql`
   SELECT setting_key, numeric_value FROM app_settings WHERE setting_key IN (
@@ -72,7 +72,7 @@ export async function PATCH(request: NextRequest) {
     weddingPrices = suppliedPrices as WeddingPrices;
   }
 
-  await ensureTables();
+
   let unifyCalendars: boolean | undefined;
   if (hasCalendarSetting) {
     const [setting] = await sql`

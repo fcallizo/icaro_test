@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ensureTables, sql } from '@/lib/db';
+import { sql } from '@/lib/db';
 import { PRIVATE_SESSION_COOKIE, readPrivateSession } from '@/lib/private-auth';
 
 function isValidDate(value: unknown): value is string {
@@ -20,7 +20,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'La base de datos no está configurada.' }, { status: 503 });
   }
 
-  await ensureTables();
   const blocks = await sql`
     SELECT id, to_char(start_date, 'YYYY-MM-DD') AS "startDate",
       to_char(end_date, 'YYYY-MM-DD') AS "endDate", reason, created_at AS "createdAt"
@@ -54,7 +53,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Un bloqueo no puede superar un año.' }, { status: 400 });
   }
 
-  await ensureTables();
   const [confirmedConflict] = await sql`
     SELECT id FROM eventos
     WHERE status = 'confirmed' AND fecha >= ${startDate} AND fecha <= ${endDate}
@@ -95,7 +93,6 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: 'El bloqueo no es válido.' }, { status: 400 });
   }
 
-  await ensureTables();
   const result = await sql`DELETE FROM calendar_blocks WHERE id = ${payload.id} RETURNING id;`;
   if (result.length === 0) {
     return NextResponse.json({ error: 'No se encontró el bloqueo.' }, { status: 404 });

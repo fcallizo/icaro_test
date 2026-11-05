@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ensureTables, sql } from '@/lib/db';
+import { sql } from '@/lib/db';
 import {
   createPrivateSession,
   PRIVATE_SESSION_COOKIE,
   privateSessionDuration,
-  seedInitialAdmin,
   verifyPassword,
 } from '@/lib/private-auth';
 
@@ -23,8 +22,6 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    await ensureTables();
-    await seedInitialAdmin();
     const [user] = await sql`SELECT id, usuario, pass FROM users WHERE usuario = ${usuario.trim()} LIMIT 1;`;
 
     if (!user || !(await verifyPassword(password, user.pass))) {

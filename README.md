@@ -18,13 +18,19 @@ cp .env.example .env.local
 
 Define los valores reales en `.env.local`. No guardes credenciales reales en `.env.example` ni en el repositorio.
 
-Para el área privada configura `ADMIN_USERNAME`, `ADMIN_PASSWORD` (mínimo 12 caracteres) y `PRIVATE_SESSION_SECRET` (mínimo 32 caracteres). Puedes generar el secreto con:
+Para el área privada configura `PRIVATE_SESSION_SECRET` (mínimo 32 caracteres). Puedes generar el secreto con:
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-Cuando `users` está vacía, la primera visita al panel crea el usuario configurado y guarda su contraseña derivada con scrypt. Los usuarios existentes no se sobrescriben. Reinicia el servidor después de cambiar `.env.local`.
+El primer usuario privado se crea de forma explícita con `scripts/provision-private-user.mjs`; así, abrir el login no modifica la base de datos. Define `PROVISION_USERNAME` y `PROVISION_PASSWORD` (mínimo 8 caracteres) en `.env.local` y ejecuta:
+
+```bash
+node scripts/provision-private-user.mjs
+```
+
+El script crea el usuario o actualiza sus credenciales si ya existe.
 
 El envío de correo usa Resend (`RESEND_API_KEY` y, opcionalmente, `RESEND_FROM`).
 
@@ -37,11 +43,13 @@ npm run dev
 
 ## Base de datos
 
-Puedes ejecutar el script SQL incluido en Neon para preparar las tablas:
+Las migraciones se ejecutan fuera de las peticiones de la aplicación. Antes del primer despliegue con esta versión, haz una copia de seguridad de la base de datos y ejecuta el esquema/migración inicial:
 
-```sql
-\i scripts/init-db.sql
+```bash
+npm run db:migrate
 ```
+
+El comando usa `DATABASE_URL` del entorno o de `.env.local` y aplica `scripts/init-db.sql` mediante el cliente Neon, sin requerir `psql`, dentro de una transacción. Este SQL también migra instalaciones existentes; incluye transformaciones de datos y eliminación de columnas antiguas, por lo que conviene revisar y respaldar la base antes de ejecutarlo. Ejecuta cualquier cambio de esquema futuro antes de desplegar código que dependa de él.
 
 Las ofertas extra de boda se guardan en `wedding_offers`. Se crean con tarifas vacías y ocultas para que puedas configurarlas y publicarlas desde **Área privada → Configuración → Extras y álbumes**.
 
@@ -60,9 +68,9 @@ Los enlaces de equipo funcionan como credenciales personales: quien tenga el enl
 ## Despliegue en Vercel
 
 1. Conecta este repositorio a Vercel.
-2. Define `DATABASE_URL`, `ADMIN_USERNAME`, `ADMIN_PASSWORD` y `PRIVATE_SESSION_SECRET` en Vercel. Añade la configuración SMTP en el entorno Production y `RESEND_API_KEY` (y opcionalmente `RESEND_FROM`) en los entornos Preview.
-3. Haz deploy del proyecto.
-4. Si la base de datos está vacía, ejecuta el SQL de `scripts/init-db.sql` desde el editor de Neon o con psql.
+2. Define `DATABASE_URL` y `PRIVATE_SESSION_SECRET` en Vercel. Añade la configuración SMTP en el entorno Production y `RESEND_API_KEY` (y opcionalmente `RESEND_FROM`) en los entornos Preview.
+3. Antes del primer despliegue de esta versión y antes de futuros cambios de esquema, haz una copia de seguridad y ejecuta `npm run db:migrate` apuntando a la base de datos del entorno correspondiente.
+4. Haz deploy del proyecto.
 
 ## Estructura principal
 
@@ -70,9 +78,3 @@ Los enlaces de equipo funcionan como credenciales personales: quien tenga el enl
 - `app/api/requests/route.ts`: API para guardar solicitudes
 - `lib/db.ts`: conexión a Neon
 - `scripts/init-db.sql`: esquema base de datos
-
-## Inicializar la base de datos
-
-```bash
-psql "$DATABASE_URL" -f scripts/init-db.sql
-```

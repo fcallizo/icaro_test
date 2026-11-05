@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ensureTables, sql } from '@/lib/db';
+import { sql } from '@/lib/db';
 import { PRIVATE_SESSION_COOKIE, readPrivateSession } from '@/lib/private-auth';
 import { sendRequestDecisionNotification } from '@/lib/request-notifications';
 import { setNullValue } from '@/lib/properties';
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'La base de datos no está configurada.' }, { status: 503 });
   }
 
-  await ensureTables();
+
   const weddings = await sql`
     SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
       w.nombre, w.email, w.tel_novio AS "telNovio", w.tel_novia AS "telNovia",
@@ -77,7 +77,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: 'Acción o solicitud no válida.' }, { status: 400 });
   }
 
-  await ensureTables();
+
   const requestType = type as RequestType;
 
   if (action === 'confirm') {

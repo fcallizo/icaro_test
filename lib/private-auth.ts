@@ -1,6 +1,5 @@
-import { randomBytes, scrypt as scryptCallback, timingSafeEqual } from 'node:crypto';
+import { scrypt as scryptCallback, timingSafeEqual } from 'node:crypto';
 import { SignJWT, jwtVerify } from 'jose';
-import { sql } from '@/lib/db';
 
 const PASSWORD_KEY_LENGTH = 64;
 const SESSION_DURATION_SECONDS = 8 * 60 * 60;
@@ -28,12 +27,6 @@ function getSessionKey() {
   return new TextEncoder().encode(secret);
 }
 
-export async function hashPassword(password: string) {
-  const salt = randomBytes(16);
-  const key = await deriveKey(password, salt);
-  return `scrypt$${salt.toString('hex')}$${key.toString('hex')}`;
-}
-
 export async function verifyPassword(password: string, storedHash: string) {
   const match = /^scrypt\$([a-f0-9]{32})\$([a-f0-9]{128})$/i.exec(storedHash);
   if (!match) return false;
@@ -42,24 +35,6 @@ export async function verifyPassword(password: string, storedHash: string) {
   const expected = Buffer.from(match[2], 'hex');
   const actual = await deriveKey(password, salt);
   return timingSafeEqual(actual, expected);
-}
-
-export async function seedInitialAdmin() {
-  if (!sql) return;
-
-  const username = process.env.ADMIN_USERNAME?.trim();
-  const password = process.env.ADMIN_PASSWORD;
-  if (!username || !password || password.length < 12) return;
-
-  const existingUsers = await sql`SELECT id FROM users LIMIT 1;`;
-  if (existingUsers.length > 0) return;
-
-  const passwordHash = await hashPassword(password);
-  await sql`
-    INSERT INTO users (usuario, pass)
-    VALUES (${username}, ${passwordHash})
-    ON CONFLICT (usuario) DO NOTHING;
-  `;
 }
 
 export async function createPrivateSession(username: string) {

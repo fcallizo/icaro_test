@@ -1,6 +1,6 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
-import { ensureTables, sql } from '@/lib/db';
+import { sql } from '@/lib/db';
 import { sendRequestNotification, sendRequestWeddingNotification } from '@/lib/request-notifications';
 import { DEFAULT_WEDDING_PRICES, readWeddingPrices } from '@/lib/wedding-form';
 import { DEFAULT_CINEMA_PRICES, CinemaPrice } from '@/lib/cinema-forms';
@@ -17,8 +17,6 @@ export async function GET() {
       dbConfigured: false,
     }, { status: 200 });
   }
-
-  await ensureTables();
 
   const eventRows = await sql`SELECT id, fecha, status, tipo AS type FROM eventos WHERE status = 'confirmed' ORDER BY created_at DESC LIMIT 100;`;
   const blockedRanges = await sql`
@@ -100,7 +98,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ request: mock, dbConfigured: false }, { status: 200 });
   }
 
-  await ensureTables();
   const requestedDate = typeof payload.fecha === 'string' ? payload.fecha : '';
   if (/^\d{4}-\d{2}-\d{2}$/.test(requestedDate)) {
     const [blockedDate] = await sql`

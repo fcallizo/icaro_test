@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
-import { ensureTables, sql } from '@/lib/db';
+import { sql } from '@/lib/db';
 import { setNullValue } from '@/lib/properties';
 
 type RouteContext = {
@@ -54,7 +54,6 @@ function isValidDate(value: string) {
 
 async function findWedding(tokenHash: string) {
   if (!sql) return null;
-  await ensureTables();
   const rows = await sql`
     SELECT e.id, e.fecha, w.nombre, w.email, w.tel_novio AS "telNovio", e.status,
       w.tel_novia AS "telNovia", w.lugar, w.novia, w.novio, w.ceremonia,

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ensureTables, sql } from '@/lib/db';
-import { PRIVATE_SESSION_COOKIE, readPrivateSession, seedInitialAdmin } from '@/lib/private-auth';
+import { sql } from '@/lib/db';
+import { PRIVATE_SESSION_COOKIE, readPrivateSession } from '@/lib/private-auth';
 
 export async function GET(request: NextRequest) {
   if (!sql) {
@@ -8,8 +8,6 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    await ensureTables();
-    await seedInitialAdmin();
     const username = await readPrivateSession(request.cookies.get(PRIVATE_SESSION_COOKIE)?.value);
     const [userState] = await sql`SELECT EXISTS(SELECT 1 FROM users) AS configured;`;
 

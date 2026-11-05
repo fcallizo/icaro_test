@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ensureTables, sql } from '@/lib/db';
+import { sql } from '@/lib/db';
 import { PRIVATE_SESSION_COOKIE, readPrivateSession } from '@/lib/private-auth';
 import { ProductionMaterialCategory } from '@/lib/private-types';
 
@@ -17,7 +17,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'La base de datos no está configurada.' }, { status: 503 });
   }
 
-  await ensureTables();
   const materials = await sql`
     SELECT id, category, name, base_price AS "basePrice", active, sort_order AS "sortOrder"
     FROM production_materials
@@ -44,7 +43,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'El precio base debe ser un importe válido.' }, { status: 400 });
   }
 
-  await ensureTables();
+
   const [material] = await sql`
     INSERT INTO production_materials (category, name, base_price)
     VALUES (${category}, ${name.trim()}, ${basePrice === null || basePrice === '' ? null : Number(basePrice)})
@@ -71,7 +70,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: 'El material no es válido.' }, { status: 400 });
   }
 
-  await ensureTables();
+
   if (typeof payload.active === 'boolean' && payload.name === undefined && payload.basePrice === undefined) {
     const [material] = await sql`
       UPDATE production_materials SET active = ${payload.active}, updated_at = NOW()

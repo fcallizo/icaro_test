@@ -1,6 +1,6 @@
 import { randomBytes, createHash } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
-import { ensureTables, sql } from '@/lib/db';
+import { sql } from '@/lib/db';
 import { PRIVATE_SESSION_COOKIE, readPrivateSession } from '@/lib/private-auth';
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '');
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'La base de datos no está configurada.' }, { status: 503 });
   }
 
-  await ensureTables();
+
   const [members, events] = await Promise.all([
     sql`
       SELECT id, name, created_at AS "createdAt", revoked_at AS "revokedAt"
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Indica un nombre de hasta 100 caracteres.' }, { status: 400 });
   }
 
-  await ensureTables();
+
   const token = createToken();
   const [member] = await sql`
     INSERT INTO team_members (name, token_hash)
@@ -108,7 +108,7 @@ export async function PATCH(request: NextRequest) {
   }
   const action = payload.action;
 
-  await ensureTables();
+
   if (action === 'assign') {
     const memberId = 'memberId' in payload ? payload.memberId : undefined;
     const eventIds = 'eventIds' in payload ? payload.eventIds : undefined;
@@ -195,7 +195,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: 'El colaborador no es válido.' }, { status: 400 });
   }
 
-  await ensureTables();
+
   const [revoked] = await sql`
     WITH revoked AS (
       UPDATE team_members SET revoked_at = NOW()
