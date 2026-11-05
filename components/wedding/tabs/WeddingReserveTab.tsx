@@ -4,6 +4,7 @@ import { PrivacyFormNotice } from '@/components/common/PrivacyFormNotice';
 import { CalendarBlockRange } from '@/lib/private-types';
 import { ContactPanel } from '@/components/common/ContactPanel';
 import { createFormFields } from '@/components/common/FormFields';
+import { RequestHoneypot } from '@/components/common/RequestHoneypot';
 import { PACK_OPTIONS, ReserveWeddingForm } from '@/lib/wedding-form';
 
 type WeddingReserveTabProps = {
@@ -67,6 +68,7 @@ export function WeddingReserveTab({
             </div>
             {input('ceremonia', 'Iglesia / lugar de la ceremonia', 'text', false, false, false, 'Nombre y dirección')}
             {textarea('detalles', 'Cuéntanos más detalles de vuestro día', false, 'Ideas clave para el tráiler, estilo del evento...')}
+            <RequestHoneypot />
             <PrivacyFormNotice />
             <button type="submit" className="submit-btn" disabled={isSubmitting}>{isSubmitting ? 'Enviando...' : 'Enviar solicitud de boda'}</button>
           </form>

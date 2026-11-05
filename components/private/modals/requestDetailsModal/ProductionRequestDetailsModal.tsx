@@ -49,16 +49,18 @@ async function downloadProductionContract(data: ProductionContractData) {
 export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
   const { request, onSave } = props;
   const materials = props.materials || [];
-  const [values, setValues] = useState<PrivateRequestUpdate>(setDefaultFormValues(request));
+  const [initialValues] = useState(() => setDefaultFormValues(request));
+  const [values, setValues] = useState<PrivateRequestUpdate>(initialValues);
   const [generating, setGenerating] = useState(false);
   const [pdfError, setPdfError] = useState('');
+  const isDirty = JSON.stringify(values) !== JSON.stringify(initialValues);
   const title = values.nombre || 'Evento cinematográfico';
 
   const { input, inputPhone, textarea, select, inputSuffix } = createFormFields({
     values,
     idPrefix: 'request',
     onChange: (field, value) => setValues((current) => ({ ...current, [field]: value })),
-    wideClassName: 'wide',
+    wideClassName: 'col-100',
     emptyOption: 'Seleccionar...',
   });
 
@@ -73,7 +75,7 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
     const hasCurrentOption = options.some((material) => material.name === currentValue);
 
     return (
-      <div className="field-group" key={field}>
+      <div className="field-group col-75" key={field}>
         <label htmlFor={`request-${field}`}>{label}</label>
         <select
           id={`request-${field}`}
@@ -140,6 +142,7 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
       title={title}
       values={values}
       canConfirm={hasCompleteBreakdown}
+      isDirty={isDirty}
       onSubmit={(event: FormEvent<HTMLFormElement>) => { event.preventDefault(); onSave(values); }}
       rightAction={hasCompleteBreakdown ? (
         <>
@@ -160,35 +163,35 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
       {input('fecha', 'Fecha', 'date', true, false, false, '')}
       {inputPhone('telefono', 'Teléfono', true)}
       {input('lugar', 'Lugar del evento', 'text', true, false, false, '')}
-      {inputSuffix('presupuesto', 'Presupuesto', true, false, false)}
-      {input('tipo', 'Tipo de producción','text', true, false, false, '')}
+      {input('tipo', 'Tipo de producción','text', true, false, false, '', undefined, 'col-75')}
+      {inputSuffix('presupuesto', 'Presupuesto', true, false, false, '€', '', 'col-25')}
       {textarea('detalles', 'Idea principal')}
-      <section className="production-contract-section wide">
+      <section className="production-contract-section col-100">
         <header className="production-contract-heading">
           <h3>Desglose técnico</h3>
           <span>Se completa antes de confirmar</span>
         </header>
         <div className="production-contract-grid">
           {materialSelect('camera', 'setupCamara', 'precioCamara', 'Cámara principal')}
-          {inputSuffix('precioCamara', 'Precio cámara', true, false, false)}
+          {inputSuffix('precioCamara', 'Precio cámara', true, false, false, '€', '', 'col-25' )}
 
           {materialSelect('drone', 'setupDrone', 'precioDrone', 'Unidad de vuelo')}
-          {inputSuffix('precioDrone', 'Precio dron', true, false, false)}
+          {inputSuffix('precioDrone', 'Precio dron', true, false, false, '€', '', 'col-25')}
 
           {materialSelect('lighting', 'setupIluminacion', 'precioIluminacion', 'Set de iluminación')}
-          {inputSuffix('precioIluminacion', 'Precio iluminación', true, false, false)}
+          {inputSuffix('precioIluminacion', 'Precio iluminación', true, false, false, '€', '', 'col-25')}
 
           {materialSelect('sound', 'setupSonido', 'precioSonido', 'Tratamiento de sonido')}
-          {inputSuffix('precioSonido', 'Precio sonido', true, false, false)}
+          {inputSuffix('precioSonido', 'Precio sonido', true, false, false, '€', '', 'col-25')}
 
           {materialSelect('format', 'formatoEntrega', 'precioFormato', 'Formato de entrega')}
-          {inputSuffix('precioFormato', 'Precio formato', true, false, false)}
+          {inputSuffix('precioFormato', 'Precio formato', true, false, false, '€', '', 'col-25')}
 
-          {input('personalExtra', 'Personal técnico extra', 'text', true, false, false, '')}
-          {inputSuffix('precioPersonalExtra', 'Precio equipo extra', true, false, false)}
+          {input('personalExtra', 'Personal técnico extra', 'text', true, false, false, '', undefined, 'col-75')}
+          {inputSuffix('precioPersonalExtra', 'Precio equipo extra', true, false, false, '€', '', 'col-25')}
 
-          {input('logistica', 'Logística y transporte', 'text', true, false, false, '')}
-          {inputSuffix('precioLogistica', 'Precio logística', true, false, false)}
+          {input('logistica', 'Logística y transporte', 'text', true, false, false, '', undefined, 'col-75')}
+          {inputSuffix('precioLogistica', 'Precio logística', true, false, false, '€', '', 'col-25')}
 
           {select('taxPercent', 'IVA', [
             { value: '0', label: 'Sin IVA (0 %)' },

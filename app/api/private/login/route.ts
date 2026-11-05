@@ -1,5 +1,7 @@
+import { isIP } from 'node:net';
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
+import { clearRateLimitBuckets, consumeRateLimitBuckets, createRateLimitBucket } from '@/lib/rate-limit';
 import {
   createPrivateSession,
   PRIVATE_SESSION_COOKIE,
@@ -13,7 +15,8 @@ export async function POST(request: NextRequest) {
   }
 
   const { usuario, password } = await request.json().catch(() => ({}));
-  if (typeof usuario !== 'string' || typeof password !== 'string' || password.length > 256) {
+  if (typeof usuario !== 'string' || !usuario.trim() || usuario.trim().length > 120
+    || typeof password !== 'string' || password.length === 0 || password.length > 256) {
     return NextResponse.json({ error: 'Usuario o contraseña no válidos.' }, { status: 400 });
   }
 
@@ -22,12 +25,34 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const [user] = await sql`SELECT id, usuario, pass FROM users WHERE usuario = ${usuario.trim()} LIMIT 1;`;
+    const normalizedUsername = usuario.trim();
+    const rawIp = request.ip
+      ?? request.headers.get('x-real-ip')
+      ?? request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
+    const clientIp = rawIp && isIP(rawIp) ? rawIp : 'unknown';
+    const rateLimitBuckets = [
+      createRateLimitBucket('login-ip', clientIp),
+      createRateLimitBucket('login-ip-user', `${clientIp}\n${normalizedUsername.toLowerCase()}`),
+    ];
+    const retryAfter = await consumeRateLimitBuckets([
+      { bucketKey: rateLimitBuckets[0], maxAttempts: 20, windowSeconds: 900, cooldownSeconds: 900 },
+      { bucketKey: rateLimitBuckets[1], maxAttempts: 5, windowSeconds: 900, cooldownSeconds: 900 },
+    ]);
+
+    if (retryAfter > 0) {
+      return NextResponse.json(
+        { error: 'Demasiados intentos. Espera antes de volver a intentarlo.' },
+        { status: 429, headers: { 'Retry-After': String(retryAfter) } },
+      );
+    }
+
+    const [user] = await sql`SELECT id, usuario, pass FROM users WHERE usuario = ${normalizedUsername} LIMIT 1;`;
 
     if (!user || !(await verifyPassword(password, user.pass))) {
       return NextResponse.json({ error: 'Usuario o contraseña incorrectos.' }, { status: 401 });
     }
 
+    await clearRateLimitBuckets(rateLimitBuckets);
     const token = await createPrivateSession(user.usuario);
     const response = NextResponse.json({ authenticated: true, username: user.usuario });
     response.cookies.set(PRIVATE_SESSION_COOKIE, token, {

@@ -1,5 +1,14 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
+CREATE TABLE IF NOT EXISTS api_rate_limits (
+  bucket_key TEXT PRIMARY KEY,
+  attempts INTEGER NOT NULL CHECK (attempts >= 0),
+  window_started_at TIMESTAMPTZ NOT NULL,
+  blocked_until TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS api_rate_limits_updated_at_idx ON api_rate_limits (updated_at);
+
 CREATE TABLE IF NOT EXISTS eventos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tipo TEXT NOT NULL CHECK (tipo IN ('wedding', 'production', 'prewedding', 'postwedding')),

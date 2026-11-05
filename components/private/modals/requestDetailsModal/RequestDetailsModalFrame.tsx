@@ -8,6 +8,7 @@ type RequestDetailsModalFrameProps = Omit<RequestDetailsModalProps, 'onSave'> & 
   title: string;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   values: PrivateRequestUpdate;
+  isDirty: boolean;
   canConfirm?: boolean;
   rightAction?: ReactNode;
   children: ReactNode;
@@ -22,6 +23,7 @@ export function RequestDetailsModalFrame({
   onAction,
   onSubmit,
   values,
+  isDirty,
   canConfirm = true,
   rightAction,
   children,
@@ -74,6 +76,7 @@ export function RequestDetailsModalFrame({
       onClose={onClose}
       onSubmit={onSubmit}
       error={error}
+      isDirty={isDirty}
       isSaving={busy}
       footerActions={footerActions}
       hint={isPending && !canConfirm

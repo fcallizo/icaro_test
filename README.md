@@ -49,7 +49,9 @@ Las migraciones se ejecutan fuera de las peticiones de la aplicación. Antes del
 npm run db:migrate
 ```
 
-El comando usa `DATABASE_URL` del entorno o de `.env.local` y aplica `scripts/init-db.sql` mediante el cliente Neon, sin requerir `psql`, dentro de una transacción. Este SQL también migra instalaciones existentes; incluye transformaciones de datos y eliminación de columnas antiguas, por lo que conviene revisar y respaldar la base antes de ejecutarlo. Ejecuta cualquier cambio de esquema futuro antes de desplegar código que dependa de él.
+El comando usa `DATABASE_URL` del entorno o de `.env.local` y aplica `scripts/init-db.sql` mediante el cliente Neon, sin requerir `psql`, dentro de una transacción. Este SQL también migra instalaciones existentes; incluye transformaciones de datos y eliminación de columnas antiguas, por lo que conviene revisar y respaldar la base antes de ejecutarlo. La tabla `api_rate_limits` debe estar creada antes de desplegar la protección del login y del formulario público. Ejecuta cualquier cambio de esquema futuro antes de desplegar código que dependa de él.
+
+El login limita a 5 intentos por combinación de IP y usuario, y a 20 por IP, en ventanas de 15 minutos. El formulario público acepta hasta 5 solicitudes por IP cada 15 minutos; el exceso recibe HTTP 429 con `Retry-After`.
 
 Las ofertas extra de boda se guardan en `wedding_offers`. Se crean con tarifas vacías y ocultas para que puedas configurarlas y publicarlas desde **Área privada → Configuración → Extras y álbumes**.
 

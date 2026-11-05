@@ -91,6 +91,7 @@ export default function HomePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'wedding',
+          companyWebsite: new FormData(event.currentTarget).get('companyWebsite'),
           ...weddingForm,
         }),
       });
@@ -119,7 +120,11 @@ export default function HomePage() {
       const response = await fetch('/api/requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'production', ...productionForm }),
+        body: JSON.stringify({
+          type: 'production',
+          companyWebsite: new FormData(event.currentTarget).get('companyWebsite'),
+          ...productionForm,
+        }),
       });
 
       const data = await response.json();

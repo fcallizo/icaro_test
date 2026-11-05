@@ -275,6 +275,7 @@ export function createFormFields<Values extends { [Field in keyof Values]: strin
       disabled = false,
       placeholder?: string,
       maxLength?: number,
+      className?: string,
     ) => (
       <FormInputField
         field={field}
@@ -282,7 +283,7 @@ export function createFormFields<Values extends { [Field in keyof Values]: strin
         label={label}
         value={values[field]}
         onChange={onChange}
-        wrapperClassName={fieldClassName(wide)}
+        wrapperClassName={[fieldClassName(wide), className].filter(Boolean).join(' ')}
         type={type}
         required={required}
         disabled={disabled || formDisabled}
@@ -316,7 +317,8 @@ export function createFormFields<Values extends { [Field in keyof Values]: strin
       disabled = false,
       wide = false,
       suffix = "€",
-      placeholder?: string,
+      placeholder?: string, 
+      className?: string,
     ) => (
       <FormPriceField
         field={field}
@@ -324,7 +326,7 @@ export function createFormFields<Values extends { [Field in keyof Values]: strin
         label={label}
         required={required}
         disabled={disabled || formDisabled}
-        wrapperClassName={fieldClassName(wide)}
+        wrapperClassName={[fieldClassName(wide), className].filter(Boolean).join(' ')}
         value={values[field]}
         onChange={onChange}
         suffix={suffix}

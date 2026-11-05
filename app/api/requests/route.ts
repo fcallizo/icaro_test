@@ -1,9 +1,181 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
+import { isIP } from 'node:net';
 import { NextRequest, NextResponse } from 'next/server';
+import { isValidPhoneNumber } from 'react-phone-number-input';
 import { sql } from '@/lib/db';
+import { consumeRateLimitBuckets, createRateLimitBucket } from '@/lib/rate-limit';
 import { sendRequestNotification, sendRequestWeddingNotification } from '@/lib/request-notifications';
-import { DEFAULT_WEDDING_PRICES, readWeddingPrices } from '@/lib/wedding-form';
+import { DEFAULT_WEDDING_PRICES, PACK_OPTIONS, readWeddingPrices } from '@/lib/wedding-form';
 import { DEFAULT_CINEMA_PRICES, CinemaPrice } from '@/lib/cinema-forms';
+
+const MAX_REQUEST_BODY_BYTES = 16 * 1024;
+const REQUEST_RATE_LIMIT = { maxAttempts: 5, windowSeconds: 900, cooldownSeconds: 900 };
+
+type JsonBodyResult = { value: unknown } | { error: string; status: number };
+
+type WeddingSubmission = {
+  type: 'wedding';
+  nombre: string;
+  email: string;
+  telNovia: string;
+  fecha: string;
+  tipoPack: string;
+  ceremonia: string;
+  detalles: string;
+};
+
+type ProductionSubmission = {
+  type: 'production';
+  nombre: string;
+  email: string;
+  telefono: string;
+  fecha: string;
+  tipo: string;
+  presupuesto: string;
+  detalles: string;
+};
+
+type RequestSubmission = WeddingSubmission | ProductionSubmission;
+
+async function readJsonBody(request: NextRequest): Promise<JsonBodyResult> {
+  const contentType = request.headers.get('content-type') ?? '';
+  if (!/^application\/json(?:\s*;|$)/i.test(contentType)) {
+    return { error: 'El formato de la solicitud no es válido.', status: 400 };
+  }
+
+  const contentLength = Number(request.headers.get('content-length'));
+  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BODY_BYTES) {
+    return { error: 'La solicitud supera el tamaño máximo permitido.', status: 413 };
+  }
+
+  const reader = request.body?.getReader();
+  if (!reader) return { error: 'El cuerpo de la solicitud está vacío.', status: 400 };
+
+  const chunks: Uint8Array[] = [];
+  let totalBytes = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    totalBytes += value.byteLength;
+    if (totalBytes > MAX_REQUEST_BODY_BYTES) {
+      await reader.cancel();
+      return { error: 'La solicitud supera el tamaño máximo permitido.', status: 413 };
+    }
+    chunks.push(value);
+  }
+
+  const body = new Uint8Array(totalBytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    body.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  try {
+    return { value: JSON.parse(new TextDecoder().decode(body)) };
+  } catch {
+    return { error: 'El cuerpo de la solicitud no contiene JSON válido.', status: 400 };
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function readTextField(
+  payload: Record<string, unknown>,
+  field: string,
+  maxLength: number,
+  required = false,
+) {
+  const rawValue = payload[field];
+  if (rawValue === undefined && !required) return '';
+  if (typeof rawValue !== 'string') return null;
+
+  const value = rawValue.trim();
+  if ((required && !value) || value.length > maxLength) return null;
+  return value;
+}
+
+function isValidDate(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
+function getClientIp(request: NextRequest) {
+  const forwardedIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
+  const ip = request.ip ?? request.headers.get('x-real-ip') ?? forwardedIp;
+  return ip && isIP(ip) ? ip : 'unknown';
+}
+
+function validateSubmission(payload: unknown): { value: RequestSubmission } | { error: string } {
+  if (!isRecord(payload)) return { error: 'La solicitud no tiene un formato válido.' };
+
+  const type = payload.type;
+  if (type !== 'wedding' && type !== 'production') {
+    return { error: 'Tipo de solicitud no válido.' };
+  }
+
+  const allowedFields = type === 'wedding'
+    ? ['type', 'companyWebsite', 'nombre', 'email', 'telNovia', 'fecha', 'tipoPack', 'ceremonia', 'detalles']
+    : ['type', 'companyWebsite', 'nombre', 'email', 'telefono', 'fecha', 'tipo', 'presupuesto', 'detalles'];
+  if (Object.keys(payload).some((field) => !allowedFields.includes(field))) {
+    return { error: 'La solicitud contiene campos no válidos.' };
+  }
+
+  const website = readTextField(payload, 'companyWebsite', 500);
+  if (website === null) return { error: 'La solicitud no tiene un formato válido.' };
+  if (website) return { error: 'No se pudo validar la solicitud.' };
+
+  const nombre = readTextField(payload, 'nombre', 120, true);
+  const email = readTextField(payload, 'email', 254, true);
+  const fecha = readTextField(payload, 'fecha', 10, true);
+  const detalles = readTextField(payload, 'detalles', 3000);
+  if (nombre === null) return { error: 'El nombre es obligatorio y no puede superar los 120 caracteres.' };
+  if (email === null || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { error: 'Introduce un email de contacto válido.' };
+  }
+  if (fecha === null || !isValidDate(fecha)) return { error: 'Introduce una fecha válida.' };
+  if (detalles === null) return { error: 'Los detalles no pueden superar los 3000 caracteres.' };
+
+  if (type === 'wedding') {
+    const telNovia = readTextField(payload, 'telNovia', 32, true);
+    const tipoPack = readTextField(payload, 'tipoPack', 32, true);
+    const ceremonia = readTextField(payload, 'ceremonia', 200);
+    if (telNovia === null || !isValidPhoneNumber(telNovia)) {
+      return { error: 'Introduce un teléfono de contacto válido.' };
+    }
+    if (tipoPack === null || !PACK_OPTIONS.some((option) => option.value === tipoPack)) {
+      return { error: 'Selecciona una opción de reportaje válida.' };
+    }
+    if (ceremonia === null) return { error: 'El lugar de la ceremonia no puede superar los 200 caracteres.' };
+
+    return {
+      value: { type, nombre, email, telNovia, fecha, tipoPack, ceremonia, detalles },
+    };
+  }
+
+  const telefono = readTextField(payload, 'telefono', 32, true);
+  const tipo = readTextField(payload, 'tipo', 120, true);
+  const presupuesto = readTextField(payload, 'presupuesto', 13, true);
+  if (telefono === null || !isValidPhoneNumber(telefono)) {
+    return { error: 'Introduce un teléfono de contacto válido.' };
+  }
+  if (tipo === null) return { error: 'El tipo de producción es obligatorio y no puede superar los 120 caracteres.' };
+  if (
+    presupuesto === null
+    || !/^\d{1,10}(?:\.\d{1,2})?$/.test(presupuesto)
+    || !Number.isFinite(Number(presupuesto))
+    || Number(presupuesto) > 9999999999.99
+  ) {
+    return { error: 'El presupuesto debe ser un importe válido igual o superior a cero.' };
+  }
+
+  return {
+    value: { type, nombre, email, telefono, fecha, tipo, presupuesto, detalles },
+  };
+}
 
 export async function GET() {
   if (!sql) {
@@ -76,52 +248,54 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const payload = await request.json();
-  const type = payload.type;
-  const email = typeof payload.email === 'string' ? payload.email.trim() : '';
+  const body = await readJsonBody(request);
+  if ('error' in body) {
+    return NextResponse.json({ error: body.error }, { status: body.status });
+  }
 
-  if (!type || !['wedding', 'production'].includes(type)) {
-    return NextResponse.json({ error: 'Tipo de solicitud no válido.' }, { status: 400 });
+  const validation = validateSubmission(body.value);
+  if ('error' in validation) {
+    return NextResponse.json({ error: validation.error }, { status: 400 });
   }
-  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return NextResponse.json({ error: 'Introduce un email de contacto válido.' }, { status: 400 });
-  }
+  const submission = validation.value;
 
   if (!sql) {
     const mock = {
       id: `mock-${Date.now()}`,
       status: 'pending',
-      ...payload,
+      ...submission,
       created_at: new Date().toISOString(),
     };
 
     return NextResponse.json({ request: mock, dbConfigured: false }, { status: 200 });
   }
 
-  const requestedDate = typeof payload.fecha === 'string' ? payload.fecha : '';
-  if (/^\d{4}-\d{2}-\d{2}$/.test(requestedDate)) {
-    const [blockedDate] = await sql`
-      SELECT id FROM calendar_blocks
-      WHERE start_date <= ${requestedDate}::date AND end_date >= ${requestedDate}::date
-      LIMIT 1;
-    `;
-    if (blockedDate) {
-      return NextResponse.json({ error: 'Esa fecha no está disponible. Elige otra para tu solicitud.' }, { status: 409 });
-    }
+  const retryAfter = await consumeRateLimitBuckets([{
+    bucketKey: createRateLimitBucket('public-request-ip', getClientIp(request)),
+    ...REQUEST_RATE_LIMIT,
+  }]);
+  if (retryAfter > 0) {
+    return NextResponse.json(
+      { error: 'Se han enviado demasiadas solicitudes. Inténtalo de nuevo más tarde.' },
+      { status: 429, headers: { 'Retry-After': String(retryAfter) } },
+    );
+  }
+
+  const { type, nombre, email, fecha } = submission;
+  const [blockedDate] = await sql`
+    SELECT id FROM calendar_blocks
+    WHERE start_date <= ${fecha}::date AND end_date >= ${fecha}::date
+    LIMIT 1;
+  `;
+  if (blockedDate) {
+    return NextResponse.json({ error: 'Esa fecha no está disponible. Elige otra para tu solicitud.' }, { status: 409 });
   }
 
   if (type === 'wedding') {
+    const { telNovia, ceremonia, detalles, tipoPack } = submission;
     const token = randomBytes(32).toString('base64url');
     const tokenHash = createHash('sha256').update(token).digest('hex');
-    const text = (field: string) => typeof payload[field] === 'string' ? payload[field].trim() : '';
-    const nombre = text('nombre');
-    const telNovia = text('telNovia');
-    const fecha = text('fecha');
-    const ceremonia = text('ceremonia');
-    const detalles = text('detalles');
-    const tipoPack = text('tipoPack');
     const eventId = randomUUID();
-    const email = text('email');
 
     const result = await sql`
       WITH new_event AS (
@@ -159,7 +333,7 @@ export async function POST(request: NextRequest) {
     }, { status: 201 });
   }
 
-  const { nombre, telefono, fecha, tipo, presupuesto, detalles } = payload;
+  const { telefono, tipo, presupuesto, detalles } = submission;
   const eventId = randomUUID();
 
   const result = await sql`

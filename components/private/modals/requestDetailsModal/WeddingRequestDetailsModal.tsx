@@ -54,9 +54,11 @@ async function downloadWeddingSheet(data: WeddingSheetData) {
 
 export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
   const { request, onSave, weddingPrices } = props;
-  const [values, setValues] = useState<PrivateRequestUpdate>(setDefaultFormValues(request));
+  const [initialValues] = useState(() => setDefaultFormValues(request));
+  const [values, setValues] = useState<PrivateRequestUpdate>(initialValues);
   const [generating, setGenerating] = useState(false);
   const [pdfError, setPdfError] = useState('');
+  const isDirty = JSON.stringify(values) !== JSON.stringify(initialValues);
 
   const title = values.nombre || 'Boda sin nombre';
 
@@ -118,7 +120,7 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
     values: formValues,
     idPrefix: 'request',
     onChange: (field, value) => setValues((current) => ({ ...current, [field]: value })),
-    wideClassName: 'wide',
+    wideClassName: 'col-100',
     emptyOption: 'Seleccionar...',
   });
 
@@ -220,6 +222,7 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
         event.preventDefault();
         onSave(valuesToSave);
       }}
+      isDirty={isDirty}
       rightAction={request.status !== 'pending' ? (
         <>
           <button
@@ -234,22 +237,22 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
         </>
       ) : undefined}
     >
-      {input('nombre', 'Nombre de la pareja', 'text', true, true, false, '')}
+      {input('nombre', 'Nombre de la pareja', 'text', true, false, false, '', undefined, 'col-100')}
       {input('email', 'Email', 'email', true, false, false, '')}
       {input('fecha', 'Fecha', 'date', true, false, false, '')}
       {inputPhone('telNovio', 'Teléfono del novio', true)}
       {inputPhone('telNovia', 'Teléfono de la novia', true)}
-      {input('novio', 'Casa del novio', 'text', false, false, false, '')}
-      {input('horaSalidaNovio', 'Salida del novio', 'time', false, false, false, '')}
-      {input('novia', 'Casa de la novia', 'text', false, false, false, '')}
-      {input('horaSalidaNovia', 'Salida de la novia', 'time', false, false, false, '')}
-      {input('ceremonia', 'Ceremonia', 'text', false, false, false, '')}
-      {input('horaCeremonia', 'Hora de la ceremonia', 'time', false, false, false, '')}
-      {input('lugar', 'Banquete', 'text', false, false, false, '')}
-      {input('horaCoctel', 'Hora del cóctel', 'time', false, false, false, '')}
-      {input('horaBarraLibre', 'Hora de la barra libre', 'time', false, false, false, '')}
+      {input('novio', 'Casa del novio', 'text', false, false, false, '', undefined, 'col-75')}
+      {input('horaSalidaNovio', 'Salida del novio', 'time', false, false, false, '', undefined, 'col-25')}
+      {input('novia', 'Casa de la novia', 'text', false, false, false, '', undefined, 'col-75')}
+      {input('horaSalidaNovia', 'Salida de la novia', 'time', false, false, false, '', undefined, 'col-25')}
+      {input('ceremonia', 'Ceremonia', 'text', false, false, false, '', undefined, 'col-75')}
+      {input('horaCeremonia', 'Hora de la ceremonia', 'time', false, false, false, '', undefined, 'col-25')}
+      {input('lugar', 'Banquete', 'text', false, false, false, '', undefined, 'col-75')}
+      {input('horaCoctel', 'Hora del cóctel', 'time', false, false, false, '', undefined, 'col-25')}
+      {input('horaBarraLibre', 'Hora de la barra libre', 'time', false, false, false, '', undefined, 'col-25')}
 
-      <section className="production-contract-section wide">
+      <section className="production-contract-section col-100">
         <header className="production-contract-heading">
           <h3>Desglose técnico</h3>
           <span>Se completa antes de confirmar</span>

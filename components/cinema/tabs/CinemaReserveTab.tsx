@@ -5,6 +5,7 @@ import { CalendarBlockRange } from '@/lib/private-types';
 import { ContactPanel } from '@/components/common/ContactPanel';
 import { ReserveProductionForm } from '@/lib/cinema-forms';
 import { createFormFields } from '@/components/common/FormFields';
+import { RequestHoneypot } from '@/components/common/RequestHoneypot';
 
 type CinemaReserveTabProps = {
   productionForm: ReserveProductionForm;
@@ -68,6 +69,7 @@ export function CinemaReserveTab({
             </div>
             {input('tipo', 'Tipo de producción', 'text', true, false, false, 'Ej: Publicidad, Videoclip, Corporativo')}
             {textarea('detalles', 'Idea principal', false, 'Explícanos brevemente tu idea para el rodaje...')}
+            <RequestHoneypot />
             <PrivacyFormNotice />
             <button type="submit" className="submit-btn" disabled={isSubmitting}>{isSubmitting ? 'Enviando...' : 'Enviar solicitud técnica'}</button>
           </form>
