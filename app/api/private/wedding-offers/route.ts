@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
-import { PRIVATE_SESSION_COOKIE, readPrivateSession } from '@/lib/private-auth';
+import { PRIVATE_SESSION_COOKIE, getPrivateSessionUser } from '@/lib/private-auth';
 import {
   WEDDING_OFFER_CATEGORIES,
   type WeddingOfferCategory,
@@ -36,7 +36,7 @@ type OfferRow = {
 };
 
 async function isAuthenticated(request: NextRequest) {
-  return Boolean(await readPrivateSession(request.cookies.get(PRIVATE_SESSION_COOKIE)?.value));
+  return Boolean(await getPrivateSessionUser(request.cookies.get(PRIVATE_SESSION_COOKIE)?.value));
 }
 
 function parsePrice(value: unknown): number | null | undefined {

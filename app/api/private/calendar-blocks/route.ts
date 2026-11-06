@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
-import { PRIVATE_SESSION_COOKIE, readPrivateSession } from '@/lib/private-auth';
+import { PRIVATE_SESSION_COOKIE, getPrivateSessionUser } from '@/lib/private-auth';
 
 function isValidDate(value: unknown): value is string {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
@@ -9,7 +9,7 @@ function isValidDate(value: unknown): value is string {
 }
 
 async function isAuthenticated(request: NextRequest) {
-  return Boolean(await readPrivateSession(request.cookies.get(PRIVATE_SESSION_COOKIE)?.value));
+  return Boolean(await getPrivateSessionUser(request.cookies.get(PRIVATE_SESSION_COOKIE)?.value));
 }
 
 export async function GET(request: NextRequest) {

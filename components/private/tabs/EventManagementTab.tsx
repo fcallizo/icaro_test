@@ -8,6 +8,7 @@ import {
   type ManagedEvent,
   type TeamMember,
 } from '../modals/EventMemberEditModal';
+import { ConfirmationDialog } from '@/components/private/ConfirmationDialog';
 
 type ManagementData = {
   members: TeamMember[];
@@ -36,6 +37,7 @@ export function EventManagementTab() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [memberToRevoke, setMemberToRevoke] = useState<TeamMember | null>(null);
 
   const loadManagementData = useCallback(async () => {
     setData(await requestManagement<ManagementData>());
@@ -74,17 +76,22 @@ export function EventManagementTab() {
     }
   };
 
-  const handleRevoke = async (member: TeamMember) => {
-    if (!window.confirm(`¿Revocar el enlace de ${member.name}? Ya no podrá acceder a su calendario.`)) return;
+  const handleRevoke = async (member: TeamMember, confirmed = false) => {
+    if (!confirmed) {
+      setMemberToRevoke(member);
+      return;
+    }
     setBusyId(member.id);
     setError('');
     setSuccess('');
     try {
       await requestManagement('DELETE', { memberId: member.id });
+      setMemberToRevoke(null);
       if (editingId === member.id) setEditingId(null);
       setFreshLink('');
       await loadManagementData();
     } catch (revokeError) {
+      setMemberToRevoke(null);
       setError(revokeError instanceof Error ? revokeError.message : 'No se pudo revocar el enlace.');
     } finally {
       setBusyId('');
@@ -217,6 +224,17 @@ export function EventManagementTab() {
 
             flashSuccess(message);
           }}
+        />
+      )}
+      {memberToRevoke && (
+        <ConfirmationDialog
+          title="Revocar enlace"
+          message={`¿Revocar el enlace de ${memberToRevoke.name}? Ya no podrá acceder a su calendario.`}
+          confirmLabel="Revocar enlace"
+          isDestructive
+          isBusy={busyId === memberToRevoke.id}
+          onCancel={() => setMemberToRevoke(null)}
+          onConfirm={() => void handleRevoke(memberToRevoke, true)}
         />
       )}
     </div>

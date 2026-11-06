@@ -14,10 +14,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'La base de datos no está configurada.' }, { status: 503 });
   }
 
-  const { usuario, password } = await request.json().catch(() => ({}));
-  if (typeof usuario !== 'string' || !usuario.trim() || usuario.trim().length > 120
+  const { email, password } = await request.json().catch(() => ({}));
+  if (typeof email !== 'string' || !email.trim() || email.trim().length > 254
     || typeof password !== 'string' || password.length === 0 || password.length > 256) {
-    return NextResponse.json({ error: 'Usuario o contraseña no válidos.' }, { status: 400 });
+    return NextResponse.json({ error: 'Correo o contraseña no válidos.' }, { status: 400 });
   }
 
   if (!process.env.PRIVATE_SESSION_SECRET || process.env.PRIVATE_SESSION_SECRET.length < 32) {
@@ -25,14 +25,14 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const normalizedUsername = usuario.trim();
+    const normalizedEmail = email.trim().toLowerCase();
     const rawIp = request.ip
       ?? request.headers.get('x-real-ip')
       ?? request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
     const clientIp = rawIp && isIP(rawIp) ? rawIp : 'unknown';
     const rateLimitBuckets = [
       createRateLimitBucket('login-ip', clientIp),
-      createRateLimitBucket('login-ip-user', `${clientIp}\n${normalizedUsername.toLowerCase()}`),
+      createRateLimitBucket('login-ip-user', `${clientIp}\n${normalizedEmail}`),
     ];
     const retryAfter = await consumeRateLimitBuckets([
       { bucketKey: rateLimitBuckets[0], maxAttempts: 20, windowSeconds: 900, cooldownSeconds: 900 },
@@ -46,15 +46,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const [user] = await sql`SELECT id, usuario, pass FROM users WHERE usuario = ${normalizedUsername} LIMIT 1;`;
+    const [user] = await sql`
+      SELECT id::text AS id, email, pass, is_admin AS "isAdmin"
+      FROM users
+      WHERE LOWER(email) = ${normalizedEmail} AND pass IS NOT NULL
+      LIMIT 1;
+    `;
 
-    if (!user || !(await verifyPassword(password, user.pass))) {
-      return NextResponse.json({ error: 'Usuario o contraseña incorrectos.' }, { status: 401 });
+    if (!user || typeof user.pass !== 'string' || !(await verifyPassword(password, user.pass))) {
+      return NextResponse.json({ error: 'Correo o contraseña incorrectos.' }, { status: 401 });
     }
 
     await clearRateLimitBuckets(rateLimitBuckets);
-    const token = await createPrivateSession(user.usuario);
-    const response = NextResponse.json({ authenticated: true, username: user.usuario });
+    const token = await createPrivateSession(user.id);
+    const response = NextResponse.json({ authenticated: true, email: user.email, isAdmin: Boolean(user.isAdmin) });
     response.cookies.set(PRIVATE_SESSION_COOKIE, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

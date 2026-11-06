@@ -5,6 +5,7 @@ type EmailMessage = {
   to: string;
   subject: string;
   text: string;
+  footer?: string;
   action?: {
     label: string;
     url: string;
@@ -22,7 +23,7 @@ function escapeHtml(value: string) {
     .replace(/'/g, '&#39;');
 }
 
-function renderEmailHtml({ subject, text, action }: EmailMessage) {
+function renderEmailHtml({ subject, text, action, footer }: EmailMessage) {
   const paragraphs = text
     .split(/\n\s*\n/)
     .map((paragraph) => paragraph.trim())
@@ -57,8 +58,7 @@ function renderEmailHtml({ subject, text, action }: EmailMessage) {
       </tr>
       <tr>
         <td style="padding:20px 24px;text-align:center;color:#bdb8ac;font-size:12px;line-height:1.6;">
-          Gracias por contactar con Ícaro Studio.<br>
-          Este mensaje se ha enviado en relación con una solicitud de nuestros servicios.
+          ${footer ? escapeHtml(footer).replace(/\n/g, '<br>') : 'Gracias por contactar con Ícaro Studio.<br>Este mensaje se ha enviado en relación con una solicitud de nuestros servicios.'}
         </td>
       </tr>
     </table>

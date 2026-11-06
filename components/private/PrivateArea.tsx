@@ -13,6 +13,8 @@ import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
 import { RequestDetailsModal } from '@/components/private/modals/requestDetailsModal/RequestDetailsModal';
 import { SettingsTab } from './tabs/SettingsTab';
 import { DEFAULT_WEDDING_PRICES, WeddingPrices } from '@/lib/wedding-form';
+import { AdminUsersTab } from '@/components/private/tabs/AdminUsersTab';
+import { ConfirmationDialog } from '@/components/private/ConfirmationDialog';
 
 async function getPrivateRequests() {
   const response = await fetch('/api/private/requests', { cache: 'no-store' });
@@ -57,9 +59,10 @@ export function PrivateArea() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [setupRequired, setSetupRequired] = useState(false);
   const [sessionReady, setSessionReady] = useState(false);
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
   const [password, setPassword] = useState('');
-  const [activeTab, setActiveTab] = useState<'notifications' | 'confirmed' | 'materials' | 'blocks' | 'events' | 'settings'>('notifications');
+  const [activeTab, setActiveTab] = useState<'notifications' | 'confirmed' | 'materials' | 'blocks' | 'events' | 'settings' | 'users'>('notifications');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [unifyCalendars, setUnifyCalendars] = useState(false);
   const [isSavingCalendarSetting, setIsSavingCalendarSetting] = useState(false);
@@ -77,6 +80,7 @@ export function PrivateArea() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
   const [toast, setToast] = useState<{ message: string; tone: StatusToastTone } | null>(null);
+  const [confirmation, setConfirmation] = useState<{ message: string; onConfirm: () => void } | null>(null);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -88,7 +92,8 @@ export function PrivateArea() {
         setSetupRequired(Boolean(data.setupRequired));
         setSessionReady(Boolean(data.sessionReady));
         setIsAuthenticated(Boolean(data.authenticated));
-        setUsername(data.username || '');
+        setEmail(data.email || '');
+        setIsAdmin(Boolean(data.isAdmin));
         if (data.authenticated) {
           const [privateRequests, privateSettings, productionMaterials, privateCalendarBlocks] = await Promise.all([
             getPrivateRequests(),
@@ -121,12 +126,13 @@ export function PrivateArea() {
       const response = await fetch('/api/private/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ usuario: username, password }),
+        body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'No se pudo iniciar sesión.');
 
-      setUsername(data.username);
+      setEmail(data.email);
+      setIsAdmin(Boolean(data.isAdmin));
       setPassword('');
       setIsAuthenticated(true);
       const [privateRequests, privateSettings, productionMaterials, privateCalendarBlocks] = await Promise.all([
@@ -147,8 +153,19 @@ export function PrivateArea() {
     }
   };
 
-  const handleRequestAction = async (request: PrivateRequest, action: RequestAction, values?: PrivateRequestUpdate) => {
-    if (action === 'reject' && !window.confirm('¿Rechazar esta solicitud? Se conservará en el historial.')) return;
+  const handleRequestAction = async (
+    request: PrivateRequest,
+    action: RequestAction,
+    values?: PrivateRequestUpdate,
+    confirmed = false,
+  ) => {
+    if (action === 'reject' && !confirmed) {
+      setConfirmation({
+        message: '¿Rechazar esta solicitud? Se conservará en el historial.',
+        onConfirm: () => void handleRequestAction(request, action, values, true),
+      });
+      return;
+    }
 
     setBusyId(request.id);
     setMessage('');
@@ -224,8 +241,14 @@ export function PrivateArea() {
     }
   };
 
-  const handleDeleteCalendarBlock = async (id: string) => {
-    if (!window.confirm('¿Quieres desbloquear estas fechas?')) return;
+  const handleDeleteCalendarBlock = async (id: string, confirmed = false) => {
+    if (!confirmed) {
+      setConfirmation({
+        message: '¿Quieres desbloquear estas fechas?',
+        onConfirm: () => void handleDeleteCalendarBlock(id, true),
+      });
+      return;
+    }
 
     setBusyBlockId(id);
     try {
@@ -319,6 +342,7 @@ export function PrivateArea() {
   const handleLogout = async () => {
     await fetch('/api/private/logout', { method: 'POST' });
     setIsAuthenticated(false);
+    setIsAdmin(false);
     setRequests([]);
     setMaterials([]);
     setCalendarBlocks([]);
@@ -391,7 +415,7 @@ export function PrivateArea() {
         </div>
         {isAuthenticated ? (
           <div className="private-toolbar">
-            <span>Sesión: <strong>{username}</strong></span>
+            <span>Sesión: <strong>{email}</strong></span>
             <button type="button" className="private-logout-button" onClick={handleLogout}>Cerrar sesión</button>
           </div>
         ) : <Link href="/" className="private-back-link">Volver a la web</Link>}
@@ -413,14 +437,15 @@ export function PrivateArea() {
               </p>
             )}
             <form className="private-login-form" onSubmit={handleLogin}>
-              <label htmlFor="private-username">Usuario</label>
-              <input id="private-username" name="username" autoComplete="username" value={username} onChange={(event) => setUsername(event.target.value)} required />
+              <label htmlFor="private-email">Correo electrónico</label>
+              <input id="private-email" name="email" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} required />
               <label htmlFor="private-password">Contraseña</label>
               <input id="private-password" name="password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required />
               <button type="submit" className="private-login-button" disabled={isSubmitting || setupRequired || !sessionReady}>
                 {isSubmitting ? 'Validando...' : 'Acceder'}
               </button>
             </form>
+            {!setupRequired && <Link href="/private/forgot-password" className="private-forgot-link">¿Has olvidado la contraseña?</Link>}
             {!setupRequired && <p className="private-login-hint">Acceso exclusivo para usuarios autorizados.</p>}
             {message && <p className="private-error-message" role="alert">{message}</p>}
           </div>
@@ -462,6 +487,11 @@ export function PrivateArea() {
                 <button type="button" role="tab" aria-selected={activeTab === 'settings'} className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>
                   ⚙️​ Cofiguración
                 </button>
+                {isAdmin && (
+                  <button type="button" role="tab" aria-selected={activeTab === 'users'} className={activeTab === 'users' ? 'active' : ''} onClick={() => setActiveTab('users')}>
+                    👤 Usuarios
+                  </button>
+                )}
               </div>
 
               {message && <p className="private-error-message" role="alert">{message}</p>}
@@ -489,6 +519,8 @@ export function PrivateArea() {
                   isSavingWeddingPrices={isSavingWeddingPrices}
                   onSaveWeddingPrices={handleWeddingPricesSave}
                 />
+              ) : activeTab === 'users' && isAdmin ? (
+                <AdminUsersTab />
               ) : (
                 <CalendarBlocksTab
                   blocks={calendarBlocks}
@@ -516,6 +548,20 @@ export function PrivateArea() {
         />
       )}
       <StatusToast message={toast?.message || ''} tone={toast?.tone || 'success'} onDismiss={() => setToast(null)} />
+      {confirmation && (
+        <ConfirmationDialog
+          title="Confirmar acción"
+          message={confirmation.message}
+          confirmLabel="Continuar"
+          isDestructive
+          onCancel={() => setConfirmation(null)}
+          onConfirm={() => {
+            const confirmAction = confirmation.onConfirm;
+            setConfirmation(null);
+            confirmAction();
+          }}
+        />
+      )}
     </main>
   );
 }

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import {
   PRIVATE_SESSION_COOKIE,
-  readPrivateSession,
+  getPrivateSessionUser,
 } from '@/lib/private-auth';
 
 type CinemaOfferPayload = {
@@ -17,7 +17,7 @@ type CinemaOfferPayload = {
 
 async function isAuthenticated(request: NextRequest) {
   return Boolean(
-    await readPrivateSession(
+    await getPrivateSessionUser(
       request.cookies.get(PRIVATE_SESSION_COOKIE)?.value,
     ),
   );

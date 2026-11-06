@@ -263,6 +263,278 @@
   color: #fff;
 }
 
+.private-forgot-link {
+  display: block;
+  margin-top: 1rem;
+  color: var(--gold);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.private-forgot-link:hover {
+  text-decoration: underline;
+}
+
+.private-account-card {
+  position: relative;
+  width: min(440px, 92%);
+  margin: 3rem auto;
+  padding: 2rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #1c1d1e;
+}
+
+.private-account-card > .eyebrow {
+  color: var(--gold);
+  font-size: 0.68rem;
+}
+
+.private-account-card h1 {
+  margin: 0.7rem 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.6rem;
+}
+
+.private-account-card > p {
+  margin-bottom: 1.2rem;
+  color: #aaa;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.private-users-panel {
+  max-height: none;
+}
+
+.private-users-heading {
+  margin-bottom: 1.2rem;
+}
+
+.private-users-heading h2 {
+  margin-bottom: 0.35rem;
+  color: #eee;
+  font-size: 1.1rem;
+}
+
+.private-users-heading p {
+  color: #aaa;
+  font-size: 0.78rem;
+}
+
+.private-user-invite-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.6rem 0.8rem;
+  max-width: 720px;
+}
+
+.private-user-invite-form label {
+  grid-column: 1 / -1;
+  color: #c9c9c9;
+  font-size: 0.78rem;
+}
+
+.private-user-invite-form input {
+  min-width: 0;
+  min-height: 40px;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #101112;
+  color: #fff;
+}
+
+.private-user-invite-form .private-login-button {
+  min-height: 40px;
+  margin: 0;
+}
+
+.private-users-message {
+  margin-top: 0.8rem;
+  color: var(--priv-success);
+  font-size: 0.8rem;
+}
+
+.private-users-list {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.private-user-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.private-user-row > div:first-child {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.private-user-row strong {
+  overflow-wrap: anywhere;
+  color: #eee;
+  font-size: 0.84rem;
+}
+
+.private-user-row span {
+  color: #999;
+  font-size: 0.72rem;
+}
+
+.private-user-notifications {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  padding: 0;
+  border: 0;
+}
+
+.private-user-notifications legend {
+  margin-bottom: 0.4rem;
+  color: #999;
+  font-size: 0.68rem;
+}
+
+.private-user-notifications label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #c9c9c9;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.private-user-notifications input {
+  accent-color: var(--gold);
+}
+
+.private-user-notifications:disabled {
+  opacity: 0.55;
+}
+
+.private-user-status-active {
+  color: var(--priv-success) !important;
+}
+
+.private-user-role-admin{
+  color: var(--gold) !important;
+}
+
+.private-user-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.private-user-action {
+  min-height: 34px;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid rgba(212,175,55,0.4);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--gold);
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.private-user-action.danger {
+  border-color: rgba(255,85,85,0.4);
+  color: var(--priv-error-soft);
+}
+
+.private-user-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.private-confirmation-dialog {
+  width: min(460px, calc(100% - 32px));
+  max-width: none;
+  max-height: calc(100% - 32px);
+  margin: auto;
+  padding: 0;
+  overflow: visible;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background: #1c1d1e;
+  color: #fff;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
+}
+
+.private-confirmation-dialog::backdrop {
+  background: rgba(8, 9, 10, 0.76);
+  backdrop-filter: blur(5px);
+}
+
+.private-confirmation-card {
+  padding: 1.6rem;
+}
+
+.private-confirmation-card > .eyebrow {
+  color: var(--gold);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+}
+
+.private-confirmation-card h2 {
+  margin-top: 0.55rem;
+  color: #f4f1ea;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.35rem;
+}
+
+.private-confirmation-card p {
+  margin-top: 0.8rem;
+  color: #c4c4c4;
+  font-size: 0.84rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.private-confirmation-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  margin-top: 1.5rem;
+}
+
+.private-confirmation-actions button {
+  min-height: 40px;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: transparent;
+  color: #ddd;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.private-confirmation-actions .private-confirmation-submit {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: #171717;
+  font-weight: 700;
+}
+
+.private-confirmation-actions .private-confirmation-submit.danger {
+  border-color: rgba(255, 85, 85, 0.6);
+  background: rgba(255, 85, 85, 0.14);
+  color: var(--priv-error-soft);
+}
+
+.private-confirmation-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .private-logout-button,
 .private-download-button {
   border: 1px solid rgba(212,175,55,0.45);
@@ -550,7 +822,7 @@
   padding: 1rem;
   border: 1px solid var(--border);
   border-left: 3px solid var(--gold);
-  background: #111213;
+  background: var(--priv-card-bg);
   min-height: -webkit-fill-available;
   display: flex;
   flex-direction: column;
@@ -840,4 +1112,23 @@
 .private-download-button {
   width: 100%;
   margin-top: 1rem;
+}
+
+@media (max-width: 640px) {
+  .private-user-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .private-user-actions {
+    justify-content: flex-start;
+  }
+
+  .private-user-invite-form {
+    grid-template-columns: 1fr;
+  }
+
+  .private-user-invite-form label {
+    grid-column: auto;
+  }
 }

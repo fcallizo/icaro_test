@@ -1,5 +1,6 @@
 import { scrypt as scryptCallback, timingSafeEqual } from 'node:crypto';
 import { SignJWT, jwtVerify } from 'jose';
+import { sql } from '@/lib/db';
 
 const PASSWORD_KEY_LENGTH = 64;
 const SESSION_DURATION_SECONDS = 8 * 60 * 60;
@@ -37,10 +38,10 @@ export async function verifyPassword(password: string, storedHash: string) {
   return timingSafeEqual(actual, expected);
 }
 
-export async function createPrivateSession(username: string) {
+export async function createPrivateSession(userId: string) {
   return new SignJWT({})
     .setProtectedHeader({ alg: 'HS256' })
-    .setSubject(username)
+    .setSubject(userId)
     .setIssuedAt()
     .setExpirationTime(`${SESSION_DURATION_SECONDS}s`)
     .sign(getSessionKey());
@@ -55,6 +56,19 @@ export async function readPrivateSession(token?: string) {
   } catch {
     return null;
   }
+}
+
+export async function getPrivateSessionUser(token?: string) {
+  const userId = await readPrivateSession(token);
+  if (!userId || !sql) return null;
+
+  const [user] = await sql`
+    SELECT id::text AS id, usuario, email, is_admin AS "isAdmin"
+    FROM users
+    WHERE id::text = ${userId}
+    LIMIT 1;
+  `;
+  return user ?? null;
 }
 
 export const privateSessionDuration = SESSION_DURATION_SECONDS;

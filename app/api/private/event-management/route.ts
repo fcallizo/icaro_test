@@ -1,7 +1,7 @@
 import { randomBytes, createHash } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
-import { PRIVATE_SESSION_COOKIE, readPrivateSession } from '@/lib/private-auth';
+import { PRIVATE_SESSION_COOKIE, getPrivateSessionUser } from '@/lib/private-auth';
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '');
 
@@ -19,7 +19,7 @@ function createToken() {
 }
 
 async function isAuthenticated(request: NextRequest) {
-  return Boolean(await readPrivateSession(request.cookies.get(PRIVATE_SESSION_COOKIE)?.value));
+  return Boolean(await getPrivateSessionUser(request.cookies.get(PRIVATE_SESSION_COOKIE)?.value));
 }
 
 export async function GET(request: NextRequest) {
