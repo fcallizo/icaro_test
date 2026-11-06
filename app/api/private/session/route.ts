@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { PRIVATE_SESSION_COOKIE, getPrivateSessionUser } from '@/lib/private-auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   if (!sql) {
     return NextResponse.json({ error: 'La base de datos no está configurada.' }, { status: 503 });
