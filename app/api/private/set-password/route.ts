@@ -1,15 +1,26 @@
 import { isIP } from 'node:net';
 import { createHash, randomBytes, scrypt as scryptCallback } from 'node:crypto';
-import { promisify } from 'node:util';
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { clearRateLimitBuckets, consumeRateLimitBuckets, createRateLimitBucket } from '@/lib/rate-limit';
 
-const deriveKey = promisify(scryptCallback);
+function deriveKey(password: string, salt: Buffer) {
+  return new Promise<Buffer>((resolve, reject) => {
+    scryptCallback(password, salt, 64, (error, derivedKey) => {
+      if (error) {
+        reject(error);
+        return;
+      }
 
-function createPasswordHash(password: string) {
+      resolve(Buffer.from(derivedKey));
+    });
+  });
+}
+
+async function createPasswordHash(password: string) {
   const salt = randomBytes(16);
-  return deriveKey(password, salt, 64).then((key) => `scrypt$${salt.toString('hex')}$${Buffer.from(key).toString('hex')}`);
+  const key = await deriveKey(password, salt);
+  return `scrypt$${salt.toString('hex')}$${key.toString('hex')}`;
 }
 
 export async function POST(request: NextRequest) {
