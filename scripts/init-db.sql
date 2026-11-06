@@ -378,16 +378,16 @@ VALUES
   ('6bc20ad1-91d1-4b72-a233-000000000010', 10, 'extra', 'celebration', 'Guestbox: cámaras para invitados', '', '6 cámaras',
   130, NULL, 'Cámaras desechables en las mesas para que los invitados fotografíen su propia boda. Sus copias reveladas llegan con el reportaje.'),
   -- Albumes de fotos
-  ('6bc20ad1-91d1-4b72-a233-000000000011', 11, 'album', 'celebration', 'Álbum de fotos', 'Essential', '70-80 páginas',
+  ('6bc20ad1-91d1-4b72-a233-000000000011', 11, 'album', 'celebration', 'Álbum de fotos', 'Essential', '70 - 80 páginas',
     300, NULL, 'Un album fotografico de 70 a 80 páginas con las imágenes más importantes del día, maquetado con cuidado para dejar en el salón, no en el trastero.'),
-  ('6bc20ad1-91d1-4b72-a233-000000000012', 12, 'album', 'celebration', 'Álbum de fotos', 'Premium', '100-110 páginas',
+  ('6bc20ad1-91d1-4b72-a233-000000000012', 12, 'album', 'celebration', 'Álbum de fotos', 'Premium', '100 - 110 páginas',
     400, 500, 'El relato casi completo: también invitados, detalles y esos momentos que en el Essential quedan fuera. 100-110 páginas que recoge el día completo, con un montaje más elaborado y una terminación más cuidada.'),
-  ('6bc20ad1-91d1-4b72-a233-000000000013', 13, 'album', 'celebration', 'Álbum de fotos', 'Delux', '140-150 páginas',
+  ('6bc20ad1-91d1-4b72-a233-000000000013', 13, 'album', 'celebration', 'Álbum de fotos', 'Delux', '140 - 150 páginas',
     700, NULL, 'Nuestro álbum más largo: 140-150 páginas para guardar la boda entera con sus repeticiones, el baile y las conversaciones de sobremesa. Encuadernación artesanal y diseño cerrado contigo.'),
   -- Entregables
   ('6bc20ad1-91d1-4b72-a233-000000000019', 14, 'extra', 'delivery', 'Vídeo de ceremonia', '', '',
     80, 200, 'Grabación completa de la ceremonia con el audio original, lista para volver a verla las veces que queráis.'),
-  ('6bc20ad1-91d1-4b72-a233-000000000014', 4, 'extra', 'delivery', 'Adelanto en 48 horas', '', '30-50 fotos',
+  ('6bc20ad1-91d1-4b72-a233-000000000014', 4, 'extra', 'delivery', 'Adelanto en 48 horas', '', '30 - 50 fotos',
     90, NULL, 'Una selección de 30-50 fotos editada y entregada en los dos días siguientes, para compartir el día mientras el reportaje final se termina.'),
   ('6bc20ad1-91d1-4b72-a233-000000000015', 5, 'extra', 'delivery', 'Edición exprés', '', '',
     300, NULL, 'Recepción de las fotografías editadas en 15 días en lugar del plazo habitual. Para cuando hay prisa por verlas.')

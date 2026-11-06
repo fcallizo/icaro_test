@@ -47,8 +47,8 @@
 .wedding-price-card {
   min-width: 0;
   padding: 20px 30px 10px;
-  border: 1px solid rgba(128, 128, 128, 0.22);
-  background: #151617;
+  border: 1px solid var(--border);
+  background: var(--priv-card-bg);
   transition:
     border-color 0.2s ease,
     transform 0.2s ease,
@@ -81,8 +81,8 @@
   align-items: center;
   gap: 20px;
   padding: 22px;
-  border: 1px solid rgba(128, 128, 128, 0.22);
-  background: #151617;
+  border: 1px solid var(--border);
+  background: var(--priv-card-bg);
 }
 
 .wedding-discount-label {
@@ -114,7 +114,7 @@
   justify-content: space-between;
   gap: 20px;
   padding-top: 24px;
-  border-top: 1px solid rgba(128, 128, 128, 0.22);
+  border-top: 1px solid var(--border);
 }
 
 .wedding-prices-footer > p {
@@ -168,9 +168,6 @@
 
 .cinema-offers-admin {
   --offers-text: var(--text-color, #f4f1eb);
-  --offers-border: var(--border-color, rgba(255, 255, 255, 0.12));
-  --offers-surface: var(--surface-color, #181818);
-  --offers-surface-hover: var(--surface-hover, #222222);
 
   width: 100%;
   min-width: 0;
@@ -214,8 +211,8 @@
   align-items: flex-end;
   gap: 4px;
   padding: 12px 16px;
-  border: 1px solid var(--offers-border);
-  background: var(--offers-surface);
+  border: 1px solid var(--border);
+  background: var(--priv-card-bg);
 }
 
 .cinema-offers-counter strong {
@@ -247,7 +244,7 @@
   justify-content: space-between;
   gap: 14px;
   padding: 15px;
-  border: 1px dashed var(--offers-border);
+  border: 1px dashed var(--border);
   border-radius: 5px;
   background: transparent;
 }
@@ -312,7 +309,7 @@
 
 .cinema-offers-feedback {
   margin: 0;
-  background: var(--offers-surface);
+  background: var(--priv-card-bg);
   color: var(--muted);
 }
 
@@ -331,8 +328,8 @@
   justify-content: space-between;
   gap: 24px;
   padding: 20px;
-  border: 1px solid var(--offers-border);
-  background: #151617;
+  border: 1px solid var(--border);
+  background: var(--priv-card-bg);
   transition:
     border-color 180ms ease,
     background-color 180ms ease;
@@ -393,7 +390,7 @@
 
 .cinema-offer-admin-prices > span {
   padding-left: 12px;
-  border-left: 1px solid var(--offers-border);
+  border-left: 1px solid var(--border);
   color: var(--muted);
   font-size: 0.75rem;
 }

@@ -313,7 +313,6 @@ export const PrivateModalShell = forwardRef<PrivateModalShellHandle, PrivateModa
 
     const body = (
       <>
-        <div className="pvm__body">{children}</div>
 
         {confirmDiscard && (
           <div className="pvm__confirm" role="alertdialog" aria-live="assertive">
@@ -332,6 +331,7 @@ export const PrivateModalShell = forwardRef<PrivateModalShellHandle, PrivateModa
             </div>
           </div>
         )}
+        <div className="pvm__body">{children}</div>
 
         <footer className="pvm__foot">
           <span className="pvm__hint">

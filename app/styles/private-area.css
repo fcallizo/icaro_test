@@ -161,7 +161,7 @@
 .private-workspace {
   margin-top: 1.5rem;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid var(--border);
   border-radius: 8px;
   background: #1c1d1e;
 }
@@ -170,7 +170,7 @@
   width: min(440px, 100%);
   margin: 2.5rem auto;
   padding: 2rem 1.5rem 2.4rem;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid var(--border);
   border-radius: 8px;
   background: #1c1d1e;
 }
@@ -370,8 +370,8 @@
   align-items: end;
   gap: 0.75rem;
   padding: 1rem;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: #151617;
+  border: 1px solid var(--border);
+  background: var(--priv-card-bg);
 }
 
 .production-material-add-form {
@@ -478,8 +478,8 @@
   align-items: end;
   gap: 0.75rem;
   padding: 1rem;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: #151617;
+  border: 1px solid var(--border);
+  background: var(--priv-card-bg);
 }
 
 .calendar-block-form label {
@@ -517,9 +517,9 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.85rem 1rem;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid var(--border);
   border-left: 3px solid var(--priv-error);
-  background: #151617;
+  background: var(--priv-card-bg);
 }
 
 .calendar-block-row strong {
@@ -548,7 +548,7 @@
 
 .private-request-card {
   padding: 1rem;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid var(--border);
   border-left: 3px solid var(--gold);
   background: #111213;
   min-height: -webkit-fill-available;

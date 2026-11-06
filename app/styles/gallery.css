@@ -238,12 +238,12 @@
   position: absolute;
   border: none;
   border-radius: 5px;
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--border);
   cursor: pointer;
 }
 
 .works-lightbox-close {
-  top: 5rem;
+  top: 1rem;
   right: 1rem;
 
   display: flex;
@@ -269,7 +269,9 @@
   height: 3rem;
 }
 
+.works-lightbox-close:hover,
 .works-lightbox-arrow:hover {
+  color: var(--gold-dark);
   span {
     color: var(--gold-dark);
   }

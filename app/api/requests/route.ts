@@ -1,7 +1,7 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { isIP } from 'node:net';
 import { NextRequest, NextResponse } from 'next/server';
-import { isValidPhoneNumber } from 'react-phone-number-input';
+import { isValidPhoneNumber } from 'libphonenumber-js/min';
 import { sql } from '@/lib/db';
 import { consumeRateLimitBuckets, createRateLimitBucket } from '@/lib/rate-limit';
 import { sendRequestNotification, sendRequestWeddingNotification } from '@/lib/request-notifications';
