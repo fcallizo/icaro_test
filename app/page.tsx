@@ -81,8 +81,9 @@ export default function HomePage() {
     loadRequests();
   }, []);
 
-  const handleWeddingSubmit = async (event: FormEvent) => {
+  const handleWeddingSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const companyWebsite = new FormData(event.currentTarget).get('companyWebsite');
     setIsSubmitting(true);
     setToast(null);
     try {
@@ -91,7 +92,7 @@ export default function HomePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'wedding',
-          companyWebsite: new FormData(event.currentTarget).get('companyWebsite'),
+          companyWebsite,
           ...weddingForm,
         }),
       });
@@ -111,8 +112,9 @@ export default function HomePage() {
     }
   };
 
-  const handleProductionSubmit = async (event: FormEvent) => {
+  const handleProductionSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const companyWebsite = new FormData(event.currentTarget).get('companyWebsite');
     setIsSubmitting(true);
     setToast(null);
 
@@ -122,7 +124,7 @@ export default function HomePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'production',
-          companyWebsite: new FormData(event.currentTarget).get('companyWebsite'),
+          companyWebsite,
           ...productionForm,
         }),
       });
