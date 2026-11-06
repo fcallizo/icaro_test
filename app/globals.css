@@ -2373,12 +2373,6 @@ input[type="date"] {
     padding-left: 1rem;
   }
 
-  .private-tabs {
-    padding-right: 1rem;
-    padding-left: 1rem;
-    overflow-x: auto;
-  }
-
   .production-material-add-form,
   .production-material-row,
   .calendar-block-form,

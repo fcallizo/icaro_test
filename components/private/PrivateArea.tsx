@@ -469,27 +469,34 @@ export function PrivateArea() {
             </div>
             <section className="private-workspace" aria-label="Gestión de solicitudes">
               <div className="private-tabs" role="tablist" aria-label="Gestión privada">
-                <button type="button" role="tab" aria-selected={activeTab === 'notifications'} className={activeTab === 'notifications' ? 'active' : ''} onClick={() => setActiveTab('notifications')}>
-                  🔔 Notificaciones <span>{pendingCount}</span>
+                <button type="button" role="tab" aria-selected={activeTab === 'notifications'} className={activeTab === 'notifications' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('notifications')}>
+                  <span className="private-tab__icon" aria-hidden="true">​🔔</span>
+                  Notificaciones <span className="private-tab__count">{pendingCount}</span>
                 </button>
-                <button type="button" role="tab" aria-selected={activeTab === 'confirmed'} className={activeTab === 'confirmed' ? 'active' : ''} onClick={() => setActiveTab('confirmed')}>
-                  ✅​ Confirmados <span>{confirmedCount}</span>
+                <button type="button" role="tab" aria-selected={activeTab === 'confirmed'} className={activeTab === 'confirmed' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('confirmed')}>
+                  <span className="private-tab__icon" aria-hidden="true">​✅</span>
+                  Confirmados <span className="private-tab__count">{confirmedCount}</span>
                 </button>
-                <button type="button" role="tab" aria-selected={activeTab === 'events'} className={activeTab === 'events' ? 'active' : ''} onClick={() => setActiveTab('events')}>
-                  🤝​​​ Gestión de Colaboradores
+                <button type="button" role="tab" aria-selected={activeTab === 'events'} className={activeTab === 'events' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('events')}>
+                  <span className="private-tab__icon" aria-hidden="true">🤝​​​</span>
+                  ​Colaboradores
                 </button>
-                <button type="button" role="tab" aria-selected={activeTab === 'blocks'} className={activeTab === 'blocks' ? 'active' : ''} onClick={() => setActiveTab('blocks')}>
-                  🚫 Asuntos propios <span>{calendarBlocks.length}</span>
+                <button type="button" role="tab" aria-selected={activeTab === 'blocks'} className={activeTab === 'blocks' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('blocks')}>
+                  <span className="private-tab__icon" aria-hidden="true">🚫​</span>
+                  Inactividad <span className="private-tab__count">{calendarBlocks.length}</span>
                 </button>
-                <button type="button" role="tab" aria-selected={activeTab === 'materials'} className={activeTab === 'materials' ? 'active' : ''} onClick={() => setActiveTab('materials')}>
-                  📸 Materiales <span>{materials.filter((material) => material.active).length}</span>
+                <button type="button" role="tab" aria-selected={activeTab === 'materials'} className={activeTab === 'materials' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('materials')}>
+                  <span className="private-tab__icon" aria-hidden="true">📸​</span>
+                  Materiales <span className="private-tab__count">{materials.filter((material) => material.active).length}</span>
                 </button>
-                <button type="button" role="tab" aria-selected={activeTab === 'settings'} className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>
-                  ⚙️​ Cofiguración
+                <button type="button" role="tab" aria-selected={activeTab === 'settings'} className={activeTab === 'settings' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('settings')}>
+                  <span className="private-tab__icon" aria-hidden="true">⚙️​​</span>
+                  Cofiguración
                 </button>
                 {isAdmin && (
-                  <button type="button" role="tab" aria-selected={activeTab === 'users'} className={activeTab === 'users' ? 'active' : ''} onClick={() => setActiveTab('users')}>
-                    👤 Usuarios
+                  <button type="button" role="tab" aria-selected={activeTab === 'users'} className={activeTab === 'users' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('users')}>
+                    <span className="private-tab__icon" aria-hidden="true">​👤</span>
+                    Usuarios
                   </button>
                 )}
               </div>
