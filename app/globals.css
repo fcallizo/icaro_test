@@ -517,9 +517,21 @@ span.nav-label>a {
   backdrop-filter: blur(18px);
 }
 
+.topbar-dark {
+  --header-text: var(--text-secondary);
+  --header-contact: #d7d7d7;
+  --header-border: var(--border);
+  background: rgba(25, 26, 27, 0.84);
+  border-bottom: 1px solid var(--header-border);
+}
 
-
-
+.topbar-light {
+  --header-text: #444;
+  --header-contact: #333;
+  --header-border: var(--border-light);
+  background: var(--bg-light-raised);
+  border-bottom: 1px solid var(--header-border);
+}
 
 .nav-container {
   width: min(1450px, 92%);
@@ -1928,11 +1940,19 @@ input[type="date"] {
   animation: status-toast-in 180ms ease-out;
 }
 
+.status-toast-success {
+  border-left-color: var(--priv-success);
+}
 
+.status-toast-error {
+  border-left-color: var(--priv-error);
+}
 
-
-
-
+.status-toast-light {
+  background: var(--white);
+  color: var(--black);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+}
 
 .status-toast p {
   margin: 0;
