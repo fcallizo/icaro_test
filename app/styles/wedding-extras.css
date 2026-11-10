@@ -1,7 +1,11 @@
 .wedding-offers-admin {
   width: 100%;
   min-width: 0;
-  color: var(--text-color, #f4f1eb);
+  color: var(--text-color, var(--white));
+}
+
+.extras-header {
+  margin-top: 3rem !important;
 }
 
 .wedding-offer-page-range {
@@ -55,7 +59,7 @@
   overflow: hidden;
   border: 1px solid rgba(181, 139, 112, 0.36);
   background: var(--bg-light);
-  color: #292521;
+  color: var(--text-on-light);
   box-shadow: 0 25px 90px rgba(0, 0, 0, 0.35);
 }
 
@@ -174,7 +178,7 @@
   background: var(--gold);
   font-family: Georgia, 'Times New Roman', italic, serif;
   font-style: italic;
-  color: #fff;
+  color: var(--white);
   font-size: 0.68rem;
   letter-spacing: 0.08em;
   line-height: 1;
@@ -191,7 +195,7 @@
 
 .wedding-extra-card>p {
   margin: 0;
-  color: #6d6660;
+  color: var(--text-on-light-muted);
   font-size: 0.88rem;
   line-height: 1.55;
 }
@@ -224,7 +228,7 @@
   padding: 28px;
   border: 1px solid rgba(88, 70, 57, 0.14);
   border-radius: 12px;
-  background: #fffefa;
+  background: var(--bg-light-raised);
   text-align: center;
 }
 
@@ -238,8 +242,8 @@
 .wedding-extras-empty p {
   max-width: 440px;
   margin: 0 auto;
-  color: #6d6660;
-  font-size: 0.9rem;
+  color: var(--text-on-light-muted);
+  font-size: 1.125rem;
   line-height: 1.6;
   font-family: 'Cormorant Garamond';
 }
@@ -261,7 +265,7 @@
 }
 
 .wedding-album-card .wedding-album-pages {
-  color: #302c28;
+  color: var(--text-on-light);
   font-weight: 600;
   font-size: 1rem;
 }

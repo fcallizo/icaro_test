@@ -167,7 +167,7 @@
    ========================================= */
 
 .cinema-offers-admin {
-  --offers-text: var(--text-color, #f4f1eb);
+  --offers-text: var(--text-color, var(--white));
 
   width: 100%;
   min-width: 0;

@@ -12,26 +12,26 @@
 
 /* Private area styles consolidated from component and settings stylesheets. */
 :root{
-  --cof-ink:#f4f1ea;
-  --cof-muted:#9aa3ae;
+  --cof-ink:var(--white,#f4f1ea);
+  --cof-muted:var(--priv-muted,#9aa3ae);
   --cof-surface:#101318;
   --cof-surface-2:#1a1e24;
   --cof-line:rgba(244,241,234,.14);
-  --cof-danger:#ff6b6b;
+  --cof-danger:var(--priv-error,#ff5555);
   --cof-shadow:0 40px 90px -30px rgba(0,0,0,.8);
 
-  /* Color de marca: hereda del tema (--gold) y cae en ámbar si no existe. */
-  --cof-gold:var(--gold,#f0b429);
-  --cof-gold-soft:var(--gold-dark,rgba(212,175,55,.08));
-  --cof-tint-07:rgba(240,180,41,.07);
-  --cof-tint-09:rgba(240,180,41,.09);
-  --cof-tint-16:rgba(240,180,41,.16);
-  --cof-tint-40:rgba(240,180,41,.4);
-  --cof-danger-soft:rgba(255,107,107,.12);
-  --cof-danger-line:rgba(255,107,107,.45);
-  --cof-danger-ink:#ff8a8a;
-  --cof-success-line:rgba(107, 255, 114, 0.45);
-  --cof-success-ink:#7cdb97;
+  /* Mantiene la paleta de marca también fuera del tema global. */
+  --cof-gold:var(--gold,#f5c31f);
+  --cof-gold-soft:var(--gold-dark,var(--cof-tint-09));
+  --cof-tint-07:rgba(245,195,31,.07);
+  --cof-tint-09:rgba(245,195,31,.09);
+  --cof-tint-16:rgba(245,195,31,.16);
+  --cof-tint-40:rgba(245,195,31,.4);
+  --cof-danger-soft:rgba(255,85,85,.12);
+  --cof-danger-line:rgba(255,85,85,.45);
+  --cof-danger-ink:var(--priv-error-soft,#ff8a8a);
+  --cof-success-line:rgba(124, 219, 151, 0.45);
+  --cof-success-ink:var(--priv-success,#7cdb97);
 }
 @supports (color:color-mix(in srgb,red,blue)){
   :root{
@@ -41,7 +41,8 @@
     --cof-tint-40:color-mix(in srgb,var(--cof-gold) 40%,transparent);
     --cof-danger-soft:color-mix(in srgb,var(--cof-danger) 12%,transparent);
     --cof-danger-line:color-mix(in srgb,var(--cof-danger) 45%,transparent);
-    --cof-danger-ink:color-mix(in srgb,var(--cof-danger) 55%,white);
+    --cof-danger-ink:var(--priv-error-soft,#ff8a8a);
+    --cof-success-line:color-mix(in srgb,var(--cof-success-ink) 45%,transparent);
   }
 }
 .pvm{position:fixed;inset:0;height:100dvh;width:100%;display:grid;place-items:center;
@@ -106,7 +107,7 @@
   transition:background .18s ease,opacity .18s ease,box-shadow .18s ease,border-color .18s ease}
 .pvm__actions button:disabled{cursor:not-allowed;opacity:.5}
 .pvm__actions button:not(.pvm__submit):hover{background:rgba(255,255,255,.06)}
-.pvm__submit{border-color:var(--cof-gold)!important;background:rgba(212, 175, 55, 0.08)!important;
+.pvm__submit{border-color:var(--cof-gold)!important;background:var(--cof-tint-09)!important;
   color:var(--cof-gold)!important;font-weight:700}
 .pvm__submit:hover:not(:disabled){background:var(--cof-tint-16)!important}
 .pvm__submit[data-dirty]{box-shadow:0 0 0 3px var(--cof-tint-16)}
@@ -173,7 +174,7 @@
 .eem__pending button{padding:7px 12px;border:1px solid var(--cof-line);background:transparent;
   color:var(--cof-muted);font-size:12px;cursor:pointer}
 .eem__pending button:hover{color:var(--cof-ink);border-color:var(--cof-tint-40)}
-.eem__ghost{padding:11px 16px;border:1px solid var(--cof-gold);background:rgba(212, 175, 55, 0.08);
+.eem__ghost{padding:11px 16px;border:1px solid var(--cof-gold);background:var(--cof-tint-09);
   color:var(--cof-gold)!important;font-size:13px;font-weight:600;cursor:pointer;
   transition:background .18s ease}
 .eem__ghost:hover{background:var(--cof-tint-16)}
@@ -255,7 +256,7 @@
   padding: 11px 13px;
   border: 1px solid var(--cof-line);
   border-radius: 0;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--border);
   color: var(--cof-ink);
   font: inherit;
   font-size: 14px;
@@ -273,7 +274,7 @@
 .pvm .eem__search input:focus-visible,
 .pvm .eem__fresh input:focus-visible {
   border-color: var(--cof-gold);
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--border);
   box-shadow: 0 0 0 3px var(--cof-tint-16);
   outline: none;
 }
@@ -302,15 +303,15 @@
 
 .private-tab-panel select option,
 .pvm .field-group select option {
-  background: #18181b;
-  color: #f4f4f5;
+  background: var(--bg-dark);
+  color: var(--white);
 }
 
 .private-tab-panel .field-group .PhoneInputCountry,
 .pvm .field-group .PhoneInputCountry {
   border: 1px solid var(--cof-line);
   border-radius: 0;
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--border);
 }
 
 .private-tab-panel .input-with-suffix,

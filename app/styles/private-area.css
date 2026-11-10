@@ -1,7 +1,7 @@
 .private-page {
   min-height: 100vh;
   padding-bottom: 2rem;
-  color: var(--text-light);
+  color: var(--white);
 }
 
 .private-page-header,
@@ -29,7 +29,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
-  color: #fff;
+  color: var(--white);
   font-family: Georgia, 'Times New Roman', serif;
   font-weight: 700;
   letter-spacing: 0.08rem;
@@ -61,7 +61,7 @@
 
 .private-back-link {
   justify-self: end;
-  color: #ccc;
+  color: var(--text-tertiary);
   font-size: 0.78rem;
 }
 
@@ -93,7 +93,7 @@
 }
 
 .private-calendar-controls p {
-  color: #999;
+  color: var(--muted);
   font-size: 0.75rem;
 }
 
@@ -101,7 +101,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.65rem;
-  color: #eee;
+  color: var(--white);
   font-size: 0.82rem;
   cursor: pointer;
 }
@@ -134,14 +134,14 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #ddd;
+  background: var(--text-tertiary);
   content: '';
   transition: transform 0.18s ease, background 0.18s ease;
 }
 
 .private-calendar-toggle input:checked + .private-calendar-toggle-track {
   border-color: var(--gold);
-  background: rgba(212,175,55,0.3);
+  background: color-mix(in srgb, var(--gold) 30%, transparent);
 }
 
 .private-calendar-toggle input:checked + .private-calendar-toggle-track::after {
@@ -163,7 +163,7 @@
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #1c1d1e;
+  background: var(--bg-dark-raised);
 }
 
 .private-login-wrap {
@@ -172,7 +172,7 @@
   padding: 2rem 1.5rem 2.4rem;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #1c1d1e;
+  background: var(--bg-dark-raised);
 }
 
 .private-login-form {
@@ -182,7 +182,7 @@
 
 .private-login-form label {
   margin-top: 0.5rem;
-  color: #c9c9c9;
+  color: var(--text-tertiary);
   font-size: 0.78rem;
 }
 
@@ -191,8 +191,8 @@
   padding: 0.8rem 0.9rem;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: #101112;
-  color: #fff;
+  background: var(--black);
+  color: var(--white);
 }
 
 .private-login-button,
@@ -211,7 +211,7 @@
   margin-top: 0.8rem;
   border: 0;
   background: var(--gold);
-  color: #111;
+  color: var(--black);
 }
 
 .private-login-button:disabled,
@@ -225,7 +225,7 @@
 .private-state-message,
 .private-empty-state,
 .private-login-hint {
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 0.82rem;
   line-height: 1.6;
 }
@@ -234,7 +234,7 @@
   margin-bottom: 1.3rem;
   padding: 0.85rem 1rem;
   border-left: 3px solid var(--gold);
-  background: rgba(212,175,55,0.08);
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
 }
 
 .private-login-hint {
@@ -249,18 +249,18 @@
 
 .private-error-message {
   margin: 1rem 1.5rem;
-  color: #ff9b9b;
+  color: var(--priv-error-soft);
   font-size: 0.82rem;
 }
 
 .private-toolbar {
   padding: 1rem 1.5rem;
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 0.78rem;
 }
 
 .private-toolbar strong {
-  color: #fff;
+  color: var(--white);
 }
 
 .private-forgot-link {
@@ -282,7 +282,7 @@
   padding: 2rem 1.5rem;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #1c1d1e;
+  background: var(--bg-dark-raised);
 }
 
 .private-account-card > .eyebrow {
@@ -298,7 +298,7 @@
 
 .private-account-card > p {
   margin-bottom: 1.2rem;
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 0.82rem;
   line-height: 1.6;
 }
@@ -313,12 +313,12 @@
 
 .private-users-heading h2 {
   margin-bottom: 0.35rem;
-  color: #eee;
+  color: var(--white);
   font-size: 1.1rem;
 }
 
 .private-users-heading p {
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 0.78rem;
 }
 
@@ -332,7 +332,7 @@
 
 .private-user-invite-form label {
   grid-column: 1 / -1;
-  color: #c9c9c9;
+  color: var(--text-tertiary);
   font-size: 0.78rem;
 }
 
@@ -342,8 +342,8 @@
   padding: 0.65rem 0.8rem;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: #101112;
-  color: #fff;
+  background: var(--black);
+  color: var(--white);
 }
 
 .private-user-invite-form .private-login-button {
@@ -379,12 +379,12 @@
 
 .private-user-row strong {
   overflow-wrap: anywhere;
-  color: #eee;
+  color: var(--white);
   font-size: 0.84rem;
 }
 
 .private-user-row span {
-  color: #999;
+  color: var(--muted);
   font-size: 0.72rem;
 }
 
@@ -398,7 +398,7 @@
 
 .private-user-notifications legend {
   margin-bottom: 0.4rem;
-  color: #999;
+  color: var(--muted);
   font-size: 0.68rem;
 }
 
@@ -406,7 +406,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  color: #c9c9c9;
+  color: var(--text-tertiary);
   font-size: 0.72rem;
   cursor: pointer;
 }
@@ -437,7 +437,7 @@
 .private-user-action {
   min-height: 34px;
   padding: 0.4rem 0.65rem;
-  border: 1px solid rgba(212,175,55,0.4);
+  border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent);
   border-radius: 4px;
   background: transparent;
   color: var(--gold);
@@ -462,10 +462,10 @@
   margin: auto;
   padding: 0;
   overflow: visible;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid var(--border);
   border-radius: 10px;
-  background: #1c1d1e;
-  color: #fff;
+  background: var(--bg-dark-raised);
+  color: var(--white);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
 }
 
@@ -486,14 +486,14 @@
 
 .private-confirmation-card h2 {
   margin-top: 0.55rem;
-  color: #f4f1ea;
+  color: var(--white);
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 1.35rem;
 }
 
 .private-confirmation-card p {
   margin-top: 0.8rem;
-  color: #c4c4c4;
+  color: var(--text-tertiary);
   font-size: 0.84rem;
   line-height: 1.6;
   overflow-wrap: anywhere;
@@ -512,7 +512,7 @@
   border: 1px solid var(--border);
   border-radius: 5px;
   background: transparent;
-  color: #ddd;
+  color: var(--text-tertiary);
   font-size: 0.78rem;
   cursor: pointer;
 }
@@ -520,7 +520,7 @@
 .private-confirmation-actions .private-confirmation-submit {
   border-color: var(--gold);
   background: var(--gold);
-  color: #171717;
+  color: var(--black);
   font-weight: 700;
 }
 
@@ -537,7 +537,7 @@
 
 .private-logout-button,
 .private-download-button {
-  border: 1px solid rgba(212,175,55,0.45);
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
   background: transparent;
   color: var(--gold);
 }
@@ -570,7 +570,7 @@
   border-bottom: 2px solid transparent;
   border-radius: 0;
   background: transparent;
-  color: #9aa3ae;
+  color: var(--priv-muted);
   font: inherit;
   font-size: 0.82rem;
   white-space: nowrap;
@@ -579,16 +579,16 @@
 }
 
 .private-tab:hover {
-  color: #f4f1ea;
+  color: var(--white);
 }
 
 .private-tab[aria-selected='true'] {
-  border-bottom-color: var(--gold, #d4af37);
-  color: #fff;
+  border-bottom-color: var(--gold);
+  color: var(--white);
 }
 
 .private-tab:focus-visible {
-  outline: 2px solid var(--gold, #d4af37);
+  outline: 2px solid var(--gold);
   outline-offset: 3px;
 }
 
@@ -604,7 +604,7 @@
   height: 1.3rem;
   padding: 0 0.32rem;
   border-radius: 999px;
-  background: rgba(212, 175, 55, 0.16);
+  background: color-mix(in srgb, var(--gold) 16%, transparent);
   color: var(--gold);
   font-size: 0.68rem;
   font-variant-numeric: tabular-nums;
@@ -628,7 +628,7 @@
 .private-request-section h3,
 .private-request-section h4 {
   margin-bottom: 0.85rem;
-  color: #e6e6e6;
+  color: var(--white);
 }
 
 .private-request-section h3 {
@@ -652,7 +652,7 @@
 
 .production-materials-intro {
   margin: -0.25rem 0 1rem;
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 0.8rem;
   line-height: 1.5;
 }
@@ -675,7 +675,7 @@
 .production-material-row label {
   display: grid;
   gap: 0.4rem;
-  color: #bbb;
+  color: var(--text-secondary);
   font-size: 0.7rem;
   text-transform: uppercase;
 }
@@ -688,8 +688,8 @@
   min-height: 40px;
   padding: 0.6rem 0.7rem;
   border: 1px solid rgba(255,255,255,0.16);
-  background: #101112;
-  color: #fff;
+  background: var(--black);
+  color: var(--white);
   font-size: 0.8rem;
 }
 
@@ -697,8 +697,8 @@
 .private-material-toggle {
   min-height: 40px;
   padding: 0.55rem 0.75rem;
-  border: 1px solid rgba(212,175,55,0.45);
-  background: rgba(212,175,55,0.08);
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
   color: var(--gold);
   font-size: 0.72rem;
   font-weight: 700;
@@ -709,12 +709,12 @@
 .private-material-toggle {
   border-color: rgba(255,255,255,0.18);
   background: transparent;
-  color: #ccc;
+  color: var(--text-tertiary);
 }
 
 .private-gold-button:hover,
 .private-material-toggle:hover {
-    background: rgba(212,175,55,0.16);
+    background: color-mix(in srgb, var(--gold) 16%, transparent);
     outline: none;
 }
 
@@ -730,7 +730,7 @@
 
 .production-material-group h4 {
   margin-bottom: 0.55rem;
-  color: #e5e5e5;
+  color: var(--white);
   font-size: 0.82rem;
 }
 
@@ -755,12 +755,12 @@
 }
 
 .production-material-row.inactive .production-material-state {
-  color: #aaa;
+  color: var(--text-secondary);
 }
 
 .calendar-blocks-intro {
   margin: -0.25rem 0 1rem;
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 0.8rem;
   line-height: 1.5;
 }
@@ -778,7 +778,7 @@
 .calendar-block-form label {
   display: grid;
   gap: 0.4rem;
-  color: #bbb;
+  color: var(--text-secondary);
   font-size: 0.7rem;
   text-transform: uppercase;
 }
@@ -789,13 +789,13 @@
   min-height: 40px;
   padding: 0.6rem 0.7rem;
   border: 1px solid rgba(255,255,255,0.16);
-  background: #101112;
-  color: #fff;
+  background: var(--black);
+  color: var(--white);
   font-size: 0.8rem;
 }
 
 .calendar-block-form .date-input {
-  color: #fff;
+  color: var(--white);
 }
 
 .calendar-block-list {
@@ -816,13 +816,13 @@
 }
 
 .calendar-block-row strong {
-  color: #eee;
+  color: var(--white);
   font-size: 0.82rem;
 }
 
 .calendar-block-row p {
   margin-top: 0.25rem;
-  color: #999;
+  color: var(--muted);
   font-size: 0.75rem;
 }
 
@@ -876,7 +876,7 @@
 
 .private-request-heading {
   margin-bottom: 0.55rem;
-  color: #999;
+  color: var(--muted);
   font-size: 0.72rem;
 }
 
@@ -911,15 +911,15 @@
 
 .private-request-card h4 {
   margin-bottom: 0.8rem;
-  color: #fff;
+  color: var(--white);
   font-size: 1rem;
 }
 
 .private-view-button {
   display: inline-block;
   margin-top: 0.65rem;
-  border: 1px solid rgba(212,175,55,0.5);
-  background: rgba(212,175,55,0.08);
+  border: 1px solid color-mix(in srgb, var(--gold) 50%, transparent);
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
   color: var(--gold);
   padding: 0.9rem 1.3rem;
   font-size: 0.72rem;
@@ -931,7 +931,7 @@
 .private-view-button:hover,
 .private-view-button:focus-visible {
   border-color: var(--gold);
-  background: rgba(212,175,55,0.16);
+  background: color-mix(in srgb, var(--gold) 16%, transparent);
   outline: none;
 }
 
@@ -971,13 +971,13 @@
 }
 
 .production-contract-heading h3 {
-  color: #f4f4f0;
+  color: var(--white);
   font-size: 1rem;
 }
 
 .production-contract-heading span,
 .production-confirm-hint {
-  color: #b7b7b7;
+  color: var(--text-secondary);
   font-size: 0.75rem;
 }
 
@@ -998,8 +998,8 @@
   min-height: 44px;
   padding: 0.7rem 0.75rem;
   border: 1px solid rgba(255,255,255,0.16);
-  background: #1b1c1d;
-  color: #fff;
+  background: var(--bg-dark-raised);
+  color: var(--white);
 }
 
 .production-contract-totals {
@@ -1008,7 +1008,7 @@
   margin-top: 0.5rem;
   padding-top: 0.9rem;
   border-top: 1px solid rgba(255,255,255,0.12);
-  color: #bbb;
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }
 
@@ -1019,7 +1019,7 @@
 }
 
 .production-contract-totals strong {
-  color: #fff;
+  color: var(--white);
 }
 
 .production-contract-totals .production-contract-total {
@@ -1073,8 +1073,8 @@
 }
 
 .private-save-button {
-  border: 1px solid rgba(212,175,55,0.65);
-  background: rgba(212,175,55,0.12);
+  border: 1px solid color-mix(in srgb, var(--gold) 65%, transparent);
+  background: color-mix(in srgb, var(--gold) 12%, transparent);
   color: var(--gold);
 }
 
@@ -1087,7 +1087,7 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.65rem 1rem;
-  color: #ccc;
+  color: var(--text-tertiary);
   font-size: 0.78rem;
   line-height: 1.45;
 }
@@ -1102,7 +1102,7 @@
 
 .private-request-details dt {
   margin-bottom: 0.15rem;
-  color: #999;
+  color: var(--muted);
   font-size: 0.68rem;
   text-transform: uppercase;
 }
@@ -1121,7 +1121,7 @@
   flex: 1;
   border: 0;
   background: #328c4b;
-  color: #fff;
+  color: var(--white);
 }
 
 .private-discard-button {
@@ -1151,7 +1151,6 @@
   }
 
   .private-tab {
-    /* grow 0 = no estirar (si grow:1, la fila suelta se ensancha en vez de centrarse) */
     flex: 0 1 calc((100% - var(--pvt-gap) * (var(--pvt-cols) - 1)) / var(--pvt-cols));
     justify-content: center;
     min-width: 0;
@@ -1166,7 +1165,7 @@
 
   .private-tab.active {
     border-color: var(--gold);
-    background: rgba(212,175,55,0.08);
+    background: color-mix(in srgb, var(--gold) 8%, transparent);
   }
 
 }

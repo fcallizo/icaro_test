@@ -16,7 +16,10 @@ type WeddingExtrasModalProps = {
 function formatPrice(price: number | null) {
   return price === null
     ? 'A consultar'
-    : `${new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 }).format(price)} €`;
+    : (price === 0
+      ? 'Gratuito'
+      : `${new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 }).format(price)} €`
+    );
 }
 
 export function WeddingExtrasModal({ offers, onClose }: WeddingExtrasModalProps) {
@@ -108,8 +111,10 @@ export function WeddingExtrasModal({ offers, onClose }: WeddingExtrasModalProps)
         </header>
 
         <div className="wedding-extras-dialog-body">
-          <div>
-            <h2 id="wedding-extras-title">Extras para vuestra boda</h2>
+          <div className="divider-block light extras-header">
+            <div className="divider-title" >
+              <h2>Extras para vuestra boda</h2>
+            </div>
             <p>Pequeños detalles para hacer vuestro recuerdo todavía más personal.</p>
           </div>
 

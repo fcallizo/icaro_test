@@ -477,22 +477,24 @@ export function PrivateArea() {
                   <span className="private-tab__icon" aria-hidden="true">​✅</span>
                   Confirmados <span className="private-tab__count">{confirmedCount}</span>
                 </button>
-                <button type="button" role="tab" aria-selected={activeTab === 'events'} className={activeTab === 'events' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('events')}>
-                  <span className="private-tab__icon" aria-hidden="true">🤝​​​</span>
-                  ​Colaboradores
-                </button>
                 <button type="button" role="tab" aria-selected={activeTab === 'blocks'} className={activeTab === 'blocks' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('blocks')}>
                   <span className="private-tab__icon" aria-hidden="true">🚫​</span>
                   Inactividad <span className="private-tab__count">{calendarBlocks.length}</span>
+                </button>
+                <button type="button" role="tab" aria-selected={activeTab === 'settings'} className={activeTab === 'settings' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('settings')}>
+                  <span className="private-tab__icon" aria-hidden="true">⚙️​​</span>
+                  Parámetros
                 </button>
                 <button type="button" role="tab" aria-selected={activeTab === 'materials'} className={activeTab === 'materials' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('materials')}>
                   <span className="private-tab__icon" aria-hidden="true">📸​</span>
                   Materiales <span className="private-tab__count">{materials.filter((material) => material.active).length}</span>
                 </button>
-                <button type="button" role="tab" aria-selected={activeTab === 'settings'} className={activeTab === 'settings' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('settings')}>
-                  <span className="private-tab__icon" aria-hidden="true">⚙️​​</span>
-                  Cofiguración
-                </button>
+                {isAdmin && (
+                  <button type="button" role="tab" aria-selected={activeTab === 'events'} className={activeTab === 'events' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('events')}>
+                    <span className="private-tab__icon" aria-hidden="true">🤝​​​</span>
+                    ​Colaboradores
+                  </button>
+                )}
                 {isAdmin && (
                   <button type="button" role="tab" aria-selected={activeTab === 'users'} className={activeTab === 'users' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('users')}>
                     <span className="private-tab__icon" aria-hidden="true">​👤</span>
@@ -515,7 +517,7 @@ export function PrivateArea() {
                   onUpdate={handleUpdateMaterial}
                   onSetActive={(id, active) => void handleSetMaterialActive(id, active)}
                 />
-              ) : activeTab === 'events' ? (
+              ) : activeTab === 'events' && isAdmin ? (
                 <EventManagementTab />
               ) : activeTab === 'settings' ? (
                 <SettingsTab

@@ -1,6 +1,6 @@
 .event-management-intro {
   margin: -0.25rem 0 1rem;
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 0.8rem;
   line-height: 1.55;
 }
@@ -14,7 +14,7 @@
 
 .event-member-link label {
   grid-column: 1 / -1;
-  color: #bbb;
+  color: var(--text-secondary);
   font-size: 0.72rem;
 }
 
@@ -23,12 +23,12 @@
   gap: 0.5rem;
   margin-top: 1rem;
   padding: 0.9rem;
-  border: 1px solid rgba(212,175,55,0.3);
-  background: rgba(212,175,55,0.06);
+  border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent);
+  background: color-mix(in srgb, var(--gold) 6%, transparent);
 }
 
 .event-member-link p {
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 0.75rem;
   line-height: 1.5;
 }
@@ -41,8 +41,8 @@
 
 .event-member-card {
   padding: 1rem;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: #171819;
+  border: 1px solid var(--border);
+  background: var(--priv-card-bg);
 }
 
 .event-member-heading {
@@ -54,7 +54,7 @@
 
 .event-member-heading h4 {
   margin-bottom: 0.35rem;
-  color: #fff;
+  color: var(--white);
   font-size: 0.9rem;
 }
 
@@ -92,7 +92,7 @@
 }
 
 .event-assignment-form h5 {
-  color: #ccc;
+  color: var(--text-tertiary);
   font-size: 0.75rem;
 }
 
@@ -108,8 +108,8 @@
   align-items: flex-start;
   gap: 0.65rem;
   padding: 0.6rem;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: #121314;
+  border: 1px solid var(--border);
+  background: var(--black);
   cursor: pointer;
 }
 
@@ -125,14 +125,14 @@
 }
 
 .event-assignment-option strong {
-  color: #eee;
+  color: var(--white);
   font-size: 0.75rem;
   font-weight: 600;
 }
 
 .event-assignment-option small {
   overflow-wrap: anywhere;
-  color: #999;
+  color: var(--muted);
   font-size: 0.7rem;
 }
 
@@ -177,7 +177,7 @@
 .team-calendar-error {
   padding: 1rem;
   border: 1px solid rgba(255,100,100,0.35);
-  color: #ffaaaa;
+  color: varar(--priv-error-soft);
 }
 
 .team-calendar-list-heading {
@@ -189,7 +189,7 @@
 }
 
 .team-calendar-list-heading h2 {
-  color: #eee;
+  color: var(--white);
   font-size: 1rem;
 }
 
@@ -208,9 +208,9 @@
 
 .team-assigned-event {
   padding: 1rem;
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid var(--border);
   border-radius: 5px;
-  background: #1c1d1e;
+  background: var(--bg-dark-raised);
 }
 
 .team-assigned-event-heading {
@@ -228,12 +228,12 @@
 
 .team-assigned-event-heading h3 {
   margin-top: 0.25rem;
-  color: #fff;
+  color: var(--white);
   font-size: 0.95rem;
 }
 
 .team-assigned-event-heading time {
-  color: #ccc;
+  color: var(--text-tertiary);
   font-size: 0.78rem;
   white-space: nowrap;
 }
@@ -251,14 +251,14 @@
 
 .team-event-details dt {
   margin-bottom: 0.2rem;
-  color: #999;
+  color: var(--muted);
   font-size: 0.65rem;
   text-transform: uppercase;
 }
 
 .team-event-details dd {
   overflow-wrap: anywhere;
-  color: #eee;
+  color: var(--white);
   font-size: 0.78rem;
   line-height: 1.45;
   white-space: pre-wrap;
@@ -270,7 +270,7 @@
 }
 
 .team-event-colleagues p {
-    color: #ddd;
+    color: var(--text-tertiary);
     font-size: 0.8rem;
     line-height: 1.5;
 }

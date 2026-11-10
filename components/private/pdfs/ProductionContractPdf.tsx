@@ -14,10 +14,10 @@ export type ProductionContractData = {
   total: string;
 };
 
-const GOLD = '#8c7533';
+const GOLD = '#806719';
 
 const s = StyleSheet.create({
-  page: { padding: 40, fontSize: 10, fontFamily: 'Helvetica', color: '#181818', lineHeight: 1.4 },
+  page: { padding: 40, fontSize: 10, fontFamily: 'Helvetica', color: '#111111', lineHeight: 1.4 },
   brand: { fontSize: 9, letterSpacing: 2, color: GOLD, marginBottom: 4 },
   title: { fontSize: 18, fontFamily: 'Helvetica-Bold', marginBottom: 16 },
   section: { fontSize: 12, fontFamily: 'Helvetica-Bold', marginTop: 20, marginBottom: 8, paddingBottom: 4, borderBottom: '1pt solid #bbb' },
@@ -34,7 +34,7 @@ const s = StyleSheet.create({
   total: { marginTop: 4, fontSize: 13, fontFamily: 'Helvetica-Bold' },
   sign: { marginTop: 70, flexDirection: 'row', justifyContent: 'space-between' },
   signBox: { width: '45%' },
-  signLine: { borderBottom: '1pt solid #181818', height: 24, marginBottom: 4 },
+  signLine: { borderBottom: '1pt solid #111111', height: 24, marginBottom: 4 },
   signLabel: { fontSize: 9, color: '#666' },
 });
 

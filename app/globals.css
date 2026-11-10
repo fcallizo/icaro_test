@@ -9,21 +9,29 @@
 @import './styles/wedding-extras.css';
 
 :root {
+  --white: #ffffff;
+  --black: #111111;
   --gold: #F5C31F;
   --gold-dark: color-mix(in srgb, var(--gold) 70%, black);
   --gold-light: color-mix(in srgb, var(--gold) 40%, white);
+  --text-secondary: #b5b5b5;
+  --text-tertiary: #cccccc;
+  --text-on-light: #28262a;
+  --muted: #999999;
+
   --bg-dark: #191a1b;
-  --bg-dark-raised: #222324;
-  --bg-light: #f3f0ea;
-  --bg-light-raised: #F4F4EE;
-  --text-light: #ffffff;
-  --text-dark: #111111;
-  --muted: #8b8b8b;
+  --bg-dark-raised: color-mix(in srgb, var(--bg-dark) 96%, white);
   --border: rgba(255, 255, 255, 0.12);
+  
+  --bg-light: #f7f5f0;
+  --bg-light-raised: color-mix(in srgb, var(--bg-light) 70%, var(--white));
+  --text-on-light-muted: #625f5b;
+  --border-light: rgba(17, 17, 17, 0.12);
 
   /* private colors */
   --priv-cinema: #3399ff;
   --priv-wedding: #c98fa2;
+  --priv-muted: #9aa3ae;
   --priv-success: #7cdb97;
   --priv-warning: #e4c968;
   --priv-error: #ff5555;
@@ -80,7 +88,7 @@ html:has(.page-shell-bodas)::-webkit-scrollbar-thumb {
 body {
   font-family: 'Montserrat', sans-serif;
   background: var(--bg-dark);
-  color: var(--text-light);
+  color: var(--white);
   min-height: 100vh;
 }
 
@@ -186,8 +194,9 @@ textarea {
 }
 
 .page-shell-bodas {
+  --border: var(--border-light);
   background: var(--bg-light);
-  color: var(--text-dark);
+  color: var(--black);
 }
 
 .public-legal-footer {
@@ -201,7 +210,7 @@ textarea {
   padding: 0.45rem 1rem;
   border-top: 1px solid var(--border);
   background: var(--priv-card-bg);
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 0.68rem;
 }
 
@@ -220,18 +229,18 @@ textarea {
 
 .public-legal-footer a:hover,
 .public-legal-footer a:focus-visible {
-  color: #f0d77a;
+  color: var(--gold-dark);
   text-decoration: underline;
 }
 
 .page-shell-bodas .public-legal-footer {
-  border-top-color: rgba(17, 17, 17, 0.12);
-  background: #f3f1eb;
-  color: #555;
+  border-top-color: var(--border);
+  background: var(--bg-light);
+  color: var(--text-on-light-muted);
 }
 
 .page-shell-bodas .public-legal-footer a {
-  color: #876d19;
+  color: var(--gold-dark);
 }
 
 .icon-mask {
@@ -278,11 +287,11 @@ span.nav-label>a {
 }
 
 .dark-link {
-  color: var(--text-light);
+  color: var(--white);
 }
 
 .wedding-link {
-  color: var(--text-dark);
+  color: var(--black);
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 1.05rem;
 }
@@ -326,7 +335,7 @@ span.nav-label>a {
 
 .legal-document h1 {
   margin-bottom: 1.6rem;
-  color: #fff;
+  color: var(--white);
   font-family: Georgia, 'Times New Roman', serif;
   font-size: clamp(1.8rem, 4vw, 2.5rem);
 }
@@ -352,14 +361,14 @@ span.nav-label>a {
 }
 
 .legal-document a {
-  color: #e3c95e;
+  color: var(--priv-warning);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 .legal-completion-notice {
   padding: 0.85rem 1rem;
-  border-left: 3px solid #ff6868;
+  border-left: 3px solid var(--priv-error);
   background: rgba(255, 104, 104, 0.09);
   color: #ffd0d0;
   font-size: 0.8rem;
@@ -378,12 +387,12 @@ span.nav-label>a {
 }
 
 .legal-details-list dt {
-  color: #999;
+  color: var(--muted);
   font-size: 0.78rem;
 }
 
 .legal-pending {
-  color: #ffd07a !important;
+  color: var(--priv-warning) !important;
 }
 
 .grain-layer {
@@ -403,7 +412,7 @@ span.nav-label>a {
 .intro-screen {
   position: fixed;
   inset: 0;
-  background: radial-gradient(ellipse at center, #252627 0%, var(--bg-dark) 72%);
+  background: radial-gradient(ellipse at center, var(--bg-dark-raised) 0%, var(--bg-dark) 72%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -436,7 +445,7 @@ span.nav-label>a {
 .intro-logo {
   width: 180px;
   height: auto;
-  filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
+  filter: drop-shadow(0 0 20px color-mix(in srgb, var(--gold) 50%, transparent));
 }
 
 .flicker-anim {
@@ -467,7 +476,7 @@ span.nav-label>a {
   font-family: Georgia, 'Times New Roman', serif;
   letter-spacing: 0.5rem;
   font-size: clamp(1.6rem, 3vw, 2.8rem);
-  color: white;
+  color: var(--white);
 }
 
 .intro-progress {
@@ -495,9 +504,9 @@ span.nav-label>a {
 }
 
 .topbar-dark {
-  --header-text: #b5b5b5;
+  --header-text: var(--text-secondary);
   --header-contact: #d7d7d7;
-  --header-border: rgba(255, 255, 255, 0.08);
+  --header-border: var(--border);
   background: rgba(25, 26, 27, 0.84);
   border-bottom: 1px solid var(--header-border);
 }
@@ -505,7 +514,7 @@ span.nav-label>a {
 .topbar-light {
   --header-text: #444;
   --header-contact: #333;
-  --header-border: rgba(17, 17, 17, 0.12);
+  --header-border: var(--border-light);
   background: var(--bg-light-raised);
   border-bottom: 1px solid var(--header-border);
 }
@@ -596,7 +605,7 @@ span.nav-label>a {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  border: 1px solid rgba(212, 175, 55, 0.35);
+  border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent);
   padding: 0.6rem 0.8rem;
   color: var(--gold);
 }
@@ -608,8 +617,8 @@ span.nav-label>a {
   height: 1.2rem;
   padding: 0 0.28rem;
   border-radius: 999px;
-  background: #ff4d4d;
-  color: white;
+  background: var(--priv-error);
+  color: var(--white);
   font-size: 0.62rem;
 }
 
@@ -687,7 +696,7 @@ span.nav-label>a {
 }
 
 .panel-content p {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-tertiary);
   font-size: 0.9rem;
   letter-spacing: 0.06rem;
   text-transform: uppercase;
@@ -696,8 +705,8 @@ span.nav-label>a {
 .cta {
   display: inline-block;
   margin-top: 1.5rem;
-  border: 1px solid rgba(212, 175, 55, 0.5);
-  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid color-mix(in srgb, var(--gold) 50%, transparent);
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
   color: var(--gold);
   padding: 0.9rem 1.3rem;
   font-size: 0.72rem;
@@ -748,7 +757,7 @@ span.nav-label>a {
 .hero-block.light h1,
 .hero-block.light h2,
 .hero-block.light p {
-  color: var(--text-dark);
+  color: var(--black);
 }
 
 .divider-block {
@@ -864,7 +873,7 @@ span.nav-label>a {
 
 .gallery-card {
   aspect-ratio: 3 / 2;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--border);
   background-size: cover;
   background-position: center;
 }
@@ -901,7 +910,7 @@ span.nav-label>a {
 
 .tech-header p {
   margin-top: 0.8rem;
-  color: #8b8b8b;
+  color: var(--muted);
   line-height: 1.8;
 }
 
@@ -912,7 +921,7 @@ span.nav-label>a {
 
 .stat-card {
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.035), transparent 60%), var(--bg-dark-raised);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid color-mix(in srgb, var(--gold) 20%, transparent);
   border-radius: 12px;
   padding: 1.15rem;
 }
@@ -924,7 +933,7 @@ span.nav-label>a {
 }
 
 .stat-card span {
-  color: #bdbdbd;
+  color: var(--text-tertiary);
   font-size: 0.75rem;
 }
 
@@ -989,7 +998,7 @@ span.nav-label>a {
 
 .cinema-pricing-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
   gap: 18px;
   align-items: stretch;
 }
@@ -1093,7 +1102,7 @@ span.nav-label>a {
   border-radius: 5px;
 
   background: var(--gold);
-  color: #fff;
+  color: var(--white);
 
   font-size: 0.68rem;
   font-weight: 700;
@@ -1143,7 +1152,7 @@ span.nav-label>a {
 
   p {
     margin-bottom: 1.5rem;
-    color: #8b8b8b;
+    color: var(--muted);
     line-height: 1.8;
   }
 
@@ -1162,7 +1171,7 @@ span.nav-label>a {
 
 .info-card {
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.03), transparent 60%), var(--bg-dark-raised);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 1.4rem;
 }
@@ -1185,7 +1194,7 @@ span.nav-label>a {
   justify-content: space-between;
   gap: 1rem;
   padding: 0.95rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--border);
   width: 100%;
 }
 
@@ -1196,8 +1205,8 @@ span.nav-label>a {
 
 .price-row span {
   display: block;
-  font-size: 0.76rem;
-  color: #8b8b8b;
+  font-size: 0.85rem;
+  color: var(--muted);
   line-height: 1.5;
 }
 
@@ -1211,8 +1220,8 @@ span.nav-label>a {
 }
 
 .tech-item {
-  background: #111;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--black);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 0.9rem;
   transition: transform 0.3s ease, border-color 0.3s ease;
@@ -1231,7 +1240,7 @@ span.nav-label>a {
 
 .tech-item p {
   font-size: 0.78rem;
-  color: #b7b7b7;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 
@@ -1241,7 +1250,7 @@ span.nav-label>a {
 }
 
 .legal-line {
-  background: #101010;
+  background: var(--black);
   border-left: 3px solid var(--gold);
   border-radius: 6px;
   padding: 0.85rem 1rem;
@@ -1250,7 +1259,7 @@ span.nav-label>a {
 .legal-line span {
   display: block;
   margin-top: 0.3rem;
-  color: #8d8d8d;
+  color: var(--muted);
 }
 
 .reservation-layout {
@@ -1281,7 +1290,7 @@ span.nav-label>a {
 .calendar-block,
 .booking-form {
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.03), transparent 60%), var(--bg-dark-raised);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.5rem;
 }
@@ -1291,7 +1300,7 @@ span.nav-label>a {
 }
 
 .booking-form .international-phone-input {
-  background: #111;
+  background: var(--black);
   border: 1px solid var(--border);
   border-radius: 8px;
 }
@@ -1320,7 +1329,7 @@ span.nav-label>a {
 .calendar-box {
   border-radius: 10px;
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.025), transparent 60%), var(--bg-dark);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
   padding: 1rem;
 }
 
@@ -1330,7 +1339,7 @@ span.nav-label>a {
   align-items: center;
   margin-bottom: 1rem;
   padding-bottom: 0.9rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--border);
 }
 
 .calendar-header button {
@@ -1373,7 +1382,7 @@ span.nav-label>a {
   border-radius: 6px;
   min-height: 42px;
   font-size: 0.78rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
 }
 
 .day.empty {
@@ -1425,7 +1434,7 @@ span.nav-label>a {
 
 .field-group label {
   display: block;
-  color: #bbb;
+  color: var(--text-secondary);
   text-transform: uppercase;
   font-size: 0.7rem;
   letter-spacing: 0.08rem;
@@ -1436,8 +1445,8 @@ span.nav-label>a {
 .field-group select {
   width: 100%;
   border: 1px solid var(--border);
-  background: #111;
-  color: white;
+  background: var(--black);
+  color: var(--white);
   border-radius: 8px;
   padding: 0.82rem 0.9rem;
   font: inherit;
@@ -1457,7 +1466,7 @@ span.nav-label>a {
   padding: 0 0.65rem;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: #111;
+  background: var(--black);
 }
 
 .international-phone-input .PhoneInputInput {
@@ -1534,27 +1543,27 @@ input[type="date"] {
 
 .privacy-form-notice {
   margin: 0.9rem 0;
-  color: #a9a9a6;
+  color: var(--text-secondary);
   font-size: 0.75rem;
   line-height: 1.55;
 }
 
 .privacy-form-notice a {
-  color: #e3c95e;
+  color: var(--priv-warning);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 .wedding-panel .privacy-form-notice {
-  color: #555;
+  color: var(--text-on-light-muted);
 }
 
 .wedding-panel .privacy-form-notice a {
-  color: #806719;
+  color: var(--gold-dark);
 }
 
 .weddings-mode {
-  color: var(--text-dark);
+  color: var(--black);
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 1.05rem;
 }
@@ -1663,14 +1672,14 @@ input[type="date"] {
 
 .weddings-mode .wedding-story-row h4 {
   margin-top: 0.55rem;
-  color: #171717;
+  color: var(--black);
   font-size: 1.7rem;
   line-height: 1.1;
 }
 
 .wedding-story-row article p {
   margin-top: 0.45rem;
-  color: #555;
+  color: var(--text-on-light-muted);
   font-size: 0.9rem;
   line-height: 1.65;
 }
@@ -1682,19 +1691,19 @@ input[type="date"] {
 }
 
 .wedding-planning-intro .eyebrow {
-  color: #806719;
+  color: var(--gold-dark);
 }
 
 .wedding-planning-intro h3 {
   margin-top: 0.55rem;
-  color: #171717;
+  color: var(--black);
   font-family: Georgia, 'Times New Roman', serif;
   font-size: clamp(1.45rem, 2.4vw, 2rem);
 }
 
 .wedding-planning-intro p {
   margin-top: 0.6rem;
-  color: #555;
+  color: var(--text-on-light-muted);
   font-size: 0.9rem;
   line-height: 1.65;
 }
@@ -1714,21 +1723,21 @@ input[type="date"] {
 }
 
 .wedding-planning-number {
-  color: #806719;
+  color: var(--gold-dark);
   font-size: 0.68rem;
   font-weight: 700;
 }
 
 .wedding-planning-grid h4 {
   margin-top: 0.55rem;
-  color: #171717;
+  color: var(--black);
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 1rem;
 }
 
 .wedding-planning-grid p {
   margin-top: 0.45rem;
-  color: #555;
+  color: var(--text-on-light-muted);
   font-size: 0.78rem;
   line-height: 1.55;
 }
@@ -1738,21 +1747,21 @@ input[type="date"] {
 .weddings-mode .hero-block p,
 .weddings-mode .field-group label,
 .weddings-mode .booking-form h4 {
-  color: var(--text-dark);
+  color: var(--black);
 }
 
 .weddings-mode .wedding-calendar {
   background: var(--bg-light-raised);
   border-color: rgba(0, 0, 0, 0.08);
-  color: var(--text-dark);
+  color: var(--black);
 }
 
 .weddings-mode .wedding-calendar h3 {
-  color: var(--text-dark);
+  color: var(--black);
 }
 
 .weddings-mode .wedding-calendar .calendar-box {
-  background: #fbf9f5;
+  background: var(--bg-light-raised);
   border-color: rgba(0, 0, 0, 0.08);
 }
 
@@ -1777,12 +1786,12 @@ input[type="date"] {
   align-items: center;
   gap: 0.5rem;
   margin-top: 1rem;
-  color: #555;
+  color: var(--text-on-light-muted);
   font-size: 0.8rem;
 }
 
 .calendar-legend-dark {
-  color: #b5b5b5;
+  color: var(--text-secondary);
 }
 
 .legend-free,
@@ -1814,7 +1823,7 @@ input[type="date"] {
 
 .video-card {
   aspect-ratio: 19 / 9;
-  background: linear-gradient(135deg, #e9e4d7, #d7d3c7);
+  background: linear-gradient(135deg, var(--bg-light), var(--bg-light-raised));
   border: 1px solid rgba(0, 0, 0, 0.08);
   display: grid;
   place-items: center;
@@ -1843,7 +1852,7 @@ input[type="date"] {
 
 .wedding-panel {
   background: var(--bg-light-raised);
-  color: var(--text-dark);
+  color: var(--black);
   max-width: 840px;
   border-color: rgba(0, 0, 0, 0.08);
 }
@@ -1851,9 +1860,9 @@ input[type="date"] {
 .wedding-panel .field-group input,
 .wedding-panel .field-group textarea,
 .wedding-panel .field-group select {
-  background: #f5f5f5;
+  background: var(--bg-light-raised);
   border-color: rgba(0, 0, 0, 0.08);
-  color: var(--text-dark);
+  color: var(--black);
 }
 
 
@@ -1875,12 +1884,12 @@ input[type="date"] {
 }
 
 .wedding-panel .international-phone-input {
-  background: #f5f5f5;
+  background: var(--bg-light-raised);
   border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .wedding-panel .international-phone-input .PhoneInputCountry {
-  background: #f5f5f5;
+  background: var(--bg-light-raised);
 }
 
 /* Bloque combinado */
@@ -1912,7 +1921,7 @@ input[type="date"] {
 }
 
 .combo-desc {
-  color: #8a897f;
+  color: var(--text-on-light-muted);
   font-size: .9rem;
   margin: .5rem 0 1rem;
 }
@@ -1958,7 +1967,7 @@ input[type="date"] {
 .price-start {
   display: block;
   margin-bottom: 0.15rem;
-  color: #8a897f;
+  color: var(--text-on-light-muted);
   font-size: 0.68rem;
   font-weight: 500;
 }
@@ -1968,8 +1977,8 @@ input[type="date"] {
   padding: 0.2rem 0.55rem;
   border: 1px solid rgba(135, 109, 25, 0.25);
   border-radius: 999px;
-  background: #f3f0e3;
-  color: #876d19;
+  background: var(--bg-light);
+  color: var(--gold-dark);
   font: 600 0.68rem/1.3 Arial, sans-serif;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -1980,7 +1989,7 @@ input[type="date"] {
   margin: 0.75rem 0 0;
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
-  background: #f3f0e3;
+  background: var(--bg-light);
   color: var(--gold-dark);
   font-size: 0.9rem;
   font-weight: 700;
@@ -2001,7 +2010,7 @@ input[type="date"] {
   left: 50%;
   transform: translateX(-50%);
   background: var(--gold);
-  color: #fff;
+  color: var(--white);
   padding: .3rem .9rem;
   border-radius: 999px;
   font-size: .9rem;
@@ -2011,7 +2020,7 @@ input[type="date"] {
 
 .popular-tag {
   display: inline-block;
-  background: #f3f0e3;
+  background: var(--bg-light);
   color: var(--gold);
   padding: .2rem .7rem;
   border-radius: 999px;
@@ -2048,10 +2057,10 @@ input[type="date"] {
   gap: 1rem;
   width: min(420px, calc(100vw - 2.5rem));
   padding: 1rem 1rem 1rem 1.1rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--border);
   border-left: 4px solid var(--priv-success);
-  background: #111213;
-  color: #f4f4f0;
+  background: var(--priv-card-bg);
+  color: var(--white);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
   animation: status-toast-in 180ms ease-out;
 }
@@ -2065,8 +2074,8 @@ input[type="date"] {
 }
 
 .status-toast-light {
-  background: #fff;
-  color: #171717;
+  background: var(--white);
+  color: var(--black);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
 }
 
@@ -2082,25 +2091,25 @@ input[type="date"] {
   height: 1.5rem;
   border: 0;
   background: transparent;
-  color: #bbb;
+  color: var(--text-secondary);
   font-size: 1.25rem;
   line-height: 1;
   cursor: pointer;
 }
 
 .status-toast-light button {
-  color: #555;
+  color: var(--text-on-light-muted);
 }
 
 .status-toast button:hover,
 .status-toast button:focus-visible {
-  color: #fff;
+  color: var(--white);
   outline: 1px solid currentColor;
 }
 
 .status-toast-light button:hover,
 .status-toast-light button:focus-visible {
-  color: #111;
+  color: var(--black);
 }
 
 @keyframes status-toast-in {

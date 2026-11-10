@@ -68,8 +68,8 @@
   border-radius: 3px;
   cursor: pointer;
   text-align: left;
-  background: #252525;
-  color: white;
+  background: var(--bg-dark-raised);
+  color: var(--white);
 }
 
 .works-card-1,
@@ -159,7 +159,7 @@
   padding: 0;
   border: 0;
   border-radius: 3px;
-  background: #222;
+  background: var(--bg-dark-raised);
   cursor: zoom-in;
 }
 
@@ -300,7 +300,7 @@
 
 .works-gallery-wedding .works-project-card,
 .works-gallery-wedding .works-mosaic-item {
-  background: #e6e1d8;
+  background: var(--bg-light-raised);
 }
 
 /* =========================================================

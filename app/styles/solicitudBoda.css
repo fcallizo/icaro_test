@@ -8,7 +8,7 @@
   padding: 1rem;
   border: 1px solid rgba(135, 109, 25, 0.24);
   border-radius: 8px;
-  background: #fbf8ef;
+  background: var(--bg-light);
   color: #3b3526;
   font-size: 0.9rem;
 }
@@ -32,8 +32,8 @@
 .customer-wedding-page {
   min-height: 100vh;
   padding: clamp(1.25rem, 5vw, 4rem) 1rem;
-  background: radial-gradient(ellipse at 50% 0%, #fff 0%, transparent 58%), var(--bg-light);
-  color: #28262a;
+  background: radial-gradient(ellipse at 50% 0%, var(--white) 0%, transparent 58%), var(--bg-light);
+  color: var(--text-on-light);
   font-family: 'Cormorant Garamond', Georgia, serif;
 }
 
@@ -41,7 +41,7 @@
   width: min(100%, 860px);
   margin: 0 auto;
   padding: clamp(1.25rem, 5vw, 3.5rem);
-  border: 1px solid #e8e1d5;
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.94);
   box-shadow: 0 20px 55px rgba(65, 52, 34, 0.08);
@@ -57,7 +57,7 @@
 .customer-wedding-eyebrow {
   margin-top: 2rem;
   margin-bottom: 0.35rem;
-  color: #8c7533;
+  color: var(--gold-dark);
   font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -74,7 +74,7 @@
 .customer-wedding-intro {
   max-width: 620px;
   margin: 0.85rem 0 2rem;
-  color: #625f5b;
+  color: var(--text-on-light-muted);
   font-size: 1.12rem;
   line-height: 1.5;
 }
@@ -84,7 +84,7 @@
    (cambia estas cuatro líneas para cambiar todo el tono)
    ========================================================= */
 .customer-wedding-form {
-  --field-bg: #fbf8ef;
+  --field-bg: var(--bg-light);
   --field-bg-hover: #f8f5ed;
   --field-bg-focus: #fffdf7;
   --field-border: #e3dac2;
@@ -165,7 +165,7 @@
 .customer-wedding-form .field-group select {
   border-color: var(--field-border);
   background: var(--bg-light);
-  color: #28262a;
+  color: var(--text-on-light);
   transition: background-color 0.2s ease, border-color 0.2s ease;
   font-size: 1.1rem;
   font-weight: 600;
@@ -187,12 +187,12 @@
 
 .customer-wedding-form .field-group input::placeholder,
 .customer-wedding-form .field-group textarea::placeholder {
-  color: rgba(40, 38, 42, 0.4);
+  color: color-mix(in srgb, var(--text-on-light) 40%, transparent);
 }
 
 .customer-wedding-form .field-group select option {
-  background: #fff;
-  color: #28262a;
+  background: var(--white);
+  color: var(--text-on-light);
 }
 
 /* Fecha y hora */
@@ -206,15 +206,15 @@
 }
 
 .customer-wedding-form .field-group .date-input {
-  color: #28262a;
+  color: var(--text-on-light);
 }
 
 /* Autocompletado del navegador (necesita un color sólido) */
 .customer-wedding-form .field-group input:-webkit-autofill,
 .customer-wedding-form .field-group input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px #fbf8ef inset;
-  -webkit-text-fill-color: #28262a;
-  caret-color: #28262a;
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-light) inset;
+  -webkit-text-fill-color: var(--text-on-light);
+  caret-color: var(--text-on-light);
 }
 
 /* =========================================================
@@ -227,7 +227,7 @@
 .customer-wedding-form .field-group > .international-phone-input {
   display: flex;
   align-items: stretch;
-  border: 1px solid #ded9cf;
+  border: 1px solid var(--border-light);
   border-radius: 8px;
   background: rgba(140, 117, 51, 0.06);   /* igual que los inputs */
   overflow: hidden;
@@ -236,7 +236,7 @@
 /* Prefijo (bandera + código) algo más intenso para distinguirlo */
 .customer-wedding-form .field-group > .international-phone-input .PhoneInputCountry {
   background: rgba(140, 117, 51, 0.14);
-  border-right: 1px solid #ded9cf;
+  border-right: 1px solid var(--border-light);
   padding: 0 0.6rem;
   display: flex;
   align-items: center;
@@ -253,7 +253,7 @@
   border: none;
   background: transparent;
   flex: 1;
-  color: #28262a;
+  color: var(--text-on-light);
   font-size: 1.1rem;
   font-weight: 600;
 }
@@ -278,7 +278,7 @@
    Privacidad
    ========================================================= */
 .customer-wedding-form .privacy-form-notice {
-  color: #625f5b;
+  color: var(--text-on-light-muted);
 }
 
 .customer-wedding-form .privacy-form-notice a {
@@ -294,7 +294,7 @@
   border: 0;
   border-radius: 8px;
   background: var(--gold);
-  color: #fff;
+  color: var(--white);
   cursor: pointer;
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
@@ -310,7 +310,7 @@
   margin: 1rem 0;
   padding: 0.85rem 1rem;
   border-radius: 8px;
-  background: #f5f1e8;
+  background: var(--bg-light-raised);
   color: #49443a;
   font-family: 'Montserrat', sans-serif;
   font-size: 0.88rem;
