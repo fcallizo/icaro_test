@@ -16,7 +16,7 @@
 .works-eyebrow {
   display: block;
   letter-spacing: 0.24em;
-  font-size: 0.72rem;
+  font-size: var(--font-size-caption);
   opacity: 0.68;
   margin-bottom: 0.7rem;
 }
@@ -113,7 +113,7 @@
 
 .works-project-overlay small {
   opacity: 0.8;
-  font-size: 0.75rem;
+  font-size: var(--font-size-caption);
 }
 
 /* =========================================================
@@ -132,7 +132,7 @@
 }
 
 .works-project-toolbar p {
-  font-size: 0.85rem;
+  font-size: var(--font-size-small);
 }
 
 /* =========================================================

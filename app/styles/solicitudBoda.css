@@ -10,7 +10,7 @@
   border-radius: 8px;
   background: var(--bg-light);
   color: #3b3526;
-  font-size: 0.9rem;
+  font-size: var(--font-size-small);
 }
 
 .customer-form-link-notice a {
@@ -34,6 +34,7 @@
   padding: clamp(1.25rem, 5vw, 4rem) 1rem;
   background: radial-gradient(ellipse at 50% 0%, var(--white) 0%, transparent 58%), var(--bg-light);
   color: var(--text-on-light);
+  font-size: var(--font-size-body);
   font-family: 'Cormorant Garamond', Georgia, serif;
 }
 
@@ -58,7 +59,7 @@
   margin-top: 2rem;
   margin-bottom: 0.35rem;
   color: var(--gold-dark);
-  font-size: 0.75rem;
+  font-size: var(--font-size-caption);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -75,7 +76,7 @@
   max-width: 620px;
   margin: 0.85rem 0 2rem;
   color: var(--text-on-light-muted);
-  font-size: 1.12rem;
+  font-size: var(--font-size-body-large);
   line-height: 1.5;
 }
 
@@ -103,14 +104,14 @@
   margin-bottom: 0.8rem;
   color: #4a4130;
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 1.45rem;
+  font-size: var(--font-size-card-title);
   font-weight: 600;
 }
 
 .customer-wedding-section-intro {
   margin: -0.4rem 0 0.8rem;
   color: #706c65;
-  font-size: 0.95rem;
+  font-size: var(--font-size-small);
 }
 
 .customer-wedding-form .two-col {
@@ -167,7 +168,7 @@
   background: var(--bg-light);
   color: var(--text-on-light);
   transition: background-color 0.2s ease, border-color 0.2s ease;
-  font-size: 1.1rem;
+  font-size: var(--font-size-body-large);
   font-weight: 600;
 }
 
@@ -254,7 +255,7 @@
   background: transparent;
   flex: 1;
   color: var(--text-on-light);
-  font-size: 1.1rem;
+  font-size: var(--font-size-body-large);
   font-weight: 600;
 }
 
@@ -313,7 +314,7 @@
   background: var(--bg-light-raised);
   color: #49443a;
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.88rem;
+  font-size: var(--font-size-small);
 }
 
 .customer-wedding-error {

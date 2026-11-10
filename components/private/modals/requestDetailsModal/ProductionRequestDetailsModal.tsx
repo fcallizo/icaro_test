@@ -144,7 +144,7 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
       canConfirm={hasCompleteBreakdown}
       isDirty={isDirty}
       onSubmit={(event: FormEvent<HTMLFormElement>) => { event.preventDefault(); onSave(values); }}
-      rightAction={hasCompleteBreakdown ? (
+      rightAction={request.status !== 'pending' ? (
         <>
           <button
             type="button"

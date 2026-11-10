@@ -34,7 +34,7 @@
   border: 1px solid var(--gold-dark);
   border-radius: 10px;
   color: var(--gold);
-  font-size: 0.8rem;
+  font-size: var(--font-size-private-small);
   font-weight: 700;
 }
 
@@ -57,7 +57,7 @@
 
 .wedding-price-card > p {
   margin: 14px 0 0;
-  font-size: 0.83rem;
+  font-size: var(--font-size-private-small);
   line-height: 1.7;
   opacity: 0.65;
 }
@@ -89,19 +89,19 @@
   display: inline-block;
   margin-bottom: 10px;
   color: var(--gold);
-  font-size: 0.72rem;
+  font-size: var(--font-size-private-caption);
   font-weight: 700;
   letter-spacing: 0.1em;
 }
 
 .wedding-discount-card h5 {
   margin: 0 0 7px;
-  font-size: 1rem;
+  font-size: var(--font-size-private-body);
 }
 
 .wedding-discount-card p {
   margin: 0;
-  font-size: 0.83rem;
+  font-size: var(--font-size-private-small);
   line-height: 1.6;
   opacity: 0.65;
 }
@@ -119,7 +119,7 @@
 
 .wedding-prices-footer > p {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--font-size-private-small);
   line-height: 1.6;
   opacity: 0.65;
 }
@@ -190,7 +190,7 @@
   display: inline-block;
   margin-bottom: 8px;
   color: var(--gold-dark);
-  font-size: 0.7rem;
+  font-size: var(--font-size-private-caption);
   font-weight: 700;
   letter-spacing: 0.16em;
   line-height: 1.4;
@@ -200,7 +200,7 @@
 .cinema-offers-admin-header p {
   margin: 10px 0 0;
   color: var(--muted);
-  font-size: 0.92rem;
+  font-size: var(--font-size-private-body);
   line-height: 1.65;
 }
 
@@ -217,14 +217,14 @@
 
 .cinema-offers-counter strong {
   color: var(--gold);
-  font-size: 1.4rem;
+  font-size: var(--font-size-private-title);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
 .cinema-offers-counter span {
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: var(--font-size-private-caption);
 }
 
 /* Posiciones disponibles */
@@ -265,14 +265,14 @@
 
 .cinema-offer-slot > span {
   color: var(--muted);
-  font-size: 0.65rem;
+  font-size: var(--font-size-private-caption);
   font-weight: 700;
   letter-spacing: 0.1em;
 }
 
 .cinema-offer-slot > strong {
   overflow-wrap: anywhere;
-  font-size: 0.88rem;
+  font-size: var(--font-size-private-small);
   font-weight: 600;
   line-height: 1.4;
 }
@@ -289,7 +289,7 @@
 .cinema-offers-feedback {
   padding: 13px 16px;
   border-radius: 8px;
-  font-size: 0.88rem;
+  font-size: var(--font-size-private-small);
   line-height: 1.5;
 }
 
@@ -342,7 +342,7 @@
 
 .cinema-offer-admin-title h5 {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--font-size-private-body);
   font-weight: 600;
   line-height: 1.45;
   overflow-wrap: anywhere;
@@ -353,7 +353,7 @@
   align-items: center;
   padding: 10px 0px;
   color: var(--muted);
-  font-size: 0.7rem;
+  font-size: var(--font-size-private-caption);
   font-weight: 600;
   line-height: 1;
 }
@@ -365,7 +365,7 @@
 .cinema-offer-admin-info > p {
   margin: 9px 0 14px;
   color: var(--muted);
-  font-size: 0.86rem;
+  font-size: var(--font-size-private-small);
   line-height: 1.6;
   overflow-wrap: anywhere;
 }
@@ -379,20 +379,20 @@
 
 .cinema-offer-admin-prices strong {
   color: var(--gold);
-  font-size: 1rem;
+  font-size: var(--font-size-private-body);
   font-weight: 700;
 }
 
 .cinema-offer-admin-prices del {
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: var(--font-size-private-small);
 }
 
 .cinema-offer-admin-prices > span {
   padding-left: 12px;
   border-left: 1px solid var(--border);
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: var(--font-size-private-caption);
 }
 
 /* Botones */
@@ -464,7 +464,7 @@
   }
 
   .cinema-offers-counter strong {
-    font-size: 1.1rem;
+    font-size: var(--font-size-private-large);
   }
 
   .cinema-offers-slots {

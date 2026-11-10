@@ -273,10 +273,8 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
             </header>
             <div className="production-contract-grid">
               {select('servicioPreboda', 'Servicios', serviceOptions)}
-            </div>
-            <div className="production-contract-grid">
               {input('fechaPreboda', 'Fecha preboda', 'date', true, false, false, '')}
-              {input('lugarPreboda', 'Lugar preboda', 'text', true, false, false, '')}
+              {input('lugarPreboda', 'Lugar preboda', 'text', true, true, false, '')}
               {textarea('detallesPreboda', 'Detalles preboda')}
               {input('extraPreboda', 'Extras', 'text', false, false, false, '')}
               {inputSuffix('precioExtraPreboda', 'Precio extras', true, false, false)}
@@ -292,17 +290,14 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
             </header>
             <div className="production-contract-grid">
               {select('servicioPostboda', 'Servicios', serviceOptions)}
-            </div>
-            <div className="production-contract-grid">
               {input('fechaPostboda', 'Fecha postboda', 'date', true, false, false, '')}
-              {input('lugarPostboda', 'Lugar postboda', 'text', true, false, false, '')}
+              {input('lugarPostboda', 'Lugar postboda', 'text', true, true, false, '')}
               {textarea('detallesPostboda', 'Detalles postboda')}
               {input('extraPostboda', 'Extras', 'text', false, false, false, '')}
               {inputSuffix('precioExtraPostboda', 'Precio extras', true, false, false)}
             </div>
           </div>
         )}
-
         <br />
         <div className="production-contract-grid">
           {inputSuffix('descuentoBoda', 'Descuento', true, false, false, '%')}

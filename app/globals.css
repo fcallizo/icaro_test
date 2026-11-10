@@ -9,6 +9,12 @@
 @import './styles/wedding-extras.css';
 
 :root {
+  --font-size-caption: 0.8125rem;
+  --font-size-small: 0.9375rem;
+  --font-size-body: 1rem;
+  --font-size-body-large: 1.125rem;
+  --font-size-card-title: 1.375rem;
+  --font-size-section-title: clamp(1.5rem, 2.4vw, 2rem);
   --white: #ffffff;
   --black: #111111;
   --gold: #F5C31F;
@@ -28,7 +34,14 @@
   --text-on-light-muted: #625f5b;
   --border-light: rgba(17, 17, 17, 0.12);
 
-  /* private colors */
+  /* private Area */
+  --font-size-private-caption: 0.75rem;
+  --font-size-private-small: 0.875rem;
+  --font-size-private-body: 1rem;
+  --font-size-private-large: 1.125rem;
+  --font-size-private-title: 1.375rem;
+  --font-size-private-page-title: 1.5rem;
+
   --priv-cinema: #3399ff;
   --priv-wedding: #c98fa2;
   --priv-muted: #9aa3ae;
@@ -211,7 +224,7 @@ textarea {
   border-top: 1px solid var(--border);
   background: var(--priv-card-bg);
   color: var(--text-secondary);
-  font-size: 0.68rem;
+  font-size: var(--font-size-caption);
 }
 
 .home-page>.public-legal-footer {
@@ -314,7 +327,7 @@ span.nav-label>a {
 
 .legal-back-link {
   color: var(--gold);
-  font-size: 0.78rem;
+  font-size: var(--font-size-caption);
 }
 
 .legal-document {
@@ -322,13 +335,14 @@ span.nav-label>a {
   flex: 1 0 auto;
   margin: 2.5rem auto 4rem;
   color: #d6d6d2;
+  font-size: var(--font-size-body);
   line-height: 1.7;
 }
 
 .legal-eyebrow {
   margin-bottom: 0.6rem;
   color: var(--gold);
-  font-size: 0.68rem;
+  font-size: var(--font-size-caption);
   font-weight: 700;
   letter-spacing: 0.08rem;
 }
@@ -347,13 +361,13 @@ span.nav-label>a {
 .legal-document h2 {
   margin-bottom: 0.65rem;
   color: var(--gold);
-  font-size: 1rem;
+  font-size: var(--font-size-body-large);
 }
 
 .legal-document p,
 .legal-document dd {
   color: #c2c2bf;
-  font-size: 0.86rem;
+  font-size: var(--font-size-small);
 }
 
 .legal-document p+p {
@@ -575,7 +589,7 @@ span.nav-label>a {
 
 .main-nav a {
   color: var(--header-text);
-  font-size: 0.71rem;
+  font-size: var(--font-size-caption);
   text-transform: uppercase;
   letter-spacing: 0.1rem;
   font-weight: 600;
@@ -597,7 +611,7 @@ span.nav-label>a {
   border-right: 1px solid var(--header-border);
   padding: 0 1rem;
   color: var(--header-contact);
-  font-size: 0.68rem;
+  font-size: var(--font-size-caption);
   font-family: 'SFMono-Regular', Consolas, monospace;
 }
 
@@ -697,7 +711,7 @@ span.nav-label>a {
 
 .panel-content p {
   color: var(--text-tertiary);
-  font-size: 0.9rem;
+  font-size: var(--font-size-small);
   letter-spacing: 0.06rem;
   text-transform: uppercase;
 }
@@ -709,7 +723,7 @@ span.nav-label>a {
   background: color-mix(in srgb, var(--gold) 8%, transparent);
   color: var(--gold);
   padding: 0.9rem 1.3rem;
-  font-size: 0.72rem;
+  font-size: var(--font-size-caption);
   text-transform: uppercase;
   letter-spacing: 0.15rem;
 }
@@ -749,7 +763,7 @@ span.nav-label>a {
 .hero-block>p {
   margin: 1.25rem auto 0;
   color: var(--muted);
-  font-size: clamp(1rem, 2vw, 1.15rem);
+  font-size: clamp(var(--font-size-body), 2vw, var(--font-size-body-large));
   font-style: italic;
 }
 
@@ -795,7 +809,7 @@ span.nav-label>a {
 .eyebrow {
   display: inline-block;
   color: var(--gold);
-  font-size: 0.7rem;
+  font-size: var(--font-size-caption);
   letter-spacing: 0.2rem;
   text-transform: uppercase;
   font-weight: 700;
@@ -816,7 +830,7 @@ span.nav-label>a {
   padding: 0.7rem 1rem;
   text-transform: uppercase;
   letter-spacing: 0.08rem;
-  font-size: 0.72rem;
+  font-size: var(--font-size-caption);
   font-weight: 700;
   cursor: pointer;
 }
@@ -934,7 +948,7 @@ span.nav-label>a {
 
 .stat-card span {
   color: var(--text-tertiary);
-  font-size: 0.75rem;
+  font-size: var(--font-size-caption);
 }
 
 .gestion-card {
@@ -967,7 +981,7 @@ span.nav-label>a {
 
 .process-num {
   color: var(--gold);
-  font-size: 0.8rem;
+  font-size: var(--font-size-caption);
   letter-spacing: 0.1em;
 }
 
@@ -978,7 +992,7 @@ span.nav-label>a {
 
 .process-step p {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: var(--font-size-small);
   opacity: 0.8;
 }
 
@@ -1030,7 +1044,7 @@ span.nav-label>a {
 
 .cinema-price-card h4 {
   margin: 0 0 14px;
-  font-size: 1.15rem;
+  font-size: var(--font-size-card-title);
   line-height: 1.4;
   color: var(--gold);
 }
@@ -1038,7 +1052,7 @@ span.nav-label>a {
 .cinema-price-card>p {
   flex: 1;
   margin: 0 0 28px;
-  font-size: 0.9rem;
+  font-size: var(--font-size-small);
   line-height: 1.8;
   opacity: 0.75;
 }
@@ -1055,7 +1069,7 @@ span.nav-label>a {
 }
 
 .cinema-price>span {
-  font-size: 0.8rem;
+  font-size: var(--font-size-caption);
   opacity: 0.7;
 }
 
@@ -1076,7 +1090,7 @@ span.nav-label>a {
 .cinema-pricing-note {
   margin: 22px auto 0;
   text-align: center;
-  font-size: 0.8rem;
+  font-size: var(--font-size-small);
   line-height: 1.7;
   opacity: 0.6;
 }
@@ -1104,7 +1118,7 @@ span.nav-label>a {
   background: var(--gold);
   color: var(--white);
 
-  font-size: 0.68rem;
+  font-size: var(--font-size-caption);
   font-weight: 700;
   letter-spacing: 0.08em;
   line-height: 1;
@@ -1133,7 +1147,7 @@ span.nav-label>a {
 .cinema-price>.cinema-offer-saving {
   margin-top: 5px;
   color: var(--gold);
-  font-size: 0.78rem;
+  font-size: var(--font-size-small);
   font-weight: 600;
   opacity: 1;
 }
@@ -1205,7 +1219,7 @@ span.nav-label>a {
 
 .price-row span {
   display: block;
-  font-size: 0.85rem;
+  font-size: var(--font-size-small);
   color: var(--muted);
   line-height: 1.5;
 }
@@ -1239,7 +1253,7 @@ span.nav-label>a {
 }
 
 .tech-item p {
-  font-size: 0.78rem;
+  font-size: var(--font-size-small);
   color: var(--text-secondary);
   line-height: 1.6;
 }
@@ -1323,7 +1337,7 @@ span.nav-label>a {
 .booking-form h4 {
   margin-bottom: 1rem;
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 1.5rem;
+  font-size: var(--font-size-card-title);
 }
 
 .calendar-box {
@@ -1367,7 +1381,7 @@ span.nav-label>a {
 .weekday-row {
   color: #8b8b8b;
   text-transform: uppercase;
-  font-size: 0.7rem;
+  font-size: var(--font-size-caption);
   margin-bottom: 0.85rem;
   text-align: center;
 }
@@ -1379,9 +1393,9 @@ span.nav-label>a {
 .day {
   display: grid;
   place-items: center;
-  border-radius: 6px;
+  border-radius: 2px;
   min-height: 42px;
-  font-size: 0.78rem;
+  font-size: var(--font-size-small);
   border: 1px solid var(--border);
 }
 
@@ -1436,7 +1450,7 @@ span.nav-label>a {
   display: block;
   color: var(--text-secondary);
   text-transform: uppercase;
-  font-size: 0.7rem;
+  font-size: var(--font-size-caption);
   letter-spacing: 0.08rem;
 }
 
@@ -1544,7 +1558,7 @@ input[type="date"] {
 .privacy-form-notice {
   margin: 0.9rem 0;
   color: var(--text-secondary);
-  font-size: 0.75rem;
+  font-size: var(--font-size-caption);
   line-height: 1.55;
 }
 
@@ -1565,7 +1579,11 @@ input[type="date"] {
 .weddings-mode {
   color: var(--black);
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 1.05rem;
+  font-size: var(--font-size-body);
+}
+
+.weddings-mode .eyebrow {
+  font-size: var(--font-size-caption);
 }
 
 .weddings-mode h1,
@@ -1590,28 +1608,43 @@ input[type="date"] {
 
 .weddings-mode .tabs .tab {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 0.95rem;
+  font-size: var(--font-size-small);
   letter-spacing: 0.04rem;
 }
 
 .weddings-mode .wedding-planning-intro h3 {
-  font-size: 2.8rem;
-  line-height: 1;
+  font-size: var(--font-size-section-title);
+  line-height: 1.1;
 }
 
 .weddings-mode .wedding-planning-grid h4 {
-  font-size: 1.7rem;
+  font-size: var(--font-size-card-title);
   line-height: 1.1;
+}
+
+.weddings-mode .card-title {
+  font-size: var(--font-size-card-title);
+}
+
+.weddings-mode .price-row span,
+.weddings-mode .combo-desc {
+  font-size: var(--font-size-small);
+}
+
+.weddings-mode .price-start,
+.weddings-mode .service-label,
+.weddings-mode .popular-tag {
+  font-size: var(--font-size-caption);
 }
 
 .weddings-mode .booking-form h4 {
-  font-size: 2.2rem;
-  line-height: 1;
+  font-size: var(--font-size-card-title);
+  line-height: 1.2;
 }
 
 .weddings-mode .wedding-calendar h3 {
-  font-size: 2rem;
-  line-height: 1.1;
+  font-size: var(--font-size-card-title);
+  line-height: 1.2;
 }
 
 .hero-crop {
@@ -1673,14 +1706,14 @@ input[type="date"] {
 .weddings-mode .wedding-story-row h4 {
   margin-top: 0.55rem;
   color: var(--black);
-  font-size: 1.7rem;
+  font-size: var(--font-size-card-title);
   line-height: 1.1;
 }
 
 .wedding-story-row article p {
   margin-top: 0.45rem;
   color: var(--text-on-light-muted);
-  font-size: 0.9rem;
+  font-size: var(--font-size-small);
   line-height: 1.65;
 }
 
@@ -1724,7 +1757,7 @@ input[type="date"] {
 
 .wedding-planning-number {
   color: var(--gold-dark);
-  font-size: 0.68rem;
+  font-size: var(--font-size-caption);
   font-weight: 700;
 }
 
@@ -1732,13 +1765,13 @@ input[type="date"] {
   margin-top: 0.55rem;
   color: var(--black);
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 1rem;
+  font-size: var(--font-size-card-title);
 }
 
 .wedding-planning-grid p {
   margin-top: 0.45rem;
   color: var(--text-on-light-muted);
-  font-size: 0.78rem;
+  font-size: var(--font-size-small);
   line-height: 1.55;
 }
 
@@ -1775,6 +1808,15 @@ input[type="date"] {
 
 .weddings-mode .wedding-calendar .weekday-row {
   color: #777;
+  font-size: var(--font-size-caption);
+}
+
+.weddings-mode .wedding-calendar .day {
+  font-size: var(--font-size-small);
+}
+
+.weddings-mode .calendar-legend {
+  font-size: var(--font-size-small);
 }
 
 .weddings-mode .wedding-calendar .day {
@@ -1787,7 +1829,7 @@ input[type="date"] {
   gap: 0.5rem;
   margin-top: 1rem;
   color: var(--text-on-light-muted);
-  font-size: 0.8rem;
+  font-size: var(--font-size-small);
 }
 
 .calendar-legend-dark {
@@ -1922,7 +1964,7 @@ input[type="date"] {
 
 .combo-desc {
   color: var(--text-on-light-muted);
-  font-size: .9rem;
+  font-size: var(--font-size-small);
   margin: .5rem 0 1rem;
 }
 
@@ -1968,7 +2010,7 @@ input[type="date"] {
   display: block;
   margin-bottom: 0.15rem;
   color: var(--text-on-light-muted);
-  font-size: 0.68rem;
+  font-size: var(--font-size-caption);
   font-weight: 500;
 }
 
@@ -1979,7 +2021,7 @@ input[type="date"] {
   border-radius: 999px;
   background: var(--bg-light);
   color: var(--gold-dark);
-  font: 600 0.68rem/1.3 Arial, sans-serif;
+  font: 600 var(--font-size-caption)/1.3 Arial, sans-serif;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -1999,7 +2041,7 @@ input[type="date"] {
   max-width: 760px;
   margin: 0 auto 0.5rem;
   color: #77736c;
-  font-size: 0.84rem;
+  font-size: var(--font-size-small);
   line-height: 1.6;
   text-align: center;
 }
@@ -2024,7 +2066,7 @@ input[type="date"] {
   color: var(--gold);
   padding: .2rem .7rem;
   border-radius: 999px;
-  font-size: .72rem;
+  font-size: var(--font-size-caption);
   font-weight: 600;
   margin-top: .75rem;
   margin-bottom: .75rem;
@@ -2205,7 +2247,7 @@ input[type="date"] {
   }
 
   .main-nav a {
-    font-size: 0.7rem;
+    font-size: var(--font-size-caption);
     letter-spacing: 0.04rem;
   }
 

@@ -201,7 +201,7 @@ export function AdminUsersTab() {
             <div className="private-user-actions">
               <button
                 type="button"
-                className="private-user-action"
+                className="private-gold-button"
                 onClick={() => void handleAdminChange(user)}
                 disabled={Boolean(busyId) || !user.passwordSet}
               >
@@ -209,7 +209,7 @@ export function AdminUsersTab() {
               </button>
               <button
                 type="button"
-                className="private-user-action danger"
+                className="private-discard-button"
                 onClick={() => void handleDelete(user)}
                 disabled={Boolean(busyId)}
               >

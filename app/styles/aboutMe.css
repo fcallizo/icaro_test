@@ -38,7 +38,7 @@
 .about-media figcaption {
   margin-top: 0.85rem;
   text-align: center;
-  font-size: 0.82rem;
+  font-size: var(--font-size-caption);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }

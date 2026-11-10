@@ -460,12 +460,6 @@ export function PrivateArea() {
                 selectedDate={selectedDate}
                 onDateSelect={setSelectedDate}
               />
-              {selectedDate && (
-                <div className="private-date-filter" role="status">
-                  <span>Solicitudes del {selectedDateLabel}</span>
-                  <button type="button" onClick={() => setSelectedDate(null)}>Ver todas</button>
-                </div>
-              )}
             </div>
             <section className="private-workspace" aria-label="Gestión de solicitudes">
               <div className="private-tabs" role="tablist" aria-label="Gestión privada">

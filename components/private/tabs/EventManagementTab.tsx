@@ -163,16 +163,6 @@ export function EventManagementTab() {
                       <span className={isRevoked ? 'event-member-status revoked' : 'event-member-status'}>
                         {isRevoked ? 'Enlace revocado' : 'Enlace activo'}
                       </span>
-                      <p className="event-member-summary">
-                        {isRevoked
-                          ? 'Sin acceso desde la revocación.'
-                          : assigned.length === 0
-                            ? 'Todavía sin eventos asignados.'
-                            : `${assigned.length} ${assigned.length === 1 ? 'evento asignado' : 'eventos asignados'}: ${assigned
-                                .slice(0, 2)
-                                .map((managedEvent) => `${eventTypeLabel(managedEvent.type)} · ${managedEvent.clientName}`)
-                                .join(', ')}${assigned.length > 2 ? ` +${assigned.length - 2}` : ''}`}
-                      </p>
                     </div>
 
                     <div className="event-member-actions">
@@ -198,6 +188,16 @@ export function EventManagementTab() {
                       )}
                     </div>
                   </div>
+                  <p className="event-member-summary">
+                        {isRevoked
+                          ? 'Sin acceso desde la revocación.'
+                          : assigned.length === 0
+                            ? 'Todavía sin eventos asignados.'
+                            : `${assigned.length} ${assigned.length === 1 ? 'evento asignado' : 'eventos asignados'}: ${assigned
+                                .slice(0, 2)
+                                .map((managedEvent) => `${eventTypeLabel(managedEvent.type)} · ${managedEvent.clientName}`)
+                                .join(', ')}${assigned.length > 2 ? ` +${assigned.length - 2}` : ''}`}
+                      </p>
                 </article>
               );
             })}

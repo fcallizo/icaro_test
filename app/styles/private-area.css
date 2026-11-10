@@ -2,6 +2,7 @@
   min-height: 100vh;
   padding-bottom: 2rem;
   color: var(--white);
+  font-size: var(--font-size-private-body);
 }
 
 .private-page-header,
@@ -50,19 +51,19 @@
 
 .private-page-title .eyebrow {
   color: var(--gold);
-  font-size: 0.65rem;
+  font-size: var(--font-size-private-caption);
 }
 
 .private-page-title h1 {
   margin-top: 0.35rem;
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 1.6rem;
+  font-size: var(--font-size-private-page-title);
 }
 
 .private-back-link {
   justify-self: end;
   color: var(--text-tertiary);
-  font-size: 0.78rem;
+  font-size: var(--font-size-private-small);
 }
 
 .private-back-link:hover {
@@ -94,7 +95,7 @@
 
 .private-calendar-controls p {
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: var(--font-size-private-caption);
 }
 
 .private-calendar-toggle {
@@ -102,7 +103,7 @@
   align-items: center;
   gap: 0.65rem;
   color: var(--white);
-  font-size: 0.82rem;
+  font-size: var(--font-size-private-small);
   cursor: pointer;
 }
 
@@ -183,7 +184,7 @@
 .private-login-form label {
   margin-top: 0.5rem;
   color: var(--text-tertiary);
-  font-size: 0.78rem;
+  font-size: var(--font-size-private-small);
 }
 
 .private-login-form input {
@@ -202,7 +203,7 @@
 .private-logout-button {
   min-height: 40px;
   padding: 0.65rem 0.9rem;
-  font-size: 0.78rem;
+  font-size: var(--font-size-private-small);
   font-weight: 700;
   cursor: pointer;
 }
@@ -226,7 +227,7 @@
 .private-empty-state,
 .private-login-hint {
   color: var(--text-secondary);
-  font-size: 0.82rem;
+  font-size: var(--font-size-private-small);
   line-height: 1.6;
 }
 
@@ -250,13 +251,13 @@
 .private-error-message {
   margin: 1rem 1.5rem;
   color: var(--priv-error-soft);
-  font-size: 0.82rem;
+  font-size: var(--font-size-private-small);
 }
 
 .private-toolbar {
   padding: 1rem 1.5rem;
   color: var(--text-secondary);
-  font-size: 0.78rem;
+  font-size: var(--font-size-private-small);
 }
 
 .private-toolbar strong {
@@ -267,7 +268,7 @@
   display: block;
   margin-top: 1rem;
   color: var(--gold);
-  font-size: 0.78rem;
+  font-size: var(--font-size-private-small);
   text-align: center;
 }
 
@@ -287,19 +288,19 @@
 
 .private-account-card > .eyebrow {
   color: var(--gold);
-  font-size: 0.68rem;
+  font-size: var(--font-size-private-caption);
 }
 
 .private-account-card h1 {
   margin: 0.7rem 0;
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 1.6rem;
+  font-size: var(--font-size-private-page-title);
 }
 
 .private-account-card > p {
   margin-bottom: 1.2rem;
   color: var(--text-secondary);
-  font-size: 0.82rem;
+  font-size: var(--font-size-private-small);
   line-height: 1.6;
 }
 
@@ -314,12 +315,12 @@
 .private-users-heading h2 {
   margin-bottom: 0.35rem;
   color: var(--white);
-  font-size: 1.1rem;
+  font-size: var(--font-size-private-large);
 }
 
 .private-users-heading p {
   color: var(--text-secondary);
-  font-size: 0.78rem;
+  font-size: var(--font-size-private-small);
 }
 
 .private-user-invite-form {
@@ -333,7 +334,7 @@
 .private-user-invite-form label {
   grid-column: 1 / -1;
   color: var(--text-tertiary);
-  font-size: 0.78rem;
+  font-size: var(--font-size-private-small);
 }
 
 .private-user-invite-form input {
@@ -354,7 +355,7 @@
 .private-users-message {
   margin-top: 0.8rem;
   color: var(--priv-success);
-  font-size: 0.8rem;
+  font-size: var(--font-size-private-small);
 }
 
 .private-users-list {
@@ -380,12 +381,12 @@
 .private-user-row strong {
   overflow-wrap: anywhere;
   color: var(--white);
-  font-size: 0.84rem;
+  font-size: var(--font-size-private-small);
 }
 
 .private-user-row span {
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: var(--font-size-private-caption);
 }
 
 .private-user-notifications {
@@ -399,7 +400,7 @@
 .private-user-notifications legend {
   margin-bottom: 0.4rem;
   color: var(--muted);
-  font-size: 0.68rem;
+  font-size: var(--font-size-private-caption);
 }
 
 .private-user-notifications label {
@@ -407,7 +408,7 @@
   align-items: center;
   gap: 0.4rem;
   color: var(--text-tertiary);
-  font-size: 0.72rem;
+  font-size: var(--font-size-private-caption);
   cursor: pointer;
 }
 
@@ -432,27 +433,6 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.5rem;
-}
-
-.private-user-action {
-  min-height: 34px;
-  padding: 0.4rem 0.65rem;
-  border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent);
-  border-radius: 4px;
-  background: transparent;
-  color: var(--gold);
-  font-size: 0.7rem;
-  cursor: pointer;
-}
-
-.private-user-action.danger {
-  border-color: rgba(255,85,85,0.4);
-  color: var(--priv-error-soft);
-}
-
-.private-user-action:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 .private-confirmation-dialog {
@@ -480,7 +460,7 @@
 
 .private-confirmation-card > .eyebrow {
   color: var(--gold);
-  font-size: 0.66rem;
+  font-size: var(--font-size-private-caption);
   letter-spacing: 0.12em;
 }
 
@@ -488,13 +468,13 @@
   margin-top: 0.55rem;
   color: var(--white);
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 1.35rem;
+  font-size: var(--font-size-private-title);
 }
 
 .private-confirmation-card p {
   margin-top: 0.8rem;
   color: var(--text-tertiary);
-  font-size: 0.84rem;
+  font-size: var(--font-size-private-body);
   line-height: 1.6;
   overflow-wrap: anywhere;
 }
@@ -513,7 +493,7 @@
   border-radius: 5px;
   background: transparent;
   color: var(--text-tertiary);
-  font-size: 0.78rem;
+  font-size: var(--font-size-private-small);
   cursor: pointer;
 }
 
@@ -572,7 +552,7 @@
   background: transparent;
   color: var(--priv-muted);
   font: inherit;
-  font-size: 0.82rem;
+  font-size: var(--font-size-private-small);
   white-space: nowrap;
   cursor: pointer;
   transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
@@ -593,7 +573,7 @@
 }
 
 .private-tab__icon {
-  font-size: 0.95rem;
+  font-size: var(--font-size-private-body);
   line-height: 1;
 }
 
@@ -606,7 +586,7 @@
   border-radius: 999px;
   background: color-mix(in srgb, var(--gold) 16%, transparent);
   color: var(--gold);
-  font-size: 0.68rem;
+  font-size: var(--font-size-private-caption);
   font-variant-numeric: tabular-nums;
 }
 
@@ -632,12 +612,12 @@
 }
 
 .private-request-section h3 {
-  font-size: 1.1rem;
+  font-size: var(--font-size-private-large);
   line-height: 1.35;
 }
 
 .private-request-section h4 {
-  font-size: 0.95rem;
+  font-size: var(--font-size-private-body);
   line-height: 1.4;
 }
 
@@ -653,7 +633,7 @@
 .production-materials-intro {
   margin: -0.25rem 0 1rem;
   color: var(--text-secondary);
-  font-size: 0.8rem;
+  font-size: var(--font-size-private-small);
   line-height: 1.5;
 }
 
@@ -676,7 +656,7 @@
   display: grid;
   gap: 0.4rem;
   color: var(--text-secondary);
-  font-size: 0.7rem;
+  font-size: var(--font-size-private-caption);
   text-transform: uppercase;
 }
 
@@ -690,7 +670,7 @@
   border: 1px solid rgba(255,255,255,0.16);
   background: var(--black);
   color: var(--white);
-  font-size: 0.8rem;
+  font-size: var(--font-size-private-body);
 }
 
 .private-gold-button,
@@ -700,10 +680,10 @@
   border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
   background: color-mix(in srgb, var(--gold) 8%, transparent);
   color: var(--gold);
-  font-size: 0.72rem;
+  font-size: var(--font-size-private-small);
   font-weight: 700;
   cursor: pointer;
-  height: 44px;
+  height: 48px;
 }
 
 .private-material-toggle {
@@ -731,7 +711,7 @@
 .production-material-group h4 {
   margin-bottom: 0.55rem;
   color: var(--white);
-  font-size: 0.82rem;
+  font-size: var(--font-size-private-body);
 }
 
 .production-material-list {
@@ -751,7 +731,7 @@
 .production-material-state {
   padding-bottom: 0.7rem;
   color: var(--priv-success);
-  font-size: 0.7rem;
+  font-size: var(--font-size-private-caption);
 }
 
 .production-material-row.inactive .production-material-state {
@@ -761,7 +741,7 @@
 .calendar-blocks-intro {
   margin: -0.25rem 0 1rem;
   color: var(--text-secondary);
-  font-size: 0.8rem;
+  font-size: var(--font-size-private-small);
   line-height: 1.5;
 }
 
@@ -779,7 +759,7 @@
   display: grid;
   gap: 0.4rem;
   color: var(--text-secondary);
-  font-size: 0.7rem;
+  font-size: var(--font-size-private-caption);
   text-transform: uppercase;
 }
 
@@ -791,7 +771,7 @@
   border: 1px solid rgba(255,255,255,0.16);
   background: var(--black);
   color: var(--white);
-  font-size: 0.8rem;
+  font-size: var(--font-size-private-body);
 }
 
 .calendar-block-form .date-input {
@@ -817,13 +797,13 @@
 
 .calendar-block-row strong {
   color: var(--white);
-  font-size: 0.82rem;
+  font-size: var(--font-size-private-small);
 }
 
 .calendar-block-row p {
   margin-top: 0.25rem;
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: var(--font-size-private-caption);
 }
 
 .private-notification-grid {
@@ -860,7 +840,7 @@
 
 .private-request-card.date-conflict-confirmed {
   border-left-color: var(--priv-error);
-  background: #392327;
+ background: color-mix(in srgb, var(--priv-error-soft) 16%, transparent);
 }
 
 .private-request-card.date-conflict-pending {
@@ -877,7 +857,7 @@
 .private-request-heading {
   margin-bottom: 0.55rem;
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: var(--font-size-private-caption);
 }
 
 .private-request-heading time.date-conflict-confirmed {
@@ -893,7 +873,7 @@
 .private-request-summary {
     margin-bottom: 10px;
     line-height: 20px;
-    font-size: 0.9rem;
+    font-size: var(--font-size-private-body);
 }
 
 .private-request-kind {
@@ -912,7 +892,7 @@
 .private-request-card h4 {
   margin-bottom: 0.8rem;
   color: var(--white);
-  font-size: 1rem;
+  font-size: var(--font-size-private-body);
 }
 
 .private-view-button {
@@ -922,7 +902,7 @@
   background: color-mix(in srgb, var(--gold) 8%, transparent);
   color: var(--gold);
   padding: 0.9rem 1.3rem;
-  font-size: 0.72rem;
+  font-size: var(--font-size-private-caption);
   text-transform: uppercase;
   letter-spacing: 0.15rem;
   cursor: pointer;
@@ -972,13 +952,13 @@
 
 .production-contract-heading h3 {
   color: var(--white);
-  font-size: 1rem;
+  font-size: var(--font-size-private-body);
 }
 
 .production-contract-heading span,
 .production-confirm-hint {
   color: var(--text-secondary);
-  font-size: 0.75rem;
+  font-size: var(--font-size-private-caption);
 }
 
 .production-contract-grid {
@@ -1009,7 +989,7 @@
   padding-top: 0.9rem;
   border-top: 1px solid rgba(255,255,255,0.12);
   color: var(--text-secondary);
-  font-size: 0.85rem;
+  font-size: var(--font-size-private-small);
 }
 
 .production-contract-totals p {
@@ -1025,7 +1005,7 @@
 .production-contract-totals .production-contract-total {
   margin-top: 0.3rem;
   color: var(--gold);
-  font-size: 1rem;
+  font-size: var(--font-size-private-body);
 }
 
 .production-contract-totals .production-contract-total strong {
@@ -1088,7 +1068,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.65rem 1rem;
   color: var(--text-tertiary);
-  font-size: 0.78rem;
+  font-size: var(--font-size-private-small);
   line-height: 1.45;
 }
 
@@ -1103,7 +1083,7 @@
 .private-request-details dt {
   margin-bottom: 0.15rem;
   color: var(--muted);
-  font-size: 0.68rem;
+  font-size: var(--font-size-private-caption);
   text-transform: uppercase;
 }
 
@@ -1124,11 +1104,20 @@
   color: var(--white);
 }
 
+.private-confirm-button:hover {
+  background: color-mix(in srgb, var(--priv-success) 16%, transparent);
+}
+
 .private-discard-button {
   border: 1px solid rgba(255,100,100,0.5);
   background: transparent;
   color: var(--priv-error-soft);
 }
+
+.private-discard-button:hover {
+  background: color-mix(in srgb, var(--priv-error-soft) 16%, transparent);
+}
+
 
 .private-download-button {
   width: 100%;
@@ -1157,7 +1146,7 @@
     padding: 0.45rem 0.5rem;
     border: 1px solid var(--border);
     border-radius: 5px;
-    font-size: 0.72rem;
+    font-size: var(--font-size-private-caption);
     line-height: 1.25;
     white-space: normal;
     text-align: center;
