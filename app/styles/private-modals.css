@@ -243,14 +243,7 @@
   overscroll-behavior: contain
 }
 
-.pvm__error {
-  margin: 12px 24px 0;
-  padding: 11px 14px;
-  border: 1px solid var(--cof-danger-line);
-  background: var(--cof-danger-soft);
-  color: var(--cof-danger-ink);
-  font-size: var(--font-size-private-small)
-}
+
 
 .pvm__confirm {
   display: flex;
@@ -394,12 +387,11 @@
   .pvm__head,
   .pvm__body,
   .pvm__foot,
-  .pvm__error,
   .pvm__confirm {
     padding-inline: 18px
   }
 
-  .pvm__error,
+  
   .pvm__confirm {
     margin-inline: 0
   }
@@ -861,7 +853,7 @@
   background: var(--border);
   color: var(--cof-ink);
   font: inherit;
-  font-size: var(--font-size-private-body);
+  font-size: var(--font-size-private-small);
   line-height: 1.45;
   transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
 }

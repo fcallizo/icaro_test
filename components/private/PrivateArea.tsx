@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { NotificationsTab } from '@/components/private/tabs/NotificationsTab';
 import { ConfirmedTab } from '@/components/private/tabs/ConfirmedTab';
@@ -75,6 +75,11 @@ export function PrivateArea() {
   const [materials, setMaterials] = useState<ProductionMaterial[]>([]);
   const [busyMaterialId, setBusyMaterialId] = useState('');
   const [isCreatingMaterial, setIsCreatingMaterial] = useState(false);
+  const materialsLoaded = useRef(false);
+  const [isLoadingMaterials, setIsLoadingMaterials] = useState(false);
+  const [materialsError, setMaterialsError] = useState('');
+  const materialsLoadRequest = useRef<Promise<void> | null>(null);
+  const materialsLoadGeneration = useRef(0);
   const [selectedRequest, setSelectedRequest] = useState<PrivateRequest | null>(null);
   const [busyId, setBusyId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -95,16 +100,14 @@ export function PrivateArea() {
         setEmail(data.email || '');
         setIsAdmin(Boolean(data.isAdmin));
         if (data.authenticated) {
-          const [privateRequests, privateSettings, productionMaterials, privateCalendarBlocks] = await Promise.all([
+          const [privateRequests, privateSettings, privateCalendarBlocks] = await Promise.all([
             getPrivateRequests(),
             getPrivateSettings(),
-            getProductionMaterials(),
             getCalendarBlocks(),
           ]);
           setRequests(privateRequests);
           setUnifyCalendars(privateSettings.unifyCalendars);
           setWeddingPrices(privateSettings.weddingPrices);
-          setMaterials(productionMaterials);
           setCalendarBlocks(privateCalendarBlocks);
         }
       } catch (error) {
@@ -116,6 +119,35 @@ export function PrivateArea() {
 
     void checkSession();
   }, []);
+
+  const loadMaterials = () => {
+    if (materialsLoaded.current || materialsLoadRequest.current) {
+      return materialsLoadRequest.current ?? Promise.resolve();
+    }
+
+    const generation = materialsLoadGeneration.current;
+    setIsLoadingMaterials(true);
+    setMaterialsError('');
+    let request: Promise<void>;
+    request = getProductionMaterials()
+      .then((loadedMaterials) => {
+        if (generation !== materialsLoadGeneration.current) return;
+        setMaterials(loadedMaterials);
+        materialsLoaded.current = true;
+      })
+      .catch((error: unknown) => {
+        if (generation !== materialsLoadGeneration.current) return;
+        setMaterialsError(error instanceof Error ? error.message : 'No se pudo cargar el catálogo de materiales.');
+      })
+      .finally(() => {
+        if (generation !== materialsLoadGeneration.current) return;
+        setIsLoadingMaterials(false);
+        if (materialsLoadRequest.current === request) materialsLoadRequest.current = null;
+      });
+
+    materialsLoadRequest.current = request;
+    return request;
+  };
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -135,16 +167,14 @@ export function PrivateArea() {
       setIsAdmin(Boolean(data.isAdmin));
       setPassword('');
       setIsAuthenticated(true);
-      const [privateRequests, privateSettings, productionMaterials, privateCalendarBlocks] = await Promise.all([
+      const [privateRequests, privateSettings, privateCalendarBlocks] = await Promise.all([
         getPrivateRequests(),
         getPrivateSettings(),
-        getProductionMaterials(),
         getCalendarBlocks(),
       ]);
       setRequests(privateRequests);
       setUnifyCalendars(privateSettings.unifyCalendars);
       setWeddingPrices(privateSettings.weddingPrices);
-      setMaterials(productionMaterials);
       setCalendarBlocks(privateCalendarBlocks);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'No se pudo iniciar sesión.');
@@ -336,6 +366,7 @@ export function PrivateArea() {
 
   const handleViewRequest = (request: PrivateRequest) => {
     setMessage('');
+    if (request.type === 'production') void loadMaterials();
     setSelectedRequest(request);
   };
 
@@ -345,6 +376,11 @@ export function PrivateArea() {
     setIsAdmin(false);
     setRequests([]);
     setMaterials([]);
+    materialsLoadGeneration.current += 1;
+    materialsLoadRequest.current = null;
+    setIsLoadingMaterials(false);
+    materialsLoaded.current = false;
+    setMaterialsError('');
     setCalendarBlocks([]);
     setActiveTab('notifications');
     setSelectedDate(null);
@@ -395,6 +431,9 @@ export function PrivateArea() {
   const visibleRequests = selectedDate
     ? requests.filter((request) => [request.fecha, request.fechaPreboda, request.fechaPostboda].includes(selectedDate))
     : requests;
+  const visibleCalendarBlocks = selectedDate
+    ? calendarBlocks.filter((block) => block.startDate <= selectedDate && block.endDate >= selectedDate)
+    : calendarBlocks;
   const pendingCount = visibleRequests.filter((request) => request.status === 'pending').length;
   const confirmedCount = visibleRequests.filter((request) => request.status === 'confirmed').length;
   const selectedDateLabel = selectedDate
@@ -416,7 +455,7 @@ export function PrivateArea() {
         {isAuthenticated ? (
           <div className="private-toolbar">
             <span>Sesión: <strong>{email}</strong></span>
-            <button type="button" className="private-logout-button" onClick={handleLogout}>Cerrar sesión</button>
+            <button type="button" className="private-gold-button" onClick={handleLogout}>Cerrar sesión</button>
           </div>
         ) : <Link href="/" className="private-back-link">Volver a la web</Link>}
       </header>
@@ -473,15 +512,18 @@ export function PrivateArea() {
                 </button>
                 <button type="button" role="tab" aria-selected={activeTab === 'blocks'} className={activeTab === 'blocks' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('blocks')}>
                   <span className="private-tab__icon" aria-hidden="true">🚫​</span>
-                  Inactividad <span className="private-tab__count">{calendarBlocks.length}</span>
+                  Inactividad <span className="private-tab__count">{visibleCalendarBlocks.length}</span>
                 </button>
                 <button type="button" role="tab" aria-selected={activeTab === 'settings'} className={activeTab === 'settings' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('settings')}>
                   <span className="private-tab__icon" aria-hidden="true">⚙️​​</span>
                   Parámetros
                 </button>
-                <button type="button" role="tab" aria-selected={activeTab === 'materials'} className={activeTab === 'materials' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('materials')}>
+                <button type="button" role="tab" aria-selected={activeTab === 'materials'} className={activeTab === 'materials' ? 'private-tab active' : 'private-tab'} onClick={() => {
+                  setActiveTab('materials');
+                  void loadMaterials();
+                }}>
                   <span className="private-tab__icon" aria-hidden="true">📸​</span>
-                  Materiales <span className="private-tab__count">{materials.filter((material) => material.active).length}</span>
+                  Materiales
                 </button>
                 {isAdmin && (
                   <button type="button" role="tab" aria-selected={activeTab === 'events'} className={activeTab === 'events' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('events')}>
@@ -505,8 +547,11 @@ export function PrivateArea() {
               ) : activeTab === 'materials' ? (
                 <ProductionMaterialsTab
                   materials={materials}
+                  isLoading={isLoadingMaterials}
+                  error={materialsError}
                   busyId={busyMaterialId}
                   isCreating={isCreatingMaterial}
+                  onRetry={() => void loadMaterials()}
                   onCreate={handleCreateMaterial}
                   onUpdate={handleUpdateMaterial}
                   onSetActive={(id, active) => void handleSetMaterialActive(id, active)}
@@ -526,7 +571,8 @@ export function PrivateArea() {
                 <AdminUsersTab />
               ) : (
                 <CalendarBlocksTab
-                  blocks={calendarBlocks}
+                  blocks={visibleCalendarBlocks}
+                  selectedDateLabel={selectedDateLabel}
                   busyId={busyBlockId}
                   isCreating={isCreatingBlock}
                   onCreate={handleCreateCalendarBlock}

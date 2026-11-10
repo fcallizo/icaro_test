@@ -3,6 +3,7 @@ import { CalendarBlock } from '@/lib/private-types';
 
 type CalendarBlocksTabProps = {
   blocks: CalendarBlock[];
+  selectedDateLabel: string;
   busyId: string;
   isCreating: boolean;
   onCreate: (startDate: string, endDate: string, reason: string) => Promise<boolean>;
@@ -17,7 +18,7 @@ function formatDate(date: string) {
   });
 }
 
-export function CalendarBlocksTab({ blocks, busyId, isCreating, onCreate, onDelete }: CalendarBlocksTabProps) {
+export function CalendarBlocksTab({ blocks, selectedDateLabel, busyId, isCreating, onCreate, onDelete }: CalendarBlocksTabProps) {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [reason, setReason] = useState('');
@@ -36,6 +37,7 @@ export function CalendarBlocksTab({ blocks, busyId, isCreating, onCreate, onDele
       <section className="private-request-section">
         <h3>Días no disponibles</h3>
         <p className="calendar-blocks-intro">Bloquea días libres, vacaciones u otras fechas. Se marcarán como ocupadas en el calendario.</p>
+        {selectedDateLabel && <p className="calendar-blocks-intro">Mostrando bloqueos que incluyen el {selectedDateLabel}.</p>}
 
         <form className="calendar-block-form" onSubmit={(event) => void handleCreate(event)}>
           <label>
@@ -61,7 +63,11 @@ export function CalendarBlocksTab({ blocks, busyId, isCreating, onCreate, onDele
 
         <div className="calendar-block-list" aria-live="polite">
           {blocks.length === 0 ? (
-            <p className="private-empty-state">Todavía no hay días bloqueados manualmente.</p>
+            <p className="private-empty-state">
+              {selectedDateLabel
+                ? `No hay bloqueos que incluyan el ${selectedDateLabel}.`
+                : 'Todavía no hay días bloqueados manualmente.'}
+            </p>
           ) : blocks.map((block) => (
             <article className="calendar-block-row" key={block.id}>
               <div>

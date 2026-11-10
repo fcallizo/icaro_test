@@ -284,8 +284,7 @@
 
 /* Mensajes */
 
-.cinema-offers-error,
-.cinema-offers-success,
+
 .cinema-offers-feedback {
   padding: 13px 16px;
   border-radius: 8px;
@@ -293,19 +292,9 @@
   line-height: 1.5;
 }
 
-.cinema-offers-error {
-  margin: 0 0 20px;
-  border: 1px solid rgba(239, 91, 91, 0.3);
-  background: rgba(239, 91, 91, 0.08);
-  color: var(--priv-error-soft);
-}
 
-.cinema-offers-success {
-  margin: 0 0 20px;
-  border: 1px solid rgba(75, 190, 130, 0.3);
-  background: rgba(75, 190, 130, 0.08);
-  color: var(--priv-success);
-}
+
+
 
 .cinema-offers-feedback {
   margin: 0;
@@ -402,28 +391,6 @@
   flex-shrink: 0;
   align-items: center;
   gap: 8px;
-}
-
-.cinema-offers-admin .private-material-edit:hover:not(:disabled) {
-  border-color: var(--gold);
-  color: var(--gold);
-}
-
-.cinema-offers-admin .cinema-offer-visibility {
-  border-color: color-mix(
-    in srgb,
-    var(--gold) 55%,
-    transparent
-  );
-  color: var(--gold);
-}
-
-.cinema-offers-admin .cinema-offer-visibility:hover:not(:disabled) {
-  background: color-mix(
-    in srgb,
-    var(--gold) 12%,
-    transparent
-  );
 }
 
 /* Tablet */

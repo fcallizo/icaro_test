@@ -31,7 +31,7 @@
   align-items: center;
   gap: 0.75rem;
   color: var(--white);
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, "Times New Roman", serif;
   font-weight: 700;
   letter-spacing: 0.08rem;
 }
@@ -56,7 +56,7 @@
 
 .private-page-title h1 {
   margin-top: 0.35rem;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, "Times New Roman", serif;
   font-size: var(--font-size-private-page-title);
 }
 
@@ -136,7 +136,7 @@
   height: 14px;
   border-radius: 50%;
   background: var(--text-tertiary);
-  content: '';
+  content: "";
   transition: transform 0.18s ease, background 0.18s ease;
 }
 
@@ -197,10 +197,7 @@
 }
 
 .private-login-button,
-.private-confirm-button,
-.private-discard-button,
-.private-download-button,
-.private-logout-button {
+.private-discard-button{
   min-height: 40px;
   padding: 0.65rem 0.9rem;
   font-size: var(--font-size-private-small);
@@ -216,7 +213,6 @@
 }
 
 .private-login-button:disabled,
-.private-confirm-button:disabled,
 .private-discard-button:disabled {
   opacity: 0.55;
   cursor: not-allowed;
@@ -293,7 +289,7 @@
 
 .private-account-card h1 {
   margin: 0.7rem 0;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, "Times New Roman", serif;
   font-size: var(--font-size-private-page-title);
 }
 
@@ -467,7 +463,7 @@
 .private-confirmation-card h2 {
   margin-top: 0.55rem;
   color: var(--white);
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, "Times New Roman", serif;
   font-size: var(--font-size-private-title);
 }
 
@@ -515,13 +511,6 @@
   opacity: 0.55;
 }
 
-.private-logout-button,
-.private-download-button {
-  border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
-  background: transparent;
-  color: var(--gold);
-}
-
 .private-tabs {
   display: flex;
   justify-content: center;
@@ -562,7 +551,7 @@
   color: var(--white);
 }
 
-.private-tab[aria-selected='true'] {
+.private-tab[aria-selected="true"] {
   border-bottom-color: var(--gold);
   color: var(--white);
 }
@@ -683,7 +672,7 @@
   font-size: var(--font-size-private-small);
   font-weight: 700;
   cursor: pointer;
-  height: 48px;
+  height: 44px;
 }
 
 .private-material-toggle {
@@ -838,15 +827,9 @@
   border-left-color: var(--priv-wedding);
 }
 
-.private-request-card.date-conflict-confirmed {
-  border-left-color: var(--priv-error);
- background: color-mix(in srgb, var(--priv-error-soft) 16%, transparent);
-}
 
-.private-request-card.date-conflict-pending {
-  border-left-color: var(--priv-warning);
-  background: #302b1e;
-}
+
+
 
 .private-request-card > .private-view-button {
   margin-top: auto;
@@ -860,15 +843,9 @@
   font-size: var(--font-size-private-caption);
 }
 
-.private-request-heading time.date-conflict-confirmed {
-  color: var(--priv-error-soft);
-  font-weight: 800;
-}
 
-.private-request-heading time.date-conflict-pending {
-  color: var(--priv-warning);
-  font-weight: 800;
-}
+
+
 
 .private-request-summary {
     margin-bottom: 10px;
@@ -955,8 +932,7 @@
   font-size: var(--font-size-private-body);
 }
 
-.production-contract-heading span,
-.production-confirm-hint {
+.production-contract-heading span{
   color: var(--text-secondary);
   font-size: var(--font-size-private-caption);
 }
@@ -967,11 +943,7 @@
   gap: 16px;
 }
 
-.production-contract-grid-trio {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
+
 
 .production-contract-grid select {
   width: 100%;
@@ -1012,102 +984,6 @@
   color: var(--gold);
 }
 
-.production-confirm-hint {
-  margin-top: 0.65rem;
-  text-align: right;
-}
-
-.request-details-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.7rem;
-  margin-top: 1.25rem;
-}
-
-.request-details-primary-actions,
-.request-details-decision-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-}
-
-.request-details-decision-actions {
-  margin-left: auto;
-}
-
-.request-details-actions button {
-  min-height: 44px;
-  padding: 0.7rem 1rem;
-  cursor: pointer;
-}
-
-.request-details-actions .private-confirm-button {
-  flex: 0 1 auto;
-}
-
-.request-details-decision-actions .private-download-button {
-  width: auto;
-  margin-top: 0;
-}
-
-.private-save-button {
-  border: 1px solid color-mix(in srgb, var(--gold) 65%, transparent);
-  background: color-mix(in srgb, var(--gold) 12%, transparent);
-  color: var(--gold);
-}
-
-.request-details-actions button:disabled {
-  cursor: wait;
-  opacity: 0.65;
-}
-
-.private-request-details {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.65rem 1rem;
-  color: var(--text-tertiary);
-  font-size: var(--font-size-private-small);
-  line-height: 1.45;
-}
-
-.private-request-details > div {
-  min-width: 0;
-}
-
-.private-request-details .wide {
-  grid-column: 1 / -1;
-}
-
-.private-request-details dt {
-  margin-bottom: 0.15rem;
-  color: var(--muted);
-  font-size: var(--font-size-private-caption);
-  text-transform: uppercase;
-}
-
-.private-request-details dd {
-  overflow-wrap: anywhere;
-}
-
-.private-request-actions {
-  display: flex;
-  gap: 0.6rem;
-  margin-top: 1rem;
-}
-
-.private-confirm-button {
-  flex: 1;
-  border: 0;
-  background: #328c4b;
-  color: var(--white);
-}
-
-.private-confirm-button:hover {
-  background: color-mix(in srgb, var(--priv-success) 16%, transparent);
-}
-
 .private-discard-button {
   border: 1px solid rgba(255,100,100,0.5);
   background: transparent;
@@ -1116,12 +992,6 @@
 
 .private-discard-button:hover {
   background: color-mix(in srgb, var(--priv-error-soft) 16%, transparent);
-}
-
-
-.private-download-button {
-  width: 100%;
-  margin-top: 1rem;
 }
 
 @media (max-width: 1150px) {
