@@ -48,7 +48,7 @@ export default function ForgotPasswordPage() {
             onChange={(event) => setEmail(event.target.value)}
             required
           />
-          <button type="submit" className="private-login-button" disabled={isSubmitting}>
+          <button type="submit" className="private-gold-button" disabled={isSubmitting}>
             {isSubmitting ? 'Enviando...' : 'Enviar enlace'}
           </button>
         </form>

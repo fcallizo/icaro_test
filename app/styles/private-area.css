@@ -196,7 +196,6 @@
   color: var(--white);
 }
 
-.private-login-button,
 .private-discard-button{
   min-height: 40px;
   padding: 0.65rem 0.9rem;
@@ -205,14 +204,6 @@
   cursor: pointer;
 }
 
-.private-login-button {
-  margin-top: 0.8rem;
-  border: 0;
-  background: var(--gold);
-  color: var(--black);
-}
-
-.private-login-button:disabled,
 .private-discard-button:disabled {
   opacity: 0.55;
   cursor: not-allowed;
@@ -827,14 +818,29 @@
   border-left-color: var(--priv-wedding);
 }
 
+.private-request-card.date-conflict-confirmed {
+  border-left-color: var(--priv-error);
+  background: color-mix(in srgb, var(--priv-error-soft) 16%, transparent);
+}
 
-
-
+.private-request-card.date-conflict-pending {
+  border-left-color: var(--priv-warning);
+  background: color-mix(in srgb, var(--priv-warning) 16%, transparent);
+}
 
 .private-request-card > .private-view-button {
   margin-top: auto;
-  align-self: flex-end;
-  text-align: right;
+  font-size: var(--font-size-private-caption);
+}
+
+.private-request-heading time.date-conflict-confirmed {
+  color: var(--priv-error-soft);
+  font-weight: 800;
+}
+
+.private-request-heading time.date-conflict-pending {
+  color: var(--priv-warning);
+  font-weight: 800;
 }
 
 .private-request-heading {
@@ -842,10 +848,6 @@
   color: var(--muted);
   font-size: var(--font-size-private-caption);
 }
-
-
-
-
 
 .private-request-summary {
     margin-bottom: 10px;

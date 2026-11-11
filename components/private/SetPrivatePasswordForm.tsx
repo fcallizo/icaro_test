@@ -69,7 +69,7 @@ export function SetPrivatePasswordForm({ token }: { token: string }) {
               disabled={isComplete}
             />
             {!isComplete && (
-              <button type="submit" className="private-login-button" disabled={isSubmitting}>
+              <button type="submit" className="private-gold-button" disabled={isSubmitting}>
                 {isSubmitting ? 'Guardando...' : 'Guardar contraseña'}
               </button>
             )}

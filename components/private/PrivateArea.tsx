@@ -480,7 +480,7 @@ export function PrivateArea() {
               <input id="private-email" name="email" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} required />
               <label htmlFor="private-password">Contraseña</label>
               <input id="private-password" name="password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required />
-              <button type="submit" className="private-login-button" disabled={isSubmitting || setupRequired || !sessionReady}>
+              <button type="submit" className="private-gold-button" disabled={isSubmitting || setupRequired || !sessionReady}>
                 {isSubmitting ? 'Validando...' : 'Acceder'}
               </button>
             </form>
