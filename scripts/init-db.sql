@@ -39,6 +39,8 @@ CREATE TABLE IF NOT EXISTS wedding_requests (
   evento_id UUID NOT NULL UNIQUE REFERENCES eventos(id) ON DELETE CASCADE,
   nombre TEXT,
   email TEXT,
+  tipo_documento_identidad TEXT,
+  documento_identidad TEXT,
   tel_novio TEXT,
   tel_novia TEXT,
   tipo_pack TEXT,
@@ -75,6 +77,8 @@ CREATE TABLE IF NOT EXISTS production_requests (
   evento_id UUID NOT NULL UNIQUE REFERENCES eventos(id) ON DELETE CASCADE,
   nombre TEXT,
   email TEXT,
+  tipo_documento_identidad TEXT,
+  documento_identidad TEXT,
   telefono TEXT,
   tipo TEXT,
   presupuesto TEXT,
@@ -99,6 +103,8 @@ CREATE TABLE IF NOT EXISTS production_requests (
 );
 
 ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS tipo_documento_identidad TEXT;
+ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS documento_identidad TEXT;
 ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS hora_salida_novio TEXT;
 ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS hora_salida_novia TEXT;
 ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS hora_ceremonia TEXT;
@@ -107,6 +113,8 @@ ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS hora_barra_libre TEXT;
 ALTER TABLE wedding_requests ADD COLUMN IF NOT EXISTS customer_form_token_hash TEXT;
 CREATE UNIQUE INDEX IF NOT EXISTS wedding_requests_customer_form_token_hash_idx ON wedding_requests (customer_form_token_hash) WHERE customer_form_token_hash IS NOT NULL;
 ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS tipo_documento_identidad TEXT;
+ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS documento_identidad TEXT;
 ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS setup_camara TEXT;
 ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS precio_camara NUMERIC(12, 2);
 ALTER TABLE production_requests ADD COLUMN IF NOT EXISTS setup_drone TEXT;

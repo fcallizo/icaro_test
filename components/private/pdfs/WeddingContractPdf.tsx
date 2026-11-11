@@ -1,3 +1,4 @@
+import { GOLD } from '@/lib/properties';
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 
 export type WeddingSheetLine = { label: string; amount: string };
@@ -13,6 +14,8 @@ export type WeddingSheetBlock = {
 export type WeddingSheetData = {
   nombre: string;
   email: string;
+  tipoDocumentoIdentidad?: string;
+  documentoIdentidad?: string;
   fecha: string;
   telNovio: string;
   telNovia: string;
@@ -25,8 +28,6 @@ export type WeddingSheetData = {
   discount: string;
   total: string;
 };
-
-const GOLD = '#806719';
 
 const s = StyleSheet.create({
   page: { padding: 40, fontSize: 10, fontFamily: 'Helvetica', color: '#111111', lineHeight: 1.4 },
@@ -88,6 +89,12 @@ export function WeddingSheetPdf({ data }: { data: WeddingSheetData }) {
             <Text style={s.infoValue}>{dash(value)}</Text>
           </View>
         ))}
+        {data.documentoIdentidad && (
+          <View style={s.infoRow}>
+            <Text style={s.infoLabel}>{data.tipoDocumentoIdentidad === 'passport' ? 'Pasaporte' : 'NIF'}</Text>
+            <Text style={s.infoValue}>{data.documentoIdentidad}</Text>
+          </View>
+        )}
 
         {data.detalles.trim() !== '' && (
           <>

@@ -2,7 +2,9 @@ import { FormEvent, useState } from 'react';
 import { PrivateRequestUpdate, ProductionMaterialCategory, RequestDetailsModalProps, setDefaultFormValues } from '@/lib/private-types';
 import { RequestDetailsModalFrame } from './RequestDetailsModalFrame';
 import { createFormFields } from '@/components/common/FormFields';
+import { SpanishTaxIdField } from '@/components/common/SpanishTaxIdField';
 import type { ProductionContractData } from '../../pdfs/ProductionContractPdf';
+import { isValidIdentityDocument, normalizeSpanishTaxId } from '@/lib/spanish-tax-id';
 
 const productionItems = [
   { setup: 'setupCamara', price: 'precioCamara', label: 'Cámara principal' },
@@ -55,6 +57,8 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
   const [pdfError, setPdfError] = useState('');
   const isDirty = JSON.stringify(values) !== JSON.stringify(initialValues);
   const title = values.nombre || 'Evento cinematográfico';
+  const hasValidIdentity = !values.documentoIdentidad.trim()
+    || isValidIdentityDocument(values.tipoDocumentoIdentidad, values.documentoIdentidad);
 
   const { input, inputPhone, textarea, select, inputSuffix } = createFormFields({
     values,
@@ -115,14 +119,17 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
         nombre: values.nombre,
         email: values.email,
         telefono: values.telefono,
+        clienteTipoDocumento: values.tipoDocumentoIdentidad,
+        clienteCif: normalizeSpanishTaxId(values.documentoIdentidad),
         fecha: formatDate(values.fecha),
         proyecto: values.tipo || 'Producción audiovisual',
-        presupuesto: currency(Number(values.presupuesto) || 0),
+        descipcionTrabajo: values.detalles,
         rows: productionItems.map((item) => ({
           label: item.label,
           setup: values[item.setup],
           price: currency(Number(values[item.price]) || 0),
         })),
+        presupuesto: currency(Number(values.presupuesto) || 0),
         taxPercent: String(taxRate),
         subtotal: currency(subtotal),
         iva: currency(taxAmount),
@@ -141,15 +148,19 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
       {...props}
       title={title}
       values={values}
-      canConfirm={hasCompleteBreakdown}
+      canConfirm={hasCompleteBreakdown && hasValidIdentity}
+      canSave={hasValidIdentity}
       isDirty={isDirty}
-      onSubmit={(event: FormEvent<HTMLFormElement>) => { event.preventDefault(); onSave(values); }}
+      onSubmit={(event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (hasValidIdentity) onSave(values);
+      }}
       rightAction={request.status !== 'pending' ? (
         <>
           <button
             type="button"
             className="pvm__submit"
-            disabled={props.busy || generating}
+            disabled={props.busy || generating || !hasValidIdentity}
             onClick={() => void handleDownloadContract()}
           >
             {generating ? 'Generando…' : 'Generar contrato PDF'}
@@ -160,12 +171,19 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
     >
       {input('nombre', 'Nombre / empresa', 'text', true, true, false, '')}
       {input('email', 'Email', 'email', true, false, false, '')}
-      {input('fecha', 'Fecha', 'date', true, false, false, '')}
       {inputPhone('telefono', 'Teléfono', true)}
+      <SpanishTaxIdField
+        idPrefix="request"
+        type={values.tipoDocumentoIdentidad}
+        value={values.documentoIdentidad}
+        onTypeChange={(tipoDocumentoIdentidad) => setValues((current) => ({ ...current, tipoDocumentoIdentidad }))}
+        onValueChange={(documentoIdentidad) => setValues((current) => ({ ...current, documentoIdentidad }))}
+      />
+      {input('fecha', 'Fecha', 'date', true, false, false, '')}
       {input('lugar', 'Lugar del evento', 'text', true, false, false, '')}
       {input('tipo', 'Tipo de producción','text', true, false, false, '', undefined, 'col-75')}
       {inputSuffix('presupuesto', 'Presupuesto', true, false, false, '€', '', 'col-25')}
-      {textarea('detalles', 'Idea principal')}
+      {textarea('detalles', 'Descripción del trabajo')}
       <section className="production-contract-section col-100">
         <header className="production-contract-heading">
           <h3>Desglose técnico</h3>

@@ -3,6 +3,8 @@ import { sql } from '@/lib/db';
 import { PRIVATE_SESSION_COOKIE, getPrivateSessionUser } from '@/lib/private-auth';
 import { sendRequestDecisionNotification } from '@/lib/request-notifications';
 import { setNullValue } from '@/lib/properties';
+import { isValidIdentityDocument, normalizeSpanishTaxId } from '@/lib/spanish-tax-id';
+import type { IdentityDocumentType } from '@/lib/spanish-tax-id';
 
 type RequestType = 'wedding' | 'production';
 
@@ -10,6 +12,10 @@ function isValidDate(value: string) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const parsed = new Date(`${value}T00:00:00.000Z`);
   return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+}
+
+function isIdentityDocumentType(value: unknown): value is IdentityDocumentType {
+  return value === 'nif' || value === 'passport';
 }
 
 async function isAuthenticated(request: NextRequest) {
@@ -27,7 +33,9 @@ export async function GET(request: NextRequest) {
 
   const weddings = await sql`
     SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
-      w.nombre, w.email, w.tel_novio AS "telNovio", w.tel_novia AS "telNovia",
+      w.nombre, w.email, COALESCE(w.tipo_documento_identidad, 'nif') AS "tipoDocumentoIdentidad",
+      w.documento_identidad AS "documentoIdentidad",
+      w.tel_novio AS "telNovio", w.tel_novia AS "telNovia",
       w.lugar, w.novia, w.novio, w.ceremonia,
       w.hora_salida_novio AS "horaSalidaNovio", w.hora_salida_novia AS "horaSalidaNovia",
       w.hora_ceremonia AS "horaCeremonia", w.hora_coctel AS "horaCoctel",
@@ -46,7 +54,9 @@ export async function GET(request: NextRequest) {
   `;
   const productions = await sql`
     SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
-      p.nombre, p.email, p.telefono, p.tipo, p.presupuesto, p.lugar, p.detalles,
+      p.nombre, p.email, COALESCE(p.tipo_documento_identidad, 'nif') AS "tipoDocumentoIdentidad",
+      p.documento_identidad AS "documentoIdentidad",
+      p.telefono, p.tipo, p.presupuesto, p.lugar, p.detalles,
       p.setup_camara AS "setupCamara", p.precio_camara AS "precioCamara",
       p.setup_drone AS "setupDrone", p.precio_drone AS "precioDrone",
       p.setup_iluminacion AS "setupIluminacion", p.precio_iluminacion AS "precioIluminacion",
@@ -100,7 +110,7 @@ export async function PATCH(request: NextRequest) {
   if (action === 'update') {
     const values = payload.values;
     const editableFields = [
-      'nombre', 'email', 'fecha', 'telNovio', 'telNovia', 'telefono', 'lugar',
+      'nombre', 'email', 'fecha', 'tipoDocumentoIdentidad', 'documentoIdentidad', 'telNovio', 'telNovia', 'telefono', 'lugar',
       'novia', 'novio', 'ceremonia', 'horaSalidaNovio', 'horaSalidaNovia',
       'horaCeremonia', 'horaCoctel', 'horaBarraLibre', 'detalles', 'tipo', 'presupuesto', 'detalles', 'tipoPack',
       'fechaPreboda', 'lugarPreboda', 'detallesPreboda', 'fechaPostboda', 'lugarPostboda', 'detallesPostboda',
@@ -114,9 +124,24 @@ export async function PATCH(request: NextRequest) {
     if (!values || editableFields.some((field) => typeof values[field] !== 'string' || values[field].length > 10000)) {
       return NextResponse.json({ error: 'Los datos del evento no son válidos.' }, { status: 400 });
     }
+    if (values.documentoIdentidad.length > 32) {
+      return NextResponse.json({ error: 'El documento de identidad no puede superar los 32 caracteres.' }, { status: 400 });
+    }
 
     const hasValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim());
     const hasValidDate = isValidDate(values.fecha);
+    if (!isIdentityDocumentType(values.tipoDocumentoIdentidad)) {
+      return NextResponse.json({ error: 'El tipo de documento no es válido.' }, { status: 400 });
+    }
+    const normalizedDocument = normalizeSpanishTaxId(values.documentoIdentidad);
+    if (normalizedDocument && !isValidIdentityDocument(values.tipoDocumentoIdentidad, normalizedDocument)) {
+      return NextResponse.json({
+        error: values.tipoDocumentoIdentidad === 'passport'
+          ? 'El pasaporte debe tener entre 5 y 20 letras o números.'
+          : 'El documento debe ser un DNI, NIE o CIF español válido.',
+      }, { status: 400 });
+    }
+    const documentType = normalizedDocument ? values.tipoDocumentoIdentidad : null;
     if (!values.nombre.trim() || !hasValidEmail || !hasValidDate) {
       return NextResponse.json({ error: 'Nombre, email y fecha son obligatorios y deben ser válidos.' }, { status: 400 });
     }
@@ -151,6 +176,8 @@ export async function PATCH(request: NextRequest) {
         )
         UPDATE wedding_requests AS w SET
           nombre = ${values.nombre.trim()}, email = ${values.email.trim()},
+          tipo_documento_identidad = ${documentType},
+          documento_identidad = ${setNullValue(normalizedDocument)},
           tel_novio = ${values.telNovio.trim()}, tel_novia = ${values.telNovia.trim()},
           novio = ${setNullValue(values.novio)},
           hora_salida_novio = ${setNullValue(values.horaSalidaNovio)},
@@ -187,7 +214,9 @@ export async function PATCH(request: NextRequest) {
           RETURNING id
         )
         UPDATE production_requests AS p SET
-          nombre = ${values.nombre.trim()}, email = ${values.email.trim()}, telefono = ${values.telefono.trim()},
+          nombre = ${values.nombre.trim()}, email = ${values.email.trim()},
+          tipo_documento_identidad = ${documentType},
+          documento_identidad = ${setNullValue(normalizedDocument)}, telefono = ${values.telefono.trim()},
           tipo = ${values.tipo.trim()}, presupuesto = ${values.presupuesto.trim()}, 
           lugar = ${values.lugar.trim()}, detalles = ${values.detalles.trim()},
           setup_camara = ${values.setupCamara.trim() || null}, precio_camara = ${values.precioCamara.trim() === '' ? null : Number(values.precioCamara)},

@@ -1,4 +1,5 @@
 import { WeddingPrices } from '@/lib/wedding-form';
+import type { IdentityDocumentType } from '@/lib/spanish-tax-id';
 
 export type RequestType = 'wedding' | 'production';
 export type RequestStatus = 'pending' | 'confirmed' | 'rejected';
@@ -29,6 +30,8 @@ export type PrivateRequestUpdate = {
   email: string;
   fecha: string;
   detalles: string;
+  tipoDocumentoIdentidad: IdentityDocumentType;
+  documentoIdentidad: string;
 
   // boda
   telNovio: string;
@@ -101,6 +104,8 @@ export type PrivateRequest = {
   status: RequestStatus;
   nombre?: string;
   email?: string;
+  tipoDocumentoIdentidad?: IdentityDocumentType;
+  documentoIdentidad?: string;
   fecha?: string;
   created_at?: string;
   detalles: string;
@@ -162,6 +167,8 @@ export function setDefaultFormValues(request: PrivateRequest) {
 return {
     nombre: request.nombre || '',
     email: request.email || '',
+    tipoDocumentoIdentidad: request.tipoDocumentoIdentidad || 'nif',
+    documentoIdentidad: request.documentoIdentidad || '',
     fecha: request.fecha || '',
     detalles: request.detalles || '',
     

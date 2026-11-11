@@ -523,7 +523,7 @@ export function PrivateArea() {
                   void loadMaterials();
                 }}>
                   <span className="private-tab__icon" aria-hidden="true">📸​</span>
-                  Materiales
+                  Equipamiento
                 </button>
                 {isAdmin && (
                   <button type="button" role="tab" aria-selected={activeTab === 'events'} className={activeTab === 'events' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('events')}>

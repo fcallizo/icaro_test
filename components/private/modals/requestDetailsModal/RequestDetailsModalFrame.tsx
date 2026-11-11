@@ -10,6 +10,7 @@ type RequestDetailsModalFrameProps = Omit<RequestDetailsModalProps, 'onSave'> & 
   values: PrivateRequestUpdate;
   isDirty: boolean;
   canConfirm?: boolean;
+  canSave?: boolean;
   rightAction?: ReactNode;
   children: ReactNode;
 };
@@ -25,6 +26,7 @@ export function RequestDetailsModalFrame({
   values,
   isDirty,
   canConfirm = true,
+  canSave = true,
   rightAction,
   children,
 }: RequestDetailsModalFrameProps) {
@@ -41,7 +43,13 @@ export function RequestDetailsModalFrame({
             className="pvm__confirm-success"
             disabled={busy || !canConfirm}
             onClick={() => onAction('confirm', values)}
-            title={!canConfirm ? 'Completa el desglose técnico y guarda los importes antes de confirmar.' : undefined}
+            title={
+              !canSave
+                ? 'Corrige el documento de identidad antes de confirmar.'
+                : !canConfirm
+                  ? 'Completa el desglose técnico y guarda los importes antes de confirmar.'
+                  : undefined
+            }
           >
             Confirmar
           </button>
@@ -55,7 +63,7 @@ export function RequestDetailsModalFrame({
           </button>
         </>
       )}
-      <button type="submit" className="pvm__submit" disabled={busy}>
+      <button type="submit" className="pvm__submit" disabled={busy || !canSave}>
         {busy ? (
           <span className="pvm__spinner" aria-hidden="true" />
         ) : (
@@ -79,9 +87,13 @@ export function RequestDetailsModalFrame({
       isDirty={isDirty}
       isSaving={busy}
       footerActions={footerActions}
-      hint={isPending && !canConfirm
-        ? 'Completa el desglose técnico y guarda los importes antes de confirmar.'
-        : 'Esc para cerrar'}
+      hint={
+        isPending && !canSave
+          ? 'Corrige el documento de identidad antes de guardar o confirmar.'
+          : isPending && !canConfirm
+            ? 'Completa el desglose técnico y guarda los importes antes de confirmar.'
+            : 'Esc para cerrar'
+      }
       className="request-details-modal"
     >
       <div className="request-details-form-grid">{children}</div>

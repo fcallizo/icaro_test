@@ -3,6 +3,8 @@ import { formatPhoneNumberIntl } from 'react-phone-number-input';
 import { PrivateRequestUpdate, RequestDetailsModalProps, setDefaultFormValues } from '@/lib/private-types';
 import { RequestDetailsModalFrame } from './RequestDetailsModalFrame';
 import { createFormFields } from '@/components/common/FormFields';
+import { SpanishTaxIdField } from '@/components/common/SpanishTaxIdField';
+import { isValidIdentityDocument, normalizeSpanishTaxId } from '@/lib/spanish-tax-id';
 import type { WeddingSheetBlock, WeddingSheetData } from '../../pdfs/WeddingContractPdf';
 import { PACK_OPTIONS, SERVICE_OPTIONS, WeddingPrices } from '@/lib/wedding-form';
 
@@ -59,6 +61,8 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
   const [generating, setGenerating] = useState(false);
   const [pdfError, setPdfError] = useState('');
   const isDirty = JSON.stringify(values) !== JSON.stringify(initialValues);
+  const hasValidIdentity = !values.documentoIdentidad.trim()
+    || isValidIdentityDocument(values.tipoDocumentoIdentidad, values.documentoIdentidad);
 
   const title = values.nombre || 'Boda sin nombre';
 
@@ -179,6 +183,8 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
     return {
       nombre: values.nombre,
       email: values.email,
+      tipoDocumentoIdentidad: values.tipoDocumentoIdentidad,
+      documentoIdentidad: normalizeSpanishTaxId(values.documentoIdentidad),
       fecha: formatDate(values.fecha),
       telNovio: formatPhone(values.telNovio),
       telNovia: formatPhone(values.telNovia),
@@ -217,10 +223,11 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
       {...props}
       title={title}
       values={valuesToSave}
-      canConfirm={hasCompleteBreakdown}
+      canConfirm={hasCompleteBreakdown && hasValidIdentity}
+      canSave={hasValidIdentity}
       onSubmit={(event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        onSave(valuesToSave);
+        if (hasValidIdentity) onSave(valuesToSave);
       }}
       isDirty={isDirty}
       rightAction={request.status !== 'pending' ? (
@@ -228,7 +235,7 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
           <button
             type="button"
             className="pvm__submit"
-            disabled={props.busy || generating}
+            disabled={props.busy || generating || !hasValidIdentity}
             onClick={() => void handleDownload()}
           >
             {generating ? 'Generando…' : 'Descargar PDF'}
@@ -239,6 +246,13 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
     >
       {input('nombre', 'Nombre de la pareja', 'text', true, false, false, '', undefined, 'col-100')}
       {input('email', 'Email', 'email', true, false, false, '')}
+      <SpanishTaxIdField
+        idPrefix="request"
+        type={values.tipoDocumentoIdentidad}
+        value={values.documentoIdentidad}
+        onTypeChange={(tipoDocumentoIdentidad) => setValues((current) => ({ ...current, tipoDocumentoIdentidad }))}
+        onValueChange={(documentoIdentidad) => setValues((current) => ({ ...current, documentoIdentidad }))}
+      />
       {input('fecha', 'Fecha', 'date', true, false, false, '')}
       {inputPhone('telNovio', 'Teléfono del novio', true)}
       {inputPhone('telNovia', 'Teléfono de la novia', true)}
