@@ -27,7 +27,11 @@ async function requestManagement<T>(method = 'GET', body?: object): Promise<T> {
   return data as T;
 }
 
-export function EventManagementTab() {
+type EventManagementTabProps = {
+  isAdmin: boolean;
+};
+
+export function EventManagementTab({ isAdmin }: EventManagementTabProps) {
   const [data, setData] = useState<ManagementData>({ members: [], events: [] });
   const [name, setName] = useState('');
   const [freshLink, setFreshLink] = useState('');
@@ -107,25 +111,29 @@ export function EventManagementTab() {
     <div className="private-tab-panel event-management-panel" role="tabpanel">
       <section className="private-request-section">
         <h3>Gestionar colaboradores</h3>
-        <p className="event-management-intro">
-          Crea enlaces personales para compartir calendarios con los eventos asignados. Quien tenga el
-          enlace podrá consultar todos los datos de esos eventos.
-        </p>
-        <form className="event-member-create" onSubmit={handleCreate}>
-          <div className="field-group">
-            <label htmlFor="event-member-name">Nombre del colaborador</label>
-            <input
-              id="event-member-name"
-              value={name}
-              onChange={(inputEvent) => setName(inputEvent.target.value)}
-              maxLength={100}
-              required
-            />
-          </div>
-          <button type="submit" className="private-gold-button" disabled={isCreating}>
-            {isCreating ? 'Creando...' : 'Crear colaborador'}
-          </button>
-        </form>
+        {isAdmin && (
+          <>
+            <p className="event-management-intro">
+              Crea enlaces personales para compartir calendarios con los eventos asignados. Quien tenga el
+              enlace podrá consultar todos los datos de esos eventos.
+            </p>
+            <form className="event-member-create" onSubmit={handleCreate}>
+              <div className="field-group">
+                <label htmlFor="event-member-name">Nombre del colaborador</label>
+                <input
+                  id="event-member-name"
+                  value={name}
+                  onChange={(inputEvent) => setName(inputEvent.target.value)}
+                  maxLength={100}
+                  required
+                />
+              </div>
+              <button type="submit" className="private-gold-button" disabled={isCreating}>
+                {isCreating ? 'Creando...' : 'Crear colaborador'}
+              </button>
+            </form>
+          </>
+        )}
 
         {freshLink && (
           <div className="event-member-link" role="status">
@@ -176,14 +184,16 @@ export function EventManagementTab() {
                           >
                             Editar
                           </button>
-                          <button
-                            type="button"
-                            className="private-discard-button"
-                            disabled={busyId === member.id}
-                            onClick={() => void handleRevoke(member)}
-                          >
-                            Revocar
-                          </button>
+                          {isAdmin && (
+                            <button
+                              type="button"
+                              className="private-discard-button"
+                              disabled={busyId === member.id}
+                              onClick={() => void handleRevoke(member)}
+                            >
+                              Revocar
+                            </button>
+                          )}
                         </>
                       )}
                     </div>

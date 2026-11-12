@@ -525,12 +525,10 @@ export function PrivateArea() {
                   <span className="private-tab__icon" aria-hidden="true">📸​</span>
                   Equipamiento
                 </button>
-                {isAdmin && (
-                  <button type="button" role="tab" aria-selected={activeTab === 'events'} className={activeTab === 'events' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('events')}>
-                    <span className="private-tab__icon" aria-hidden="true">🤝​​​</span>
-                    ​Colaboradores
-                  </button>
-                )}
+                <button type="button" role="tab" aria-selected={activeTab === 'events'} className={activeTab === 'events' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('events')}>
+                  <span className="private-tab__icon" aria-hidden="true">🤝​​​</span>
+                  ​Colaboradores
+                </button>
                 {isAdmin && (
                   <button type="button" role="tab" aria-selected={activeTab === 'users'} className={activeTab === 'users' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('users')}>
                     <span className="private-tab__icon" aria-hidden="true">​👤</span>
@@ -556,8 +554,8 @@ export function PrivateArea() {
                   onUpdate={handleUpdateMaterial}
                   onSetActive={(id, active) => void handleSetMaterialActive(id, active)}
                 />
-              ) : activeTab === 'events' && isAdmin ? (
-                <EventManagementTab />
+              ) : activeTab === 'events' ? (
+                <EventManagementTab isAdmin={isAdmin} />
               ) : activeTab === 'settings' ? (
                 <SettingsTab
                   unifyCalendars={unifyCalendars}
