@@ -945,8 +945,6 @@
   gap: 16px;
 }
 
-
-
 .production-contract-grid select {
   width: 100%;
   min-height: 44px;
@@ -956,12 +954,18 @@
   color: var(--white);
 }
 
+.production-contract-subapart {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
 .production-contract-totals {
   display: grid;
   gap: 0.45rem;
-  margin-top: 0.5rem;
+  margin-top: 0.9rem;
   padding-top: 0.9rem;
-  border-top: 1px solid rgba(255,255,255,0.12);
+  border-top: 1px solid var(--border);
   color: var(--text-secondary);
   font-size: var(--font-size-private-small);
 }

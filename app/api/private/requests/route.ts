@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
 
 
   const weddings = await sql`
-    SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
+    SELECT e.id, e.tipo AS type, e.status, e.fecha, e.id_presupuesto AS "idPresupuesto", e.created_at,
       w.nombre, w.email, COALESCE(w.tipo_documento_identidad, 'nif') AS "tipoDocumentoIdentidad",
       w.documento_identidad AS "documentoIdentidad",
       w.tel_novio AS "telNovio", w.tel_novia AS "telNovia",
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
     ORDER BY e.created_at DESC LIMIT 500;
   `;
   const productions = await sql`
-    SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
+    SELECT e.id, e.tipo AS type, e.status, e.fecha, e.id_presupuesto AS "idPresupuesto", e.created_at,
       p.nombre, p.email, COALESCE(p.tipo_documento_identidad, 'nif') AS "tipoDocumentoIdentidad",
       p.documento_identidad AS "documentoIdentidad",
       p.telefono, p.tipo, p.presupuesto, p.lugar, p.detalles,
@@ -291,39 +291,87 @@ export async function PATCH(request: NextRequest) {
   }
 
   const isConfirming = action === 'confirm';
-  let result: Array<Record<string, unknown>>;
-
-  if (requestType === 'wedding') {
-    const nextStatus = isConfirming ? 'confirmed' : 'rejected';
-    result = await sql`
-      WITH decision AS (
-        UPDATE eventos SET status = ${nextStatus}, updated_at = NOW(), decided_at = NOW()
-        WHERE id = ${id} AND tipo = 'wedding' AND status = 'pending'
-        RETURNING id, fecha
+  const nextStatus = isConfirming ? 'confirmed' : 'rejected';
+  const result: Array<Record<string, unknown>> = isConfirming
+    ? await sql`
+      WITH current_year AS MATERIALIZED (
+        SELECT EXTRACT(YEAR FROM CURRENT_DATE)::INTEGER AS year
+      ), candidate AS MATERIALIZED (
+        SELECT id, tipo, fecha, id_presupuesto
+        FROM eventos
+        WHERE id = ${id} AND tipo = ${requestType} AND status = 'pending'
+        FOR UPDATE
+      ), allocation AS (
+        INSERT INTO annual_budget_counters (year, last_number)
+        SELECT current_year.year, 1
+        FROM candidate CROSS JOIN current_year
+        WHERE candidate.id_presupuesto IS NULL
+        ON CONFLICT (year) DO UPDATE
+        SET last_number = annual_budget_counters.last_number + 1
+        WHERE annual_budget_counters.last_number < 9999
+        RETURNING year, last_number
+      ), decision AS (
+        UPDATE eventos ev SET
+          status = 'confirmed',
+          id_presupuesto = COALESCE(
+            ev.id_presupuesto,
+            allocation.year::TEXT || '-' || LPAD(allocation.last_number::TEXT, 4, '0')
+          ),
+          updated_at = NOW(),
+          decided_at = NOW()
+        FROM candidate
+        LEFT JOIN allocation ON TRUE
+        WHERE ev.id = candidate.id
+          AND (candidate.id_presupuesto IS NOT NULL OR allocation.last_number IS NOT NULL)
+        RETURNING ev.id, ev.tipo, ev.fecha
       ), related_decisions AS (
-        UPDATE eventos child SET status = ${nextStatus}, updated_at = NOW(), decided_at = NOW()
+        UPDATE eventos child SET status = 'confirmed', updated_at = NOW(), decided_at = NOW()
         FROM decision
-        WHERE child.parent_event_id = decision.id
+        WHERE decision.tipo = 'wedding' AND child.parent_event_id = decision.id
         RETURNING child.id
       )
-      SELECT decision.fecha, w.email, w.nombre
-      FROM decision JOIN wedding_requests w ON w.evento_id = decision.id;
-    `;
-  } else {
-    const nextStatus = isConfirming ? 'confirmed' : 'rejected';
-    result = await sql`
-      WITH decision AS (
-        UPDATE eventos SET status = ${nextStatus}, updated_at = NOW(), decided_at = NOW()
-        WHERE id = ${id} AND tipo = 'production' AND status = 'pending'
-        RETURNING id, fecha
-      )
-      SELECT decision.fecha, p.email, p.nombre
-      FROM decision JOIN production_requests p ON p.evento_id = decision.id;
-    `;
-  }
+      SELECT decision.fecha, COALESCE(wedding.email, production.email) AS email,
+        COALESCE(wedding.nombre, production.nombre) AS nombre, FALSE AS "numberLimitReached"
+      FROM decision
+      LEFT JOIN wedding_requests wedding ON decision.tipo = 'wedding' AND wedding.evento_id = decision.id
+      LEFT JOIN production_requests production ON decision.tipo = 'production' AND production.evento_id = decision.id
+      UNION ALL
+      SELECT NULL::TEXT, NULL::TEXT, NULL::TEXT, TRUE
+      FROM candidate
+      WHERE candidate.id_presupuesto IS NULL
+        AND NOT EXISTS (SELECT 1 FROM allocation)
+      LIMIT 1;
+    `
+    : requestType === 'wedding'
+      ? await sql`
+        WITH decision AS (
+          UPDATE eventos SET status = 'rejected', updated_at = NOW(), decided_at = NOW()
+          WHERE id = ${id} AND tipo = 'wedding' AND status = 'pending'
+          RETURNING id, fecha
+        ), related_decisions AS (
+          UPDATE eventos child SET status = 'rejected', updated_at = NOW(), decided_at = NOW()
+          FROM decision
+          WHERE child.parent_event_id = decision.id
+          RETURNING child.id
+        )
+        SELECT decision.fecha, wedding.email, wedding.nombre, FALSE AS "numberLimitReached"
+        FROM decision JOIN wedding_requests wedding ON wedding.evento_id = decision.id;
+      `
+      : await sql`
+        WITH decision AS (
+          UPDATE eventos SET status = 'rejected', updated_at = NOW(), decided_at = NOW()
+          WHERE id = ${id} AND tipo = 'production' AND status = 'pending'
+          RETURNING id, fecha
+        )
+        SELECT decision.fecha, production.email, production.nombre, FALSE AS "numberLimitReached"
+        FROM decision JOIN production_requests production ON production.evento_id = decision.id;
+      `;
 
   if (result.length === 0) {
     return NextResponse.json({ error: 'La solicitud ya no está pendiente.' }, { status: 409 });
+  }
+  if (result[0].numberLimitReached === true) {
+    return NextResponse.json({ error: 'Se alcanzó el límite anual de 9999 presupuestos.' }, { status: 409 });
   }
 
   const affectedRequest = result[0];

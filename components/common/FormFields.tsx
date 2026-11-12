@@ -338,6 +338,7 @@ export function createFormFields<Values extends { [Field in keyof Values]: strin
       label: string,
       disabled = false,
       placeholder?: string,
+      rows?: number
     ) => (
       <FormTextareaField
         field={field}
@@ -348,6 +349,7 @@ export function createFormFields<Values extends { [Field in keyof Values]: strin
         wrapperClassName={textareaClassName ?? (wideClassName ? fieldClassName(true) : `${wrapperClassName} wide`)}
         disabled={disabled || formDisabled}
         placeholder={placeholder}
+        rows={rows}
       />
     ),
     select: (

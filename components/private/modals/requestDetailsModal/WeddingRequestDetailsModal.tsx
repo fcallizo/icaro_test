@@ -5,8 +5,7 @@ import { RequestDetailsModalFrame } from './RequestDetailsModalFrame';
 import { createFormFields } from '@/components/common/FormFields';
 import { SpanishTaxIdField } from '@/components/common/SpanishTaxIdField';
 import { isValidIdentityDocument, normalizeSpanishTaxId } from '@/lib/spanish-tax-id';
-import type { WeddingSheetBlock, WeddingSheetData } from '../../pdfs/WeddingContractPdf';
-import { PACK_OPTIONS, SERVICE_OPTIONS, WeddingPrices } from '@/lib/wedding-form';
+import { PACK_OPTIONS, SERVICE_OPTIONS, WeddingPrices, WeddingSheetBlock, WeddingSheetData } from '@/lib/wedding-form';
 
 
 const toNumber = (value: unknown) => {
@@ -183,6 +182,7 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
     return {
       nombre: values.nombre,
       email: values.email,
+      presupuestoNumero: values.idPresupuesto ?? '',
       tipoDocumentoIdentidad: values.tipoDocumentoIdentidad,
       documentoIdentidad: normalizeSpanishTaxId(values.documentoIdentidad),
       fecha: formatDate(values.fecha),
@@ -244,8 +244,12 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
         </>
       ) : undefined}
     >
-      {input('nombre', 'Nombre de la pareja', 'text', true, false, false, '', undefined, 'col-100')}
+      {input('nombre', 'Nombre / empresa', 'text', true, false, false, '', undefined, 'col-75')}
+      {input('idPresupuesto', 'N.º de presupuesto', 'text', true, false, true, 'XXXX-XXXX', undefined, 'col-25')}
       {input('email', 'Email', 'email', true, false, false, '')}
+      {input('fecha', 'Fecha', 'date', true, false, false, '')}
+      {inputPhone('telNovio', 'Teléfono del novio', true)}
+      {inputPhone('telNovia', 'Teléfono de la novia', true)}
       <SpanishTaxIdField
         idPrefix="request"
         type={values.tipoDocumentoIdentidad}
@@ -253,18 +257,23 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
         onTypeChange={(tipoDocumentoIdentidad) => setValues((current) => ({ ...current, tipoDocumentoIdentidad }))}
         onValueChange={(documentoIdentidad) => setValues((current) => ({ ...current, documentoIdentidad }))}
       />
-      {input('fecha', 'Fecha', 'date', true, false, false, '')}
-      {inputPhone('telNovio', 'Teléfono del novio', true)}
-      {inputPhone('telNovia', 'Teléfono de la novia', true)}
-      {input('novio', 'Casa del novio', 'text', false, false, false, '', undefined, 'col-75')}
-      {input('horaSalidaNovio', 'Salida del novio', 'time', false, false, false, '', undefined, 'col-25')}
-      {input('novia', 'Casa de la novia', 'text', false, false, false, '', undefined, 'col-75')}
-      {input('horaSalidaNovia', 'Salida de la novia', 'time', false, false, false, '', undefined, 'col-25')}
-      {input('ceremonia', 'Ceremonia', 'text', false, false, false, '', undefined, 'col-75')}
-      {input('horaCeremonia', 'Hora de la ceremonia', 'time', false, false, false, '', undefined, 'col-25')}
-      {input('lugar', 'Banquete', 'text', false, false, false, '', undefined, 'col-75')}
-      {input('horaCoctel', 'Hora del cóctel', 'time', false, false, false, '', undefined, 'col-25')}
-      {input('horaBarraLibre', 'Hora de la barra libre', 'time', false, false, false, '', undefined, 'col-25')}
+
+      <section className="production-contract-section col-100">
+        <header className="production-contract-heading">
+          <h3>Cronograma</h3>
+        </header>
+        <div className="production-contract-grid">
+          {input('novio', 'Casa del novio', 'text', false, false, false, '', undefined, 'col-75')}
+          {input('horaSalidaNovio', 'Salida del novio', 'time', false, false, false, '', undefined, 'col-25')}
+          {input('novia', 'Casa de la novia', 'text', false, false, false, '', undefined, 'col-75')}
+          {input('horaSalidaNovia', 'Salida de la novia', 'time', false, false, false, '', undefined, 'col-25')}
+          {input('ceremonia', 'Ceremonia', 'text', false, false, false, '', undefined, 'col-75')}
+          {input('horaCeremonia', 'Hora de la ceremonia', 'time', false, false, false, '', undefined, 'col-25')}
+          {input('lugar', 'Banquete', 'text', false, false, false, '', undefined, 'col-75')}
+          {input('horaCoctel', 'Hora del cóctel', 'time', false, false, false, '', undefined, 'col-25')}
+          {input('horaBarraLibre', 'Hora de la barra libre', 'time', false, false, false, '', undefined, 'col-25')}
+        </div>
+      </section>
 
       <section className="production-contract-section col-100">
         <header className="production-contract-heading">
@@ -274,14 +283,13 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
         <div className="production-contract-grid">
           {select('tipoPack', 'Tipo de pack', PACK_OPTIONS)}
           {select('servicioBoda', 'Servicios', serviceOptions)}
-          {textarea('detalles', 'Detalles')}
+          {textarea('detalles', 'Detalles', false, '', 7)}
           {input('extraBoda', 'Extras', 'text', false, false, false, '')}
           {inputSuffix('precioExtraBoda', 'Precio extras', true, false, false)}
         </div>
 
         {hasPreWedding && (
-          <div>
-            <br />
+          <div className="production-contract-subapart">
             <header className="production-contract-heading">
               <h3>Información preboda</h3>
             </header>
@@ -297,8 +305,7 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
         )}
 
         {hasPostWedding && (
-          <div>
-            <br />
+          <div className="production-contract-subapart">
             <header className="production-contract-heading">
               <h3>Información postboda</h3>
             </header>

@@ -46,3 +46,30 @@ export const DEFAULT_CINEMA_PRICES: CinemaPrice[] = [
     price: null,
   },
 ];
+
+// PDF
+
+export type ContractRow = {
+  label: string;
+  setup: string;
+  price: string;
+};
+
+export type ProductionContractData = {
+  nombre: string;
+  email: string;
+  telefono: string;
+  clienteTipoDocumento: string;
+  clienteCif: string;
+  presupuestoNumero?: string;
+  fecha: string;
+  proyecto: string;
+  descipcionTrabajo: string;
+  presupuesto: string;
+  rows: ContractRow[];
+  taxPercent: string;
+  subtotal: string;
+  iva: string;
+  total: string;
+  terminos?: string[];
+};

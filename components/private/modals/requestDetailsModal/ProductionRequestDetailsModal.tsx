@@ -3,8 +3,8 @@ import { PrivateRequestUpdate, ProductionMaterialCategory, RequestDetailsModalPr
 import { RequestDetailsModalFrame } from './RequestDetailsModalFrame';
 import { createFormFields } from '@/components/common/FormFields';
 import { SpanishTaxIdField } from '@/components/common/SpanishTaxIdField';
-import type { ProductionContractData } from '../../pdfs/ProductionContractPdf';
 import { isValidIdentityDocument, normalizeSpanishTaxId } from '@/lib/spanish-tax-id';
+import { ProductionContractData } from '@/lib/cinema-forms';
 
 const productionItems = [
   { setup: 'setupCamara', price: 'precioCamara', label: 'Cámara principal' },
@@ -31,7 +31,6 @@ const toFileName = (name: string) =>
     .replace(/^-+|-+$/g, '');
 
 async function downloadProductionContract(data: ProductionContractData) {
-  // Import dinámico: la librería solo se descarga al pulsar el botón
   const [{ pdf }, { ProductionContractPdf }] = await Promise.all([
     import('@react-pdf/renderer'),
     import('../../pdfs/ProductionContractPdf'),
@@ -119,6 +118,7 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
         nombre: values.nombre,
         email: values.email,
         telefono: values.telefono,
+        presupuestoNumero: values.idPresupuesto ?? undefined,
         clienteTipoDocumento: values.tipoDocumentoIdentidad,
         clienteCif: normalizeSpanishTaxId(values.documentoIdentidad),
         fecha: formatDate(values.fecha),
@@ -169,7 +169,8 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
         </>
       ) : undefined}
     >
-      {input('nombre', 'Nombre / empresa', 'text', true, true, false, '')}
+      {input('nombre', 'Nombre / empresa', 'text', true, false, false, '', undefined, 'col-75')}
+      {input('idPresupuesto', 'N.º de presupuesto', 'text', true, false, true, 'XXXX-XXXX', undefined, 'col-25')}
       {input('email', 'Email', 'email', true, false, false, '')}
       {inputPhone('telefono', 'Teléfono', true)}
       <SpanishTaxIdField
@@ -183,7 +184,7 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
       {input('lugar', 'Lugar del evento', 'text', true, false, false, '')}
       {input('tipo', 'Tipo de producción','text', true, false, false, '', undefined, 'col-75')}
       {inputSuffix('presupuesto', 'Presupuesto', true, false, false, '€', '', 'col-25')}
-      {textarea('detalles', 'Descripción del trabajo')}
+      {textarea('detalles', 'Descripción del trabajo', false, '', 7)}
       <section className="production-contract-section col-100">
         <header className="production-contract-heading">
           <h3>Desglose técnico</h3>

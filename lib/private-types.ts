@@ -32,6 +32,7 @@ export type PrivateRequestUpdate = {
   detalles: string;
   tipoDocumentoIdentidad: IdentityDocumentType;
   documentoIdentidad: string;
+  idPresupuesto: string;
 
   // boda
   telNovio: string;
@@ -104,6 +105,7 @@ export type PrivateRequest = {
   status: RequestStatus;
   nombre?: string;
   email?: string;
+  idPresupuesto?: string | null;
   tipoDocumentoIdentidad?: IdentityDocumentType;
   documentoIdentidad?: string;
   fecha?: string;
@@ -171,6 +173,7 @@ return {
     documentoIdentidad: request.documentoIdentidad || '',
     fecha: request.fecha || '',
     detalles: request.detalles || '',
+    idPresupuesto: request.idPresupuesto || '',
     
     telNovio: request.telNovio || '',
     telNovia: request.telNovia || '',

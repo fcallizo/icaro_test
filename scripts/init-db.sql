@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS eventos (
   fecha TEXT,
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'rejected')),
   parent_event_id UUID REFERENCES eventos(id) ON DELETE CASCADE,
+  id_presupuesto TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   decided_at TIMESTAMPTZ
@@ -23,6 +24,22 @@ ALTER TABLE eventos DROP CONSTRAINT IF EXISTS eventos_tipo_check;
 ALTER TABLE eventos ADD CONSTRAINT eventos_tipo_check
   CHECK (tipo IN ('wedding', 'production', 'prewedding', 'postwedding'));
 ALTER TABLE eventos ADD COLUMN IF NOT EXISTS parent_event_id UUID REFERENCES eventos(id) ON DELETE CASCADE;
+ALTER TABLE eventos ADD COLUMN IF NOT EXISTS id_presupuesto TEXT;
+CREATE UNIQUE INDEX IF NOT EXISTS eventos_id_presupuesto_key
+  ON eventos (id_presupuesto) WHERE id_presupuesto IS NOT NULL;
+
+CREATE TABLE IF NOT EXISTS annual_budget_counters (
+  year INTEGER PRIMARY KEY,
+  last_number INTEGER NOT NULL CHECK (last_number BETWEEN 1 AND 9999)
+);
+
+INSERT INTO annual_budget_counters (year, last_number)
+SELECT LEFT(id_presupuesto, 4)::INTEGER, MAX(SUBSTRING(id_presupuesto FROM 6)::INTEGER)
+FROM eventos
+WHERE id_presupuesto ~ '^[0-9]{4}-[0-9]{4}$'
+GROUP BY LEFT(id_presupuesto, 4)::INTEGER
+ON CONFLICT (year) DO UPDATE
+SET last_number = GREATEST(annual_budget_counters.last_number, EXCLUDED.last_number);
 
 CREATE TABLE IF NOT EXISTS calendar_blocks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

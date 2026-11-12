@@ -46,15 +46,15 @@ export type WeddingFormValues = {
 export const PACK_OPTIONS = [
   { value: 'indeciso', label: 'Aún no lo sabemos' },
   { value: 'boda', label: 'Solo boda' },
-  { value: 'duo-pre', label: 'Boda + preboda' },
-  { value: 'duo-post', label: 'Boda + postboda' },
-  { value: 'trio', label: 'Preboda + boda + postboda' },
+  { value: 'duo-pre', label: 'Boda y preboda' },
+  { value: 'duo-post', label: 'Boda y postboda' },
+  { value: 'trio', label: 'Pack Completo' },
 ];
 
 export const SERVICE_OPTIONS = [
   { value: 'fotos', label: 'Sesión fotográfica' },
   { value: 'video', label: 'Vídeo documental' },
-  { value: 'duo', label: 'Sesión fotográfica + vídeo documental' },
+  { value: 'duo', label: 'Sesión fotográfica y vídeo' },
 ];
 
 
@@ -141,3 +141,33 @@ export type WeddingOffer = {
   visible?: boolean;
 };
 
+/* ---------- PDF ---------- */
+
+export type WeddingSheetLine = { label: string; amount: string };
+
+export type WeddingSheetBlock = {
+  title: string; // "Boda", "Preboda", "Postboda"
+  fecha?: string;
+  lugar?: string;
+  detalles?: string;
+  lines: WeddingSheetLine[];
+};
+
+export type WeddingSheetData = {
+  nombre: string;
+  email: string;
+  presupuestoNumero?: string;
+  tipoDocumentoIdentidad?: string;
+  documentoIdentidad?: string;
+  fecha: string;
+  telNovio: string;
+  telNovia: string;
+  pack: string;
+  schedule: { label: string; place: string; time: string }[];
+  detalles: string;
+  blocks: WeddingSheetBlock[];
+  discountPercent: string;
+  subtotal: string;
+  discount: string;
+  total: string;
+};

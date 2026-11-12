@@ -1,12 +1,6 @@
-import {
-  Document,
-  Page,
-  StyleSheet,
-  Text,
-  View,
-} from '@react-pdf/renderer';
-
+import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { GOLD, INK, LINE, MUTED, SOFT } from '@/lib/properties';
+import { ProductionContractData } from '@/lib/cinema-forms';
 
 /* ==========================================================================
  * Contrato / desglose técnico — Ícaro Studio
@@ -27,33 +21,6 @@ import { GOLD, INK, LINE, MUTED, SOFT } from '@/lib/properties';
  *                  el trabajo. No se factura ni se ofrece como extra.
  * ======================================================================== */
 
-export type ContractRow = {
-  /** Nombre de la partida (servicio contratado). */
-  label: string;
-  /** Detalle / configuración / duración. */
-  setup: string;
-  /** Importe con formato ("1.500 €"). */
-  price: string;
-};
-
-export type ProductionContractData = {
-  nombre: string;
-  email: string;
-  telefono: string;
-  clienteTipoDocumento: string;
-  clienteCif: string;
-  presupuestoNumero?: string;
-  fecha: string;
-  proyecto: string;
-  descipcionTrabajo: string;
-  presupuesto: string;
-  rows: ContractRow[];
-  taxPercent: string;
-  subtotal: string;
-  iva: string;
-  total: string;
-  terminos?: string[];
-};
 
 
 /* --- Helpers ------------------------------------------------------------- */
@@ -87,15 +54,6 @@ function shouldHideRow(row: { price: string }): boolean {
   }
 
   return amount === 0;
-}
-
-/** Construye el número de documento: PR-2026-0001 a partir del presupuesto. */
-function buildDocumentNumber(presupuesto: string): string {
-  const digits = (presupuesto ?? '').replace(/\D/g, '');
-
-  if (!digits) return 'PR-2026-0000';
-
-  return `PR-${new Date().getFullYear()}-${digits.padStart(4, '0').slice(-4)}`;
 }
 
 /** Número de página con el total (React-PDF lo resuelve con renderPage). */
@@ -517,8 +475,7 @@ export function ProductionContractPdf({
   data: ProductionContractData;
 }) {
   const visibleRows = data.rows.filter((row) => !shouldHideRow(row));
-  const documentNumber =
-    data.presupuestoNumero ?? buildDocumentNumber(data.presupuesto);
+  const documentNumber = data.presupuestoNumero ?? '—';
   const terms = data.terminos?.length ? data.terminos : DEFAULT_TERMS;
 
 console.log('ProductionContractPdf: data', data);
