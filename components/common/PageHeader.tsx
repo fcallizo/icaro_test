@@ -1,4 +1,4 @@
-import { PageTheme, PageView } from "@/lib/properties";
+import { PageTheme, PageView, RUTA_LOGO_ALAS } from "@/lib/properties";
 
 type PageHeaderProps = {
   view: PageView;
@@ -13,7 +13,7 @@ export function PageHeader({ view, theme, onHome, onCinema, onWedding }: PageHea
     <header className={`topbar topbar-${theme}`}>
       <div className="nav-container">
         <div className="brand" onClick={onHome}>
-          <img src="/logo_sf_c.png" alt="Ícaro Logo" className="brand-logo" />
+          <img src={RUTA_LOGO_ALAS} alt="Ícaro Logo" className="brand-logo" />
           <span className="brand-name brand-name-reduce">ÍCARO <span className="brand-accent">STUDIO</span></span>
         </div>
 

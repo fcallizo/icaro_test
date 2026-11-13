@@ -15,6 +15,7 @@ import { SettingsTab } from './tabs/SettingsTab';
 import { DEFAULT_WEDDING_PRICES, WeddingPrices } from '@/lib/wedding-form';
 import { AdminUsersTab } from '@/components/private/tabs/AdminUsersTab';
 import { ConfirmationDialog } from '@/components/private/ConfirmationDialog';
+import { RUTA_LOGO_ALAS } from '@/lib/properties';
 
 async function getPrivateRequests() {
   const response = await fetch('/api/private/requests', { cache: 'no-store' });
@@ -445,7 +446,7 @@ export function PrivateArea() {
       <div className="grain-layer" />
       <header className="private-page-header">
         <Link href="/" className="private-brand">
-          <img src="/logo_sf_c.png" alt="Ícaro Studio" />
+          <img src={RUTA_LOGO_ALAS} alt="Ícaro Studio" />
           <span>ÍCARO <strong>STUDIO</strong></span>
         </Link>
         <div className="private-page-title">

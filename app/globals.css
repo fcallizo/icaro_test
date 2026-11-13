@@ -28,7 +28,7 @@
   --bg-dark: #191a1b;
   --bg-dark-raised: color-mix(in srgb, var(--bg-dark) 96%, white);
   --border: rgba(255, 255, 255, 0.12);
-  
+
   --bg-light: #f7f5f0;
   --bg-light-raised: color-mix(in srgb, var(--bg-light) 70%, var(--white));
   --text-on-light-muted: #625f5b;
@@ -267,27 +267,27 @@ textarea {
 }
 
 .icon-key {
-  --icon-image: url("/llave.svg");
+  --icon-image: url("/iconos/llave.svg");
 }
 
 .icon-phone {
-  --icon-image: url("/telefono.svg");
+  --icon-image: url("/iconos/telefono.svg");
 }
 
 .icon-mail {
-  --icon-image: url("/correo.svg");
+  --icon-image: url("/iconos/correo.svg");
 }
 
 .icon-pin {
-  --icon-image: url("/alfiler.svg");
+  --icon-image: url("/iconos/alfiler.svg");
 }
 
 .icon-instagram {
-  --icon-image: url("/instagram.svg");
+  --icon-image: url("/iconos/instagram.svg");
 }
 
 .icon-arrow {
-  --icon-image: url("/flecha.svg");
+  --icon-image: url("/iconos/flecha.svg");
 }
 
 .icon-inverted {
@@ -432,7 +432,7 @@ span.nav-label>a {
   justify-content: center;
   z-index: 50;
   transition: opacity 0.8s ease;
-  animation: introFade 1.6s ease forwards;
+  animation: introFade 3.1s ease forwards;
 }
 
 @keyframes introFade {
@@ -456,10 +456,72 @@ span.nav-label>a {
   gap: 1rem;
 }
 
-.intro-logo {
-  width: 180px;
+/* Contenedor del logotipo dentro de la pantalla de intro */
+.logo-animado {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Capa de la cámara */
+.capa-camara {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1;
+  animation: animacionCamara 3s ease-in-out forwards;
+}
+
+/* Capa de las alas con brillo dorado sutil */
+.capa-alas {
+  position: absolute;
+  width: 32%;
   height: auto;
-  filter: drop-shadow(0 0 20px color-mix(in srgb, var(--gold) 50%, transparent));
+  top: 57%;
+  left: 52%;
+  transform: translate(-50%, -50%) scale(1);
+  z-index: 2;
+  /* Brillo suave para acompañar la iluminación del fondo */
+  filter: drop-shadow(0 0 28px rgba(245, 178, 27, 0.65));
+  animation: animacionAlas 3s ease-in-out forwards;
+}
+
+/* Línea de tiempo de las alas (3 segundos) */
+@keyframes animacionAlas {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  25% {
+    transform: translate(-50%, -50%) scale(0.75);
+  }
+
+  85%,
+  100% {
+    transform: translate(-50%, -50%) scale(3.2);
+  }
+}
+
+/* Línea de tiempo de la cámara (3 segundos) */
+@keyframes animacionCamara {
+
+  0%,
+  25% {
+    opacity: 1;
+    transform: scale(1);
+    filter: drop-shadow(0 0 28px rgba(245, 178, 27, 0.65));
+  }
+
+  65%,
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+    filter: drop-shadow(0 0 10px rgba(245, 178, 27, 0.25));
+  }
 }
 
 .flicker-anim {
@@ -497,7 +559,7 @@ span.nav-label>a {
   width: 220px;
   height: 2px;
   background: linear-gradient(90deg, var(--gold), rgba(255, 255, 255, 0.2));
-  animation: loadingLine 1.5s ease forwards;
+  animation: loadingLine 3s ease forwards;
 }
 
 @keyframes loadingLine {
@@ -595,8 +657,6 @@ span.nav-label>a {
   font-weight: 600;
 }
 
-
-
 .nav-contact {
   display: flex;
   flex-direction: column;
@@ -608,10 +668,6 @@ span.nav-label>a {
   font-size: var(--font-size-caption);
   font-family: "SFMono-Regular", Consolas, monospace;
 }
-
-
-
-
 
 .selector-screen {
   position: relative;
@@ -636,27 +692,18 @@ span.nav-label>a {
 }
 
 .panel-cine {
-  background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.7)), url("/cinema.png");
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-
-}
-
-.panel-weddings {
-  background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.7)), url("/wedding.png");
+  background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.7)), url("/imagenes/cinema.png");
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
 }
 
-/* .panel-cine {
-  background: url('https://res.cloudinary.com/sp5ywaxz/image/upload/v1793285097/Rodaje_cinematogr%C3%A1fico_en_estudio.png') center/cover no-repeat;
-}
-
 .panel-weddings {
-  background: url('https://res.cloudinary.com/sp5ywaxz/image/upload/v1793285093/Manos_entrelazadas_con_alianzas_doradas.png') center/cover no-repeat;
-} */
+  background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.7)), url("/imagenes/wedding.png");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
 
 .panel-overlay {
   position: absolute;
@@ -2102,17 +2149,13 @@ input[type="time"] {
     display: none;
   }
 
-  
-
-  .nav-instagram-link .nav-label{
+  .nav-instagram-link .nav-label {
     display: none;
   }
 
-  
-
   .selector-grid,
   .reservation-layout,
-  .tech-header{
+  .tech-header {
     grid-template-columns: 1fr;
   }
 
@@ -2142,8 +2185,6 @@ input[type="time"] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  
-
   .divider-block {
     width: 100%;
 
@@ -2156,8 +2197,6 @@ input[type="time"] {
   .gestion-card {
     display: inline;
   }
-
-  
 
   .process-strip {
     grid-template-columns: 1fr 1fr;
@@ -2210,8 +2249,6 @@ input[type="time"] {
   .nav-container {
     padding: 0.6rem 0;
   }
-
-  
 
   .private-page-header,
   .private-tab-panel {
@@ -2275,10 +2312,6 @@ input[type="time"] {
     grid-column: auto;
   }
 
-  
-
-  
-
   .wedding-story-row {
     grid-template-columns: 1fr;
   }
@@ -2321,18 +2354,9 @@ input[type="time"] {
     gap: 0.35rem;
   }
 
-  
   .request-details-form-grid .wide {
     grid-column: auto;
   }
-
-  
-
-  
-
-  
-
-  
 
   .cinema-pricing-grid {
     grid-template-columns: 1fr;

@@ -1,7 +1,7 @@
 'use client';
 import { CarouselPhoto } from '@/hooks/useCloudinaryPhotos';
 import { PhotoCarousel } from '@/components/common/PhotoCarousel';
-import { CinemaPrice, DEFAULT_CINEMA_PRICES } from '@/lib/cinema-forms';
+import { CinemaPrice } from '@/lib/cinema-forms';
 
 
 const CAROUSEL_TAG = 'carrusel';
@@ -12,6 +12,13 @@ const fallbackPhotos: CarouselPhoto[] = [
   'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   'https://images.unsplash.com/photo-1531058020387-3be344556be6?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
 ].map((src, i) => ({ src, alt: `Foto ${i + 1}` }));
+
+const workSteps = [
+  ['01', 'Conversamos', 'Nos contáis qué queréis y cómo lo imagináis.'],
+  ['02', 'Planificamos', 'Visitamos el lugar, definimos horarios y guion.'],
+  ['03', 'Grabamos', 'Un equipo discreto y atento, sin interrumpir el momento.'],
+  ['04', 'Entregamos', 'Edición cuidada y entrega en el plazo acordado.'],
+];
 
 type CinemaInfoTabProps = {
   onReserve: () => void;
@@ -67,7 +74,7 @@ export function CinemaInfoTab({ onReserve, cinemaPrices }: CinemaInfoTabProps) {
         <div>
           <div className="img-card-div">
             <img
-              src="https://res.cloudinary.com/sp5ywaxz/image/upload/v1792438408/BG4A4010_1_2.jpg.jpg"
+              src="https://res.cloudinary.com/sp5ywaxz/image/upload/v1792717175/BG4A4010_1_4.jpg.jpg"
               alt="equipo" />
           </div>
         </div>
@@ -78,12 +85,7 @@ export function CinemaInfoTab({ onReserve, cinemaPrices }: CinemaInfoTabProps) {
       </div>
 
       <div className="process-strip">
-        {[
-          ['01', 'Conversamos', 'Nos contáis qué queréis y cómo lo imagináis.'],
-          ['02', 'Planificamos', 'Visitamos el lugar, definimos horarios y guion.'],
-          ['03', 'Grabamos', 'Un equipo discreto y atento, sin interrumpir el momento.'],
-          ['04', 'Entregamos', 'Edición cuidada y entrega en el plazo acordado.'],
-        ].map(([n, title, text]) => (
+        {workSteps.map(([n, title, text]) => (
           <div key={n} className="process-step">
             <span className="process-num">{n}</span>
             <strong>{title}</strong>

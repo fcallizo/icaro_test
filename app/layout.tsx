@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   title: title,
   description: 'Aventura de producción cinematográfica, bodas y contenido premium.',
   icons: {
-    icon: '/icono_2.png',
-    apple: '/icono_2.png',
+    icon: '/logos/logo_alas_pq.png',
+    apple: '/logos/logo_alas_pq.png',
   },
 };
 
@@ -19,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <meta charSet="UTF-8" />
         <title>{title}</title>
-        <link rel="icon" type="image/png" href="public/icono_2.png" />
+        <link rel="icon" type="image/png" href="public/logos/logo_alas_pq.png" />
       </head>
 
       <body>{children}</body>

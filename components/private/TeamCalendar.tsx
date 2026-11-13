@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { AvailabilityCalendar, CalendarRequest } from '@/components/common/AvailabilityCalendar';
+import { RUTA_LOGO_ALAS } from '@/lib/properties';
 
 type AssignedEvent = {
   id: string;
@@ -115,7 +116,7 @@ export function TeamCalendar({ token }: { token: string }) {
   return (
     <main className="page-shell team-calendar-page">
       <header className="team-calendar-header">
-        <img src="/logo_sf_c.png" alt="Ícaro Studio" />
+        <img src={RUTA_LOGO_ALAS} alt="Ícaro Studio" />
         <div>
           <span className="eyebrow">CALENDARIO DE EQUIPO</span>
           <h1>{data ? `Hola, ${data.memberName}` : 'Eventos asignados'}</h1>

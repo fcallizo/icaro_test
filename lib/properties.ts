@@ -1,3 +1,13 @@
+
+// ruta iamgenes
+
+export const RUTA_LOGO_ALAS = "/logos/logo_alas.png";
+
+export const RUTA_LOGO_CAMARA = "/logos/logo_camara.png";
+
+export const RUTA_LOGO_CAMARA_SIN_ALAS = "/logos/logo_camara_SA.png";
+
+
 export type PageView = 'selector' | 'cinema' | 'wedding';
 
 export type PageTheme = 'light' | 'dark';

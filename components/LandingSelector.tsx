@@ -1,6 +1,6 @@
 import { PageHeader } from '@/components/common/PageHeader';
 import { PublicLegalFooter } from '@/components/common/PublicLegalFooter';
-import { PageView } from '@/lib/properties';
+import { PageView, RUTA_LOGO_ALAS, RUTA_LOGO_CAMARA_SIN_ALAS } from '@/lib/properties';
 
 type LandingSelectorProps = {
   onSelect: (view: PageView) => void;
@@ -11,7 +11,10 @@ export function LandingSelector({ onSelect }: LandingSelectorProps) {
     <div className="page-shell home-page">
       <div className="intro-screen">
         <div className="intro-inner">
-          <img src="/logo_sf_c.png" alt="Ícaro Studio" className="intro-logo flicker-anim" />
+          <div className="logo-animado">
+            <img src={RUTA_LOGO_CAMARA_SIN_ALAS} alt="Cámara" className="capa-camara" />
+            <img src={RUTA_LOGO_ALAS} className="capa-alas" />
+          </div>
           <h1 className="intro-title">ÍCARO STUDIO</h1>
           <div className="intro-progress" />
         </div>
