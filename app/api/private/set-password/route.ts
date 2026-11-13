@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
         RETURNING user_id
       )
       UPDATE users
-      SET pass = ${passwordHash}
+      SET password_hash = ${passwordHash}
       WHERE id IN (SELECT user_id FROM consumed)
       RETURNING id;
     `;

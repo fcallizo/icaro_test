@@ -42,9 +42,9 @@ if (password !== undefined) {
 }
 const sql = neon(process.env.DATABASE_URL);
 
-const [existingUser] = await sql`SELECT id FROM users WHERE usuario = ${username} LIMIT 1;`;
+const [existingUser] = await sql`SELECT id FROM users WHERE username = ${username} LIMIT 1;`;
 const [emailOwner] = await sql`
-  SELECT id FROM users WHERE LOWER(email) = ${email} AND usuario <> ${username} LIMIT 1;
+  SELECT id FROM users WHERE LOWER(email) = ${email} AND username <> ${username} LIMIT 1;
 `;
 if (emailOwner) throw new Error('Ese correo ya está asociado a otro usuario.');
 
@@ -52,15 +52,15 @@ if (existingUser) {
   await sql`
     UPDATE users
     SET email = ${email},
-        pass = COALESCE(${passwordHash}, pass),
+        password_hash = COALESCE(${passwordHash}, password_hash),
         is_admin = is_admin OR ${isAdmin},
-        notificaciones = COALESCE(${notificationLevel}, notificaciones)
-    WHERE usuario = ${username};
+        notification_level = COALESCE(${notificationLevel}, notification_level)
+    WHERE username = ${username};
   `;
 } else {
   if (!passwordHash) throw new Error('No se encontró la cuenta existente y no se proporcionó contraseña para crearla.');
   await sql`
-    INSERT INTO users (usuario, pass, email, notificaciones, is_admin)
+    INSERT INTO users (username, password_hash, email, notification_level, is_admin)
     VALUES (${username}, ${passwordHash}, ${email}, COALESCE(${notificationLevel}, 0), ${isAdmin});
   `;
 }

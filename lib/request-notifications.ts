@@ -27,7 +27,7 @@ export async function sendRequestNotification(notification: RequestNotification)
       FROM users
       WHERE email IS NOT NULL
         AND btrim(email) <> ''
-        AND (notificaciones & ${notificationFlag}) = ${notificationFlag};
+        AND (notification_level & ${notificationFlag}) = ${notificationFlag};
     `;
 
     if (recipients.length === 0) return;

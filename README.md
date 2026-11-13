@@ -43,17 +43,17 @@ npm run dev
 
 ## Base de datos
 
-Las migraciones se ejecutan fuera de las peticiones de la aplicación. Antes del primer despliegue con esta versión, haz una copia de seguridad de la base de datos y ejecuta el esquema/migración inicial:
+Las operaciones de esquema se ejecutan fuera de las peticiones de la aplicación. Para crear una base de datos vacía desde cero, configura `DATABASE_URL` y ejecuta:
 
 ```bash
-npm run db:migrate
+npm run db:init
 ```
 
-El comando usa `DATABASE_URL` del entorno o de `.env.local` y aplica `scripts/init-db.sql` mediante el cliente Neon, sin requerir `psql`, dentro de una transacción. Este SQL también migra instalaciones existentes; incluye transformaciones de datos y eliminación de columnas antiguas, por lo que conviene revisar y respaldar la base antes de ejecutarlo. La tabla `api_rate_limits` debe estar creada antes de desplegar la protección del login y del formulario público. Ejecuta cualquier cambio de esquema futuro antes de desplegar código que dependa de él.
+`db:init` crea el esquema inicial y los datos de catálogo de `scripts/init-db.sql` en una base vacía. No es idempotente: úsalo solo tras crear una base de datos vacía en Neon. El comando usa `DATABASE_URL` del entorno o de `.env.local` y aplica el SQL con el cliente Neon dentro de una transacción, sin requerir `psql`.
 
 El login limita a 5 intentos por combinación de IP y correo, y a 20 por IP, en ventanas de 15 minutos. La solicitud de recuperación y el establecimiento de contraseña también tienen límites por IP/cuenta o token. El formulario público acepta hasta 5 solicitudes por IP cada 15 minutos; el exceso recibe HTTP 429 con `Retry-After`.
 
-La migración añade `users.is_admin`, permite cuentas pendientes sin contraseña y crea la tabla de tokens de invitación/recuperación. Los usuarios existentes no se convierten automáticamente en administradores: tras la migración, promociona la cuenta inicial con el script anterior antes de entrar a gestionar usuarios. El área privada permite a administradores invitar por correo, cambiar permisos y eliminar cuentas; se protege para que siempre quede al menos un administrador. Los administradores pueden configurar las notificaciones por correo de cada usuario: producción (1), bodas (2), ambas (3) o ninguna (0). Los correos de recuperación no revelan si una cuenta existe.
+El esquema permite cuentas pendientes sin contraseña y crea la tabla de tokens de invitación/recuperación. Después de inicializar la base vacía, crea el primer administrador con el script de provisión anterior. El área privada permite a administradores invitar por correo, cambiar permisos y eliminar cuentas; se protege para que siempre quede al menos un administrador. Los administradores pueden configurar las notificaciones por correo de cada usuario: producción (1), bodas (2), ambas (3) o ninguna (0). Los correos de recuperación no revelan si una cuenta existe.
 
 Las ofertas extra de boda se guardan en `wedding_offers`. Se crean con tarifas vacías y ocultas para que puedas configurarlas y publicarlas desde **Área privada → Configuración → Extras y álbumes**.
 
@@ -75,8 +75,8 @@ Los enlaces de equipo funcionan como credenciales personales: quien tenga el enl
 
 1. Conecta este repositorio a Vercel.
 2. Define `DATABASE_URL`, `PRIVATE_SESSION_SECRET`, `NEXT_PUBLIC_APP_URL`, `RESEND_API_KEY` y, opcionalmente, `RESEND_FROM` en Vercel.
-3. Antes del despliegue, haz una copia de seguridad y ejecuta `npm run db:migrate` apuntando a la base de datos del entorno correspondiente.
-4. Promociona la cuenta existente con `scripts/provision-private-user.mjs`, apuntando a esa misma base de datos.
+3. Inicializa la base de datos vacía del entorno con `npm run db:init`, verificando que `DATABASE_URL` apunta a la base correcta.
+4. Crea el primer usuario administrador con `scripts/provision-private-user.mjs`, apuntando a esa misma base de datos.
 5. Haz deploy del proyecto.
 
 ## Estructura principal

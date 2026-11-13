@@ -55,25 +55,26 @@ function isValidDate(value: string) {
 async function findWedding(tokenHash: string) {
   if (!sql) return null;
   const rows = await sql`
-    SELECT e.id, e.fecha, w.nombre, w.email, w.tel_novio AS "telNovio", e.status,
-      w.tel_novia AS "telNovia", w.lugar, w.novia, w.novio, w.ceremonia,
-      w.hora_salida_novio AS "horaSalidaNovio",
-      w.hora_salida_novia AS "horaSalidaNovia",
-      w.hora_ceremonia AS "horaCeremonia",
-      w.hora_coctel AS "horaCoctel",
-      w.hora_barra_libre AS "horaBarraLibre",
-      w.detalles, w.tipo_pack AS "tipoPack",
-      w.servicio_boda AS "servicioBoda",
-      w.servicio_preboda AS "servicioPreboda",
-      w.servicio_postboda AS "servicioPostboda",
-      (SELECT pe.fecha FROM eventos pe WHERE pe.parent_event_id = e.id AND pe.tipo = 'prewedding') AS "fechaPreboda",
-      w.lugar_preboda AS "lugarPreboda", w.detalles_preboda AS "detallesPreboda",
-      (SELECT pe.fecha FROM eventos pe WHERE pe.parent_event_id = e.id AND pe.tipo = 'postwedding') AS "fechaPostboda",
-      w.lugar_postboda AS "lugarPostboda", w.detalles_postboda AS "detallesPostboda"
-    FROM eventos e
-    JOIN wedding_requests w ON w.evento_id = e.id
+    SELECT e.id, e.event_date AS fecha, w.name AS nombre, w.email, w.groom_phone AS "telNovio", e.status,
+      w.bride_phone AS "telNovia", w.location AS lugar, w.bride_name AS novia,
+      w.groom_name AS novio, w.ceremony_location AS ceremonia,
+      w.groom_departure_time AS "horaSalidaNovio",
+      w.bride_departure_time AS "horaSalidaNovia",
+      w.ceremony_time AS "horaCeremonia",
+      w.cocktail_time AS "horaCoctel",
+      w.open_bar_time AS "horaBarraLibre",
+      w.details AS detalles, w.package_type AS "tipoPack",
+      w.wedding_service AS "servicioBoda",
+      w.prewedding_service AS "servicioPreboda",
+      w.postwedding_service AS "servicioPostboda",
+      (SELECT pe.event_date FROM events pe WHERE pe.parent_event_id = e.id AND pe.type = 'prewedding') AS "fechaPreboda",
+      w.prewedding_location AS "lugarPreboda", w.prewedding_details AS "detallesPreboda",
+      (SELECT pe.event_date FROM events pe WHERE pe.parent_event_id = e.id AND pe.type = 'postwedding') AS "fechaPostboda",
+      w.postwedding_location AS "lugarPostboda", w.postwedding_details AS "detallesPostboda"
+    FROM events e
+    JOIN wedding_requests w ON w.event_id = e.id
     WHERE w.customer_form_token_hash = ${tokenHash}
-      AND e.tipo = 'wedding' AND e.status IN ('pending', 'confirmed')
+      AND e.type = 'wedding' AND e.status IN ('pending', 'confirmed')
     LIMIT 1;
   `;
   return rows[0] ?? null;
@@ -170,34 +171,34 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
 
   const updatedRows = await sql`
     WITH updated_event AS (
-      UPDATE eventos SET fecha = ${values.fecha}, updated_at = NOW()
-      WHERE id = ${existingWedding.id} AND tipo = 'wedding' AND status IN ('pending', 'confirmed')
+      UPDATE events SET event_date = ${values.fecha}, updated_at = NOW()
+      WHERE id = ${existingWedding.id} AND type = 'wedding' AND status IN ('pending', 'confirmed')
       RETURNING id
     )
     UPDATE wedding_requests AS w SET
-      nombre = ${values.nombre}, email = ${values.email},
-      tel_novio = ${values.telNovio}, tel_novia = ${values.telNovia},
-      novio = ${setNullValue(values.novio)},
-      hora_salida_novio = ${setNullValue(values.horaSalidaNovio)},
-      novia = ${setNullValue(values.novia)},
-      hora_salida_novia = ${setNullValue(values.horaSalidaNovia)},
-      ceremonia = ${setNullValue(values.ceremonia)},
-      hora_ceremonia = ${setNullValue(values.horaCeremonia)},
-      lugar = ${setNullValue(values.lugar)},
-      hora_coctel = ${setNullValue(values.horaCoctel)},
-      hora_barra_libre = ${setNullValue(values.horaBarraLibre)},
-      detalles = ${values.detalles},
-      tipo_pack = ${values.tipoPack},
-      servicio_boda = ${values.servicioBoda},
-      servicio_preboda = ${includesPreWedding ? values.servicioPreboda : null},
-      lugar_preboda = ${includesPreWedding ? setNullValue(values.lugarPreboda) : null},
-      detalles_preboda = ${includesPreWedding ? setNullValue(values.detallesPreboda) : null},
-      servicio_postboda = ${includesPostWedding ? values.servicioPostboda : null},
-      lugar_postboda = ${includesPostWedding ? setNullValue(values.lugarPostboda) : null},
-      detalles_postboda = ${includesPostWedding ? setNullValue(values.detallesPostboda) : null}
+      name = ${values.nombre}, email = ${values.email},
+      groom_phone = ${values.telNovio}, bride_phone = ${values.telNovia},
+      groom_name = ${setNullValue(values.novio)},
+      groom_departure_time = ${setNullValue(values.horaSalidaNovio)},
+      bride_name = ${setNullValue(values.novia)},
+      bride_departure_time = ${setNullValue(values.horaSalidaNovia)},
+      ceremony_location = ${setNullValue(values.ceremonia)},
+      ceremony_time = ${setNullValue(values.horaCeremonia)},
+      location = ${setNullValue(values.lugar)},
+      cocktail_time = ${setNullValue(values.horaCoctel)},
+      open_bar_time = ${setNullValue(values.horaBarraLibre)},
+      details = ${values.detalles},
+      package_type = ${values.tipoPack},
+      wedding_service = ${values.servicioBoda},
+      prewedding_service = ${includesPreWedding ? values.servicioPreboda : null},
+      prewedding_location = ${includesPreWedding ? setNullValue(values.lugarPreboda) : null},
+      prewedding_details = ${includesPreWedding ? setNullValue(values.detallesPreboda) : null},
+      postwedding_service = ${includesPostWedding ? values.servicioPostboda : null},
+      postwedding_location = ${includesPostWedding ? setNullValue(values.lugarPostboda) : null},
+      postwedding_details = ${includesPostWedding ? setNullValue(values.detallesPostboda) : null}
     FROM updated_event AS e
-    WHERE w.evento_id = e.id
-    RETURNING w.evento_id;
+    WHERE w.event_id = e.id
+    RETURNING w.event_id;
   `;
   if (updatedRows.length === 0) {
     return NextResponse.json({ error: 'La solicitud ya no está disponible para editarse.' }, { status: 404 });
@@ -209,18 +210,18 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
   ] as const;
   for (const secondaryEvent of secondaryEvents) {
     if (!secondaryEvent.date) {
-      await sql`DELETE FROM eventos
-        WHERE parent_event_id = ${existingWedding.id} AND tipo = ${secondaryEvent.type};`;
+      await sql`DELETE FROM events
+        WHERE parent_event_id = ${existingWedding.id} AND type = ${secondaryEvent.type};`;
       continue;
     }
     await sql`
-      INSERT INTO eventos (tipo, fecha, status, parent_event_id, decided_at)
+      INSERT INTO events (type, event_date, status, parent_event_id, decided_at)
       SELECT ${secondaryEvent.type}, ${secondaryEvent.date}, parent.status, parent.id,
         CASE WHEN parent.status = 'pending' THEN NULL ELSE COALESCE(parent.decided_at, NOW()) END
-      FROM eventos parent
-      WHERE parent.id = ${existingWedding.id} AND parent.tipo = 'wedding'
-      ON CONFLICT (parent_event_id, tipo) WHERE parent_event_id IS NOT NULL
-      DO UPDATE SET fecha = EXCLUDED.fecha, updated_at = NOW();
+      FROM events parent
+      WHERE parent.id = ${existingWedding.id} AND parent.type = 'wedding'
+      ON CONFLICT (parent_event_id, type) WHERE parent_event_id IS NOT NULL
+      DO UPDATE SET event_date = EXCLUDED.event_date, updated_at = NOW();
     `;
   }
 

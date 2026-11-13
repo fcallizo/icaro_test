@@ -22,19 +22,43 @@ const WEDDING_TYPES = new Set(['wedding', 'prewedding', 'postwedding']);
 const isWedding = (type: string) => WEDDING_TYPES.has(type);
 
 const WEDDING_SECTIONS: SectionDef[] = [
-  { title: 'Información de contacto', fields: ['nombre', 'email', 'tel_novio', 'tel_novia'], type: 'default' },
-  { title: 'Ubicación y hora', fields: ['novio','hora_salida_novio', 'novia', 'hora_salida_novia','ceremonia', 
-    'hora_ceremonia', 'lugar', 'hora_coctel', 'hora_barra_libre'], type: 'wedding' },
-  { title: 'Ubicación y hora', fields: ['fecha_preboda','lugar_preboda'], type: 'prewedding'},
-  { title: 'Ubicación y hora', fields: ['fecha_postboda','lugar_postboda'], type: 'postwedding' },
+  { title: 'Información de contacto', fields: ['name', 'email', 'groom_phone', 'bride_phone'], type: 'default' },
+  { title: 'Ubicación y hora', fields: ['groom_name', 'groom_departure_time', 'bride_name', 'bride_departure_time',
+    'ceremony_location', 'ceremony_time', 'location', 'cocktail_time', 'open_bar_time'], type: 'wedding' },
+  { title: 'Ubicación y hora', fields: ['prewedding_date', 'prewedding_location'], type: 'prewedding'},
+  { title: 'Ubicación y hora', fields: ['postwedding_date', 'postwedding_location'], type: 'postwedding' },
 ];
 const PRODUCTION_SECTIONS: SectionDef[] = [
-  { title: 'Información de contacto', fields: ['nombre', 'email', 'telefono', 'lugar'], type: 'default' },
-  { title: 'Material del evento', fields: ['setup_camara', 'setup_drone', 'setup_iluminacion', 'setup_sonido', 'logistica'], type: 'default' },
+  { title: 'Información de contacto', fields: ['name', 'email', 'phone', 'location'], type: 'default' },
+  { title: 'Material del evento', fields: ['camera_setup', 'drone_setup', 'lighting_setup', 'sound_setup', 'logistics'], type: 'default' },
 ];
 
 function formatFieldName(value: string) {
-  return value.replace(/setup_/g, '').replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toLocaleUpperCase('es-ES'));
+  const labels: Record<string, string> = {
+    name: 'Nombre',
+    groom_phone: 'Teléfono del novio',
+    bride_phone: 'Teléfono de la novia',
+    groom_name: 'Novio',
+    groom_departure_time: 'Hora de salida del novio',
+    bride_name: 'Novia',
+    bride_departure_time: 'Hora de salida de la novia',
+    ceremony_location: 'Ceremonia',
+    ceremony_time: 'Hora de la ceremonia',
+    location: 'Lugar',
+    cocktail_time: 'Hora del cóctel',
+    open_bar_time: 'Hora de la barra libre',
+    prewedding_date: 'Fecha de preboda',
+    prewedding_location: 'Lugar de preboda',
+    postwedding_date: 'Fecha de postboda',
+    postwedding_location: 'Lugar de postboda',
+    phone: 'Teléfono',
+    camera_setup: 'Cámara',
+    drone_setup: 'Dron',
+    lighting_setup: 'Iluminación',
+    sound_setup: 'Sonido',
+    logistics: 'Logística',
+  };
+  return labels[value] || value.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toLocaleUpperCase('es-ES'));
 }
 function formatFieldValue(value: string | number) {
   return typeof value === 'number' ? new Intl.NumberFormat('es-ES').format(value) : value;

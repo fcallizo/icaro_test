@@ -54,8 +54,8 @@ export async function POST(request: NextRequest) {
   }
 
   const [confirmedConflict] = await sql`
-    SELECT id FROM eventos
-    WHERE status = 'confirmed' AND fecha >= ${startDate} AND fecha <= ${endDate}
+    SELECT id FROM events
+    WHERE status = 'confirmed' AND event_date >= ${startDate} AND event_date <= ${endDate}
     LIMIT 1;
   `;
   if (confirmedConflict) {

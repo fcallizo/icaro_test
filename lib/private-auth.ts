@@ -63,7 +63,7 @@ export async function getPrivateSessionUser(token?: string) {
   if (!userId || !sql) return null;
 
   const [user] = await sql`
-    SELECT id::text AS id, usuario, email, is_admin AS "isAdmin"
+    SELECT id::text AS id, username, email, is_admin AS "isAdmin"
     FROM users
     WHERE id::text = ${userId}
     LIMIT 1;

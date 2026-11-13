@@ -120,7 +120,7 @@ export async function GET(request: NextRequest) {
       old_price AS "oldPrice",
       visible,
       updated_at AS "updatedAt"
-    FROM cinema_offers
+    FROM production_offers
     ORDER BY visible DESC, position ASC, updated_at DESC
   `;
 
@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
 
   // Las ofertas nuevas siempre se crean ocultas.
   const [created] = await sql`
-    INSERT INTO cinema_offers (
+    INSERT INTO production_offers (
       position, title, description, price, old_price, visible, updated_at
     )
     VALUES (
@@ -217,7 +217,7 @@ export async function PATCH(request: NextRequest) {
 
   const [existing] = await sql`
     SELECT id
-    FROM cinema_offers
+    FROM production_offers
     WHERE id = ${payload.id}
     LIMIT 1
   `;
@@ -233,7 +233,7 @@ export async function PATCH(request: NextRequest) {
   if (offer.visible) {
     const [duplicate] = await sql`
       SELECT id
-      FROM cinema_offers
+      FROM production_offers
       WHERE visible = TRUE
         AND position = ${offer.position}
         AND id <> ${payload.id}
@@ -249,7 +249,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   const [updated] = await sql`
-    UPDATE cinema_offers
+    UPDATE production_offers
     SET
       position = ${offer.position},
       title = ${offer.title},

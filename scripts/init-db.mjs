@@ -102,9 +102,9 @@ function splitSqlStatements(source) {
   return statements;
 }
 
-const migrationSql = await readFile(new URL('./init-db.sql', import.meta.url), 'utf8');
-const statements = splitSqlStatements(migrationSql);
+const schemaSql = await readFile(new URL('./init-db.sql', import.meta.url), 'utf8');
+const statements = splitSqlStatements(schemaSql);
 const sql = neon(process.env.DATABASE_URL);
 
 await sql.transaction(statements.map((statement) => sql.query(statement)));
-console.log(`Migración completada: ${statements.length} sentencias aplicadas.`);
+console.log(`Inicialización completada: ${statements.length} sentencias aplicadas.`);

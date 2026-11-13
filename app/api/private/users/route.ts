@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
   try {
     const users = await sql`
       SELECT id::text AS id, email, is_admin AS "isAdmin",
-        pass IS NOT NULL AS "passwordSet", notificaciones AS notifications,
+        password_hash IS NOT NULL AS "passwordSet", notification_level AS notifications,
         created_at AS "createdAt"
       FROM users
       ORDER BY LOWER(email), created_at;
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
 
   try {
     let [user] = await sql`
-      SELECT id::text AS id, pass
+      SELECT id::text AS id, password_hash AS pass
       FROM users
       WHERE LOWER(email) = ${email}
       LIMIT 1;
@@ -71,15 +71,15 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       const [usernameConflict] = await sql`
-        SELECT id FROM users WHERE LOWER(usuario) = ${email} LIMIT 1;
+        SELECT id FROM users WHERE LOWER(username) = ${email} LIMIT 1;
       `;
       if (usernameConflict) {
         return NextResponse.json({ error: 'No se puede crear la cuenta con ese correo. Contacta con otro administrador.' }, { status: 409 });
       }
       [user] = await sql`
-        INSERT INTO users (usuario, email, pass)
+        INSERT INTO users (username, email, password_hash)
         VALUES (${email}, ${email}, NULL)
-        RETURNING id::text AS id, pass;
+        RETURNING id::text AS id, password_hash AS pass;
       `;
     }
 
@@ -137,8 +137,8 @@ export async function PATCH(request: NextRequest) {
 
   try {
     const [target] = await sql`
-      SELECT is_admin AS "isAdmin", pass IS NOT NULL AS "passwordSet",
-        notificaciones AS notifications
+      SELECT is_admin AS "isAdmin", password_hash IS NOT NULL AS "passwordSet",
+        notification_level AS notifications
       FROM users WHERE id::text = ${payload.id} LIMIT 1;
     `;
     if (!target) return NextResponse.json({ error: 'No se encontró el usuario.' }, { status: 404 });
@@ -158,7 +158,7 @@ export async function PATCH(request: NextRequest) {
 
     await sql`
       UPDATE users
-      SET is_admin = ${isAdmin}, notificaciones = ${notificationLevel}
+      SET is_admin = ${isAdmin}, notification_level = ${notificationLevel}
       WHERE id::text = ${payload.id};
     `;
     return NextResponse.json({ message: 'Usuario actualizado.' });

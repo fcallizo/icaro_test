@@ -190,7 +190,7 @@ export async function GET() {
     }, { status: 200 });
   }
 
-  const eventRows = await sql`SELECT id, fecha, status, tipo AS type FROM eventos WHERE status = 'confirmed' ORDER BY created_at DESC LIMIT 100;`;
+  const eventRows = await sql`SELECT id, event_date AS fecha, status, type FROM events WHERE status = 'confirmed' ORDER BY created_at DESC LIMIT 100;`;
   const blockedRanges = await sql`
     SELECT to_char(start_date, 'YYYY-MM-DD') AS "startDate",
       to_char(end_date, 'YYYY-MM-DD') AS "endDate"
@@ -212,7 +212,7 @@ export async function GET() {
 
   const cinemaPriceRows = (await sql`
     SELECT title, price, old_price as "originalPrice", description 
-    FROM cinema_offers 
+    FROM production_offers 
     WHERE visible
     ORDER BY position ASC`) as CinemaPrice[];
 
@@ -299,22 +299,23 @@ export async function POST(request: NextRequest) {
 
     const result = await sql`
       WITH new_event AS (
-        INSERT INTO eventos (id, tipo, fecha, status)
+        INSERT INTO events (id, type, event_date, status)
         VALUES (${eventId}, 'wedding', ${fecha || ''}, 'pending')
         RETURNING id
       ), new_details AS (
         INSERT INTO wedding_requests (
-          evento_id, nombre, email, tel_novia, ceremonia, detalles, tipo_pack, customer_form_token_hash
+          event_id, name, email, bride_phone, ceremony_location, details, package_type, customer_form_token_hash
         )
         SELECT id, ${nombre}, ${email}, ${telNovia}, ${ceremonia}, ${detalles}, ${tipoPack}, ${tokenHash}
         FROM new_event
-        RETURNING evento_id
+        RETURNING event_id
       )
-      SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
-        w.nombre, w.email, w.tel_novia AS "telNovia", w.ceremonia, w.detalles, w.tipo_pack
+      SELECT e.id, e.type, e.status, e.event_date AS fecha, e.created_at,
+        w.name AS nombre, w.email, w.bride_phone AS "telNovia",
+        w.ceremony_location AS ceremonia, w.details AS detalles, w.package_type AS "tipoPack"
       FROM new_details d
-      JOIN eventos e ON e.id = d.evento_id
-      JOIN wedding_requests w ON w.evento_id = e.id;
+      JOIN events e ON e.id = d.event_id
+      JOIN wedding_requests w ON w.event_id = e.id;
     `;
 
     await sendRequestNotification({ type: 'wedding', nombre, fecha });
@@ -338,20 +339,21 @@ export async function POST(request: NextRequest) {
 
   const result = await sql`
     WITH new_event AS (
-      INSERT INTO eventos (id, tipo, fecha, status)
+      INSERT INTO events (id, type, event_date, status)
       VALUES (${eventId}, 'production', ${fecha || ''}, 'pending')
       RETURNING id
     ), new_details AS (
-      INSERT INTO production_requests (evento_id, nombre, email, telefono, tipo, presupuesto, detalles)
+      INSERT INTO production_requests (event_id, name, email, phone, project_type, budget, details)
       SELECT id, ${nombre || ''}, ${email}, ${telefono || ''}, ${tipo || ''}, ${presupuesto || ''}, ${detalles || ''}
       FROM new_event
-      RETURNING evento_id
+      RETURNING event_id
     )
-    SELECT e.id, e.tipo AS type, e.status, e.fecha, e.created_at,
-      p.nombre, p.email, p.telefono, p.tipo, p.presupuesto, p.detalles
+    SELECT e.id, e.type, e.status, e.event_date AS fecha, e.created_at,
+      p.name AS nombre, p.email, p.phone AS telefono, p.project_type AS tipo,
+      p.budget AS presupuesto, p.details AS detalles
     FROM new_details d
-    JOIN eventos e ON e.id = d.evento_id
-    JOIN production_requests p ON p.evento_id = e.id;
+    JOIN events e ON e.id = d.event_id
+    JOIN production_requests p ON p.event_id = e.id;
   `;
 
   await sendRequestNotification({ type: 'production', nombre, fecha });

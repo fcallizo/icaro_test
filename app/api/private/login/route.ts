@@ -47,9 +47,9 @@ export async function POST(request: NextRequest) {
     }
 
     const [user] = await sql`
-      SELECT id::text AS id, email, pass, is_admin AS "isAdmin"
+      SELECT id::text AS id, email, password_hash AS pass, is_admin AS "isAdmin"
       FROM users
-      WHERE LOWER(email) = ${normalizedEmail} AND pass IS NOT NULL
+      WHERE LOWER(email) = ${normalizedEmail} AND password_hash IS NOT NULL
       LIMIT 1;
     `;
 

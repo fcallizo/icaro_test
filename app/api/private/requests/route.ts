@@ -32,41 +32,43 @@ export async function GET(request: NextRequest) {
 
 
   const weddings = await sql`
-    SELECT e.id, e.tipo AS type, e.status, e.fecha, e.id_presupuesto AS "idPresupuesto", e.created_at,
-      w.nombre, w.email, COALESCE(w.tipo_documento_identidad, 'nif') AS "tipoDocumentoIdentidad",
-      w.documento_identidad AS "documentoIdentidad",
-      w.tel_novio AS "telNovio", w.tel_novia AS "telNovia",
-      w.lugar, w.novia, w.novio, w.ceremonia,
-      w.hora_salida_novio AS "horaSalidaNovio", w.hora_salida_novia AS "horaSalidaNovia",
-      w.hora_ceremonia AS "horaCeremonia", w.hora_coctel AS "horaCoctel",
-      w.hora_barra_libre AS "horaBarraLibre", w.detalles, w.tipo_pack AS "tipoPack",
-      w.servicio_boda AS "servicioBoda", w.extra_boda AS "extraBoda", w.precio_extra_boda AS "precioExtraBoda", w.descuento_boda AS "descuentoBoda",
-      w.servicio_preboda AS "servicioPreboda", w.extra_preboda AS "extraPreboda", w.precio_extra_preboda AS "precioExtraPreboda",
-      w.servicio_postboda AS "servicioPostboda", w.extra_postboda AS "extraPostboda", w.precio_extra_postboda AS "precioExtraPostboda",
-      (SELECT pe.fecha FROM eventos pe WHERE pe.parent_event_id = e.id AND pe.tipo = 'prewedding') AS "fechaPreboda",
-      w.lugar_preboda AS "lugarPreboda", w.detalles_preboda AS "detallesPreboda",
-      (SELECT pe.fecha FROM eventos pe WHERE pe.parent_event_id = e.id AND pe.tipo = 'postwedding') AS "fechaPostboda",
-      w.lugar_postboda AS "lugarPostboda", w.detalles_postboda AS "detallesPostboda"
-    FROM eventos e
-    JOIN wedding_requests w ON w.evento_id = e.id
-    WHERE e.tipo = 'wedding' AND e.status IN ('pending', 'confirmed')
+    SELECT e.id, e.type, e.status, e.event_date AS fecha, e.budget_id AS "idPresupuesto", e.created_at,
+      w.name AS nombre, w.email, COALESCE(w.identity_document_type, 'nif') AS "tipoDocumentoIdentidad",
+      w.identity_document AS "documentoIdentidad",
+      w.groom_phone AS "telNovio", w.bride_phone AS "telNovia",
+      w.location AS lugar, w.bride_name AS novia, w.groom_name AS novio,
+      w.ceremony_location AS ceremonia,
+      w.groom_departure_time AS "horaSalidaNovio", w.bride_departure_time AS "horaSalidaNovia",
+      w.ceremony_time AS "horaCeremonia", w.cocktail_time AS "horaCoctel",
+      w.open_bar_time AS "horaBarraLibre", w.details AS detalles, w.package_type AS "tipoPack",
+      w.wedding_service AS "servicioBoda", w.wedding_extra AS "extraBoda", w.wedding_extra_price AS "precioExtraBoda", w.wedding_discount AS "descuentoBoda",
+      w.prewedding_service AS "servicioPreboda", w.prewedding_extra AS "extraPreboda", w.prewedding_extra_price AS "precioExtraPreboda",
+      w.postwedding_service AS "servicioPostboda", w.postwedding_extra AS "extraPostboda", w.postwedding_extra_price AS "precioExtraPostboda",
+      (SELECT pe.event_date FROM events pe WHERE pe.parent_event_id = e.id AND pe.type = 'prewedding') AS "fechaPreboda",
+      w.prewedding_location AS "lugarPreboda", w.prewedding_details AS "detallesPreboda",
+      (SELECT pe.event_date FROM events pe WHERE pe.parent_event_id = e.id AND pe.type = 'postwedding') AS "fechaPostboda",
+      w.postwedding_location AS "lugarPostboda", w.postwedding_details AS "detallesPostboda"
+    FROM events e
+    JOIN wedding_requests w ON w.event_id = e.id
+    WHERE e.type = 'wedding' AND e.status IN ('pending', 'confirmed')
     ORDER BY e.created_at DESC LIMIT 500;
   `;
   const productions = await sql`
-    SELECT e.id, e.tipo AS type, e.status, e.fecha, e.id_presupuesto AS "idPresupuesto", e.created_at,
-      p.nombre, p.email, COALESCE(p.tipo_documento_identidad, 'nif') AS "tipoDocumentoIdentidad",
-      p.documento_identidad AS "documentoIdentidad",
-      p.telefono, p.tipo, p.presupuesto, p.lugar, p.detalles,
-      p.setup_camara AS "setupCamara", p.precio_camara AS "precioCamara",
-      p.setup_drone AS "setupDrone", p.precio_drone AS "precioDrone",
-      p.setup_iluminacion AS "setupIluminacion", p.precio_iluminacion AS "precioIluminacion",
-      p.setup_sonido AS "setupSonido", p.precio_sonido AS "precioSonido",
-      p.formato_entrega AS "formatoEntrega", p.precio_formato AS "precioFormato",
-      p.personal_extra AS "personalExtra", p.precio_personal_extra AS "precioPersonalExtra",
-      p.logistica, p.precio_logistica AS "precioLogistica", p.tax_percent AS "taxPercent"
-    FROM eventos e
-    JOIN production_requests p ON p.evento_id = e.id
-    WHERE e.tipo = 'production' AND e.status IN ('pending', 'confirmed')
+    SELECT e.id, e.type, e.status, e.event_date AS fecha, e.budget_id AS "idPresupuesto", e.created_at,
+      p.name AS nombre, p.email, COALESCE(p.identity_document_type, 'nif') AS "tipoDocumentoIdentidad",
+      p.identity_document AS "documentoIdentidad",
+      p.phone AS telefono, p.project_type AS tipo, p.budget AS presupuesto,
+      p.location AS lugar, p.details AS detalles,
+      p.camera_setup AS "setupCamara", p.camera_price AS "precioCamara",
+      p.drone_setup AS "setupDrone", p.drone_price AS "precioDrone",
+      p.lighting_setup AS "setupIluminacion", p.lighting_price AS "precioIluminacion",
+      p.sound_setup AS "setupSonido", p.sound_price AS "precioSonido",
+      p.delivery_format AS "formatoEntrega", p.delivery_price AS "precioFormato",
+      p.extra_staff AS "personalExtra", p.extra_staff_price AS "precioPersonalExtra",
+      p.logistics AS logistica, p.logistics_price AS "precioLogistica", p.tax_percent AS "taxPercent"
+    FROM events e
+    JOIN production_requests p ON p.event_id = e.id
+    WHERE e.type = 'production' AND e.status IN ('pending', 'confirmed')
     ORDER BY e.created_at DESC LIMIT 500;
   `;
 
@@ -92,13 +94,13 @@ export async function PATCH(request: NextRequest) {
 
   if (action === 'confirm') {
     const [manualBlock] = await sql`
-      SELECT e.id FROM eventos e
+      SELECT e.id FROM events e
       WHERE (e.id = ${id} OR e.parent_event_id = ${id})
         AND e.status = 'pending'
         AND EXISTS (
           SELECT 1 FROM calendar_blocks b
-          WHERE e.fecha >= to_char(b.start_date, 'YYYY-MM-DD')
-            AND e.fecha <= to_char(b.end_date, 'YYYY-MM-DD')
+          WHERE e.event_date >= to_char(b.start_date, 'YYYY-MM-DD')
+            AND e.event_date <= to_char(b.end_date, 'YYYY-MM-DD')
         )
       LIMIT 1;
     `;
@@ -170,66 +172,66 @@ export async function PATCH(request: NextRequest) {
     const result = requestType === 'wedding'
       ? await sql`
         WITH updated_event AS (
-          UPDATE eventos SET fecha = ${values.fecha}, updated_at = NOW()
-          WHERE id = ${id} AND tipo = 'wedding'
+          UPDATE events SET event_date = ${values.fecha}, updated_at = NOW()
+          WHERE id = ${id} AND type = 'wedding'
           RETURNING id
         )
         UPDATE wedding_requests AS w SET
-          nombre = ${values.nombre.trim()}, email = ${values.email.trim()},
-          tipo_documento_identidad = ${documentType},
-          documento_identidad = ${setNullValue(normalizedDocument)},
-          tel_novio = ${values.telNovio.trim()}, tel_novia = ${values.telNovia.trim()},
-          novio = ${setNullValue(values.novio)},
-          hora_salida_novio = ${setNullValue(values.horaSalidaNovio)},
-          novia = ${setNullValue(values.novia)},
-          hora_salida_novia = ${setNullValue(values.horaSalidaNovia)},
-          ceremonia = ${setNullValue(values.ceremonia)},
-          hora_ceremonia = ${setNullValue(values.horaCeremonia)},
-          lugar = ${setNullValue(values.lugar)},
-          hora_coctel = ${setNullValue(values.horaCoctel)},
-          hora_barra_libre = ${setNullValue(values.horaBarraLibre)},
-          detalles = ${values.detalles.trim()}, tipo_pack = ${values.tipoPack},
-          servicio_boda = ${values.servicioBoda},
-          extra_boda = ${setNullValue(values.extraBoda)},
-          precio_extra_boda = ${values.precioExtraBoda === '' ? null : Number(values.precioExtraBoda)},
-          descuento_boda = ${values.descuentoBoda === '' ? null : Number(values.descuentoBoda)},
-          servicio_preboda = ${values.servicioPreboda},
-          lugar_preboda = ${setNullValue(values.lugarPreboda)},
-          detalles_preboda = ${setNullValue(values.detallesPreboda)},
-          extra_preboda = ${setNullValue(values.extraPreboda)},
-          precio_extra_preboda = ${values.precioExtraPreboda === '' ? null : Number(values.precioExtraPreboda)},
-          servicio_postboda = ${values.servicioPostboda},
-          lugar_postboda = ${setNullValue(values.lugarPostboda)},
-          detalles_postboda = ${setNullValue(values.detallesPostboda)},
-          extra_postboda = ${setNullValue(values.extraPostboda)},
-          precio_extra_postboda = ${values.precioExtraPostboda === '' ? null : Number(values.precioExtraPostboda)}
+          name = ${values.nombre.trim()}, email = ${values.email.trim()},
+          identity_document_type = ${documentType},
+          identity_document = ${setNullValue(normalizedDocument)},
+          groom_phone = ${values.telNovio.trim()}, bride_phone = ${values.telNovia.trim()},
+          groom_name = ${setNullValue(values.novio)},
+          groom_departure_time = ${setNullValue(values.horaSalidaNovio)},
+          bride_name = ${setNullValue(values.novia)},
+          bride_departure_time = ${setNullValue(values.horaSalidaNovia)},
+          ceremony_location = ${setNullValue(values.ceremonia)},
+          ceremony_time = ${setNullValue(values.horaCeremonia)},
+          location = ${setNullValue(values.lugar)},
+          cocktail_time = ${setNullValue(values.horaCoctel)},
+          open_bar_time = ${setNullValue(values.horaBarraLibre)},
+          details = ${values.detalles.trim()}, package_type = ${values.tipoPack},
+          wedding_service = ${values.servicioBoda},
+          wedding_extra = ${setNullValue(values.extraBoda)},
+          wedding_extra_price = ${values.precioExtraBoda === '' ? null : Number(values.precioExtraBoda)},
+          wedding_discount = ${values.descuentoBoda === '' ? null : Number(values.descuentoBoda)},
+          prewedding_service = ${values.servicioPreboda},
+          prewedding_location = ${setNullValue(values.lugarPreboda)},
+          prewedding_details = ${setNullValue(values.detallesPreboda)},
+          prewedding_extra = ${setNullValue(values.extraPreboda)},
+          prewedding_extra_price = ${values.precioExtraPreboda === '' ? null : Number(values.precioExtraPreboda)},
+          postwedding_service = ${values.servicioPostboda},
+          postwedding_location = ${setNullValue(values.lugarPostboda)},
+          postwedding_details = ${setNullValue(values.detallesPostboda)},
+          postwedding_extra = ${setNullValue(values.extraPostboda)},
+          postwedding_extra_price = ${values.precioExtraPostboda === '' ? null : Number(values.precioExtraPostboda)}
         FROM updated_event AS e
-        WHERE w.evento_id = e.id
-        RETURNING w.evento_id;
+        WHERE w.event_id = e.id
+        RETURNING w.event_id;
       `
       : await sql`
         WITH updated_event AS (
-          UPDATE eventos SET fecha = ${values.fecha}, updated_at = NOW()
-          WHERE id = ${id} AND tipo = 'production'
+          UPDATE events SET event_date = ${values.fecha}, updated_at = NOW()
+          WHERE id = ${id} AND type = 'production'
           RETURNING id
         )
         UPDATE production_requests AS p SET
-          nombre = ${values.nombre.trim()}, email = ${values.email.trim()},
-          tipo_documento_identidad = ${documentType},
-          documento_identidad = ${setNullValue(normalizedDocument)}, telefono = ${values.telefono.trim()},
-          tipo = ${values.tipo.trim()}, presupuesto = ${values.presupuesto.trim()}, 
-          lugar = ${values.lugar.trim()}, detalles = ${values.detalles.trim()},
-          setup_camara = ${values.setupCamara.trim() || null}, precio_camara = ${values.precioCamara.trim() === '' ? null : Number(values.precioCamara)},
-          setup_drone = ${values.setupDrone.trim() || null}, precio_drone = ${values.precioDrone.trim() === '' ? null : Number(values.precioDrone)},
-          setup_iluminacion = ${values.setupIluminacion.trim() || null}, precio_iluminacion = ${values.precioIluminacion.trim() === '' ? null : Number(values.precioIluminacion)},
-          setup_sonido = ${values.setupSonido.trim() || null}, precio_sonido = ${values.precioSonido.trim() === '' ? null : Number(values.precioSonido)},
-          formato_entrega = ${values.formatoEntrega.trim() || null}, precio_formato = ${values.precioFormato.trim() === '' ? null : Number(values.precioFormato)},
-          personal_extra = ${values.personalExtra.trim() || null}, precio_personal_extra = ${values.precioPersonalExtra.trim() === '' ? null : Number(values.precioPersonalExtra)},
-          logistica = ${values.logistica.trim() || null}, precio_logistica = ${values.precioLogistica.trim() === '' ? null : Number(values.precioLogistica)},
+          name = ${values.nombre.trim()}, email = ${values.email.trim()},
+          identity_document_type = ${documentType},
+          identity_document = ${setNullValue(normalizedDocument)}, phone = ${values.telefono.trim()},
+          project_type = ${values.tipo.trim()}, budget = ${values.presupuesto.trim()},
+          location = ${values.lugar.trim()}, details = ${values.detalles.trim()},
+          camera_setup = ${values.setupCamara.trim() || null}, camera_price = ${values.precioCamara.trim() === '' ? null : Number(values.precioCamara)},
+          drone_setup = ${values.setupDrone.trim() || null}, drone_price = ${values.precioDrone.trim() === '' ? null : Number(values.precioDrone)},
+          lighting_setup = ${values.setupIluminacion.trim() || null}, lighting_price = ${values.precioIluminacion.trim() === '' ? null : Number(values.precioIluminacion)},
+          sound_setup = ${values.setupSonido.trim() || null}, sound_price = ${values.precioSonido.trim() === '' ? null : Number(values.precioSonido)},
+          delivery_format = ${values.formatoEntrega.trim() || null}, delivery_price = ${values.precioFormato.trim() === '' ? null : Number(values.precioFormato)},
+          extra_staff = ${values.personalExtra.trim() || null}, extra_staff_price = ${values.precioPersonalExtra.trim() === '' ? null : Number(values.precioPersonalExtra)},
+          logistics = ${values.logistica.trim() || null}, logistics_price = ${values.precioLogistica.trim() === '' ? null : Number(values.precioLogistica)},
           tax_percent = ${values.taxPercent === '' ? null : Number(values.taxPercent)}
         FROM updated_event AS e
-        WHERE p.evento_id = e.id
-        RETURNING p.evento_id;
+        WHERE p.event_id = e.id
+        RETURNING p.event_id;
       `;
 
     if (result.length === 0) {
@@ -243,19 +245,19 @@ export async function PATCH(request: NextRequest) {
       ] as const;
       for (const secondaryEvent of secondaryEvents) {
         if (!secondaryEvent.date) {
-          await sql`DELETE FROM eventos
-            WHERE parent_event_id = ${id} AND tipo = ${secondaryEvent.type};`;
+          await sql`DELETE FROM events
+            WHERE parent_event_id = ${id} AND type = ${secondaryEvent.type};`;
           continue;
         }
 
         const savedEvent = await sql`
-          INSERT INTO eventos (tipo, fecha, status, parent_event_id, decided_at)
+          INSERT INTO events (type, event_date, status, parent_event_id, decided_at)
           SELECT ${secondaryEvent.type}, ${secondaryEvent.date}, parent.status, parent.id,
             CASE WHEN parent.status = 'pending' THEN NULL ELSE COALESCE(parent.decided_at, NOW()) END
-          FROM eventos parent
-          WHERE parent.id = ${id} AND parent.tipo = 'wedding'
-          ON CONFLICT (parent_event_id, tipo) WHERE parent_event_id IS NOT NULL
-          DO UPDATE SET fecha = EXCLUDED.fecha, updated_at = NOW()
+          FROM events parent
+          WHERE parent.id = ${id} AND parent.type = 'wedding'
+          ON CONFLICT (parent_event_id, type) WHERE parent_event_id IS NOT NULL
+          DO UPDATE SET event_date = EXCLUDED.event_date, updated_at = NOW()
           RETURNING id;
         `;
         if (savedEvent.length === 0) {
@@ -269,13 +271,16 @@ export async function PATCH(request: NextRequest) {
 
   if (action === 'confirm' && requestType === 'production') {
     const [technicalDetails] = await sql`
-      SELECT p.setup_camara, p.precio_camara, p.setup_drone, p.precio_drone,
-        p.setup_iluminacion, p.precio_iluminacion, p.setup_sonido, p.precio_sonido,
-        p.formato_entrega, p.precio_formato, p.personal_extra, p.precio_personal_extra,
-        p.logistica, p.precio_logistica, p.tax_percent
+      SELECT p.camera_setup AS setup_camara, p.camera_price AS precio_camara,
+        p.drone_setup AS setup_drone, p.drone_price AS precio_drone,
+        p.lighting_setup AS setup_iluminacion, p.lighting_price AS precio_iluminacion,
+        p.sound_setup AS setup_sonido, p.sound_price AS precio_sonido,
+        p.delivery_format AS formato_entrega, p.delivery_price AS precio_formato,
+        p.extra_staff AS personal_extra, p.extra_staff_price AS precio_personal_extra,
+        p.logistics AS logistica, p.logistics_price AS precio_logistica, p.tax_percent
       FROM production_requests p
-      JOIN eventos e ON e.id = p.evento_id
-      WHERE e.id = ${id} AND e.tipo = 'production' AND e.status = 'pending';
+      JOIN events e ON e.id = p.event_id
+      WHERE e.id = ${id} AND e.type = 'production' AND e.status = 'pending';
     `;
     if (technicalDetails) {
       const textFields = ['setup_camara', 'setup_drone', 'setup_iluminacion', 'setup_sonido', 'formato_entrega', 'personal_extra', 'logistica'];
@@ -297,24 +302,24 @@ export async function PATCH(request: NextRequest) {
       WITH current_year AS MATERIALIZED (
         SELECT EXTRACT(YEAR FROM CURRENT_DATE)::INTEGER AS year
       ), candidate AS MATERIALIZED (
-        SELECT id, tipo, fecha, id_presupuesto
-        FROM eventos
-        WHERE id = ${id} AND tipo = ${requestType} AND status = 'pending'
+        SELECT id, type, event_date, budget_id
+        FROM events
+        WHERE id = ${id} AND type = ${requestType} AND status = 'pending'
         FOR UPDATE
       ), allocation AS (
         INSERT INTO annual_budget_counters (year, last_number)
         SELECT current_year.year, 1
         FROM candidate CROSS JOIN current_year
-        WHERE candidate.id_presupuesto IS NULL
+        WHERE candidate.budget_id IS NULL
         ON CONFLICT (year) DO UPDATE
         SET last_number = annual_budget_counters.last_number + 1
         WHERE annual_budget_counters.last_number < 9999
         RETURNING year, last_number
       ), decision AS (
-        UPDATE eventos ev SET
+        UPDATE events ev SET
           status = 'confirmed',
-          id_presupuesto = COALESCE(
-            ev.id_presupuesto,
+          budget_id = COALESCE(
+            ev.budget_id,
             allocation.year::TEXT || '-' || LPAD(allocation.last_number::TEXT, 4, '0')
           ),
           updated_at = NOW(),
@@ -322,49 +327,49 @@ export async function PATCH(request: NextRequest) {
         FROM candidate
         LEFT JOIN allocation ON TRUE
         WHERE ev.id = candidate.id
-          AND (candidate.id_presupuesto IS NOT NULL OR allocation.last_number IS NOT NULL)
-        RETURNING ev.id, ev.tipo, ev.fecha
+          AND (candidate.budget_id IS NOT NULL OR allocation.last_number IS NOT NULL)
+        RETURNING ev.id, ev.type, ev.event_date
       ), related_decisions AS (
-        UPDATE eventos child SET status = 'confirmed', updated_at = NOW(), decided_at = NOW()
+        UPDATE events child SET status = 'confirmed', updated_at = NOW(), decided_at = NOW()
         FROM decision
-        WHERE decision.tipo = 'wedding' AND child.parent_event_id = decision.id
+        WHERE decision.type = 'wedding' AND child.parent_event_id = decision.id
         RETURNING child.id
       )
-      SELECT decision.fecha, COALESCE(wedding.email, production.email) AS email,
-        COALESCE(wedding.nombre, production.nombre) AS nombre, FALSE AS "numberLimitReached"
+      SELECT decision.event_date AS fecha, COALESCE(wedding.email, production.email) AS email,
+        COALESCE(wedding.name, production.name) AS nombre, FALSE AS "numberLimitReached"
       FROM decision
-      LEFT JOIN wedding_requests wedding ON decision.tipo = 'wedding' AND wedding.evento_id = decision.id
-      LEFT JOIN production_requests production ON decision.tipo = 'production' AND production.evento_id = decision.id
+      LEFT JOIN wedding_requests wedding ON decision.type = 'wedding' AND wedding.event_id = decision.id
+      LEFT JOIN production_requests production ON decision.type = 'production' AND production.event_id = decision.id
       UNION ALL
       SELECT NULL::TEXT, NULL::TEXT, NULL::TEXT, TRUE
       FROM candidate
-      WHERE candidate.id_presupuesto IS NULL
+      WHERE candidate.budget_id IS NULL
         AND NOT EXISTS (SELECT 1 FROM allocation)
       LIMIT 1;
     `
     : requestType === 'wedding'
       ? await sql`
         WITH decision AS (
-          UPDATE eventos SET status = 'rejected', updated_at = NOW(), decided_at = NOW()
-          WHERE id = ${id} AND tipo = 'wedding' AND status = 'pending'
-          RETURNING id, fecha
+          UPDATE events SET status = 'rejected', updated_at = NOW(), decided_at = NOW()
+          WHERE id = ${id} AND type = 'wedding' AND status = 'pending'
+          RETURNING id, event_date
         ), related_decisions AS (
-          UPDATE eventos child SET status = 'rejected', updated_at = NOW(), decided_at = NOW()
+          UPDATE events child SET status = 'rejected', updated_at = NOW(), decided_at = NOW()
           FROM decision
           WHERE child.parent_event_id = decision.id
           RETURNING child.id
         )
-        SELECT decision.fecha, wedding.email, wedding.nombre, FALSE AS "numberLimitReached"
-        FROM decision JOIN wedding_requests wedding ON wedding.evento_id = decision.id;
+        SELECT decision.event_date AS fecha, wedding.email, wedding.name AS nombre, FALSE AS "numberLimitReached"
+        FROM decision JOIN wedding_requests wedding ON wedding.event_id = decision.id;
       `
       : await sql`
         WITH decision AS (
-          UPDATE eventos SET status = 'rejected', updated_at = NOW(), decided_at = NOW()
-          WHERE id = ${id} AND tipo = 'production' AND status = 'pending'
-          RETURNING id, fecha
+          UPDATE events SET status = 'rejected', updated_at = NOW(), decided_at = NOW()
+          WHERE id = ${id} AND type = 'production' AND status = 'pending'
+          RETURNING id, event_date
         )
-        SELECT decision.fecha, production.email, production.nombre, FALSE AS "numberLimitReached"
-        FROM decision JOIN production_requests production ON production.evento_id = decision.id;
+        SELECT decision.event_date AS fecha, production.email, production.name AS nombre, FALSE AS "numberLimitReached"
+        FROM decision JOIN production_requests production ON production.event_id = decision.id;
       `;
 
   if (result.length === 0) {

@@ -34,26 +34,26 @@ export async function GET(request: NextRequest) {
   const [members, events] = await Promise.all([
     sql`
       SELECT id, name, created_at AS "createdAt", revoked_at AS "revokedAt"
-      FROM team_members
+      FROM event_members
       ORDER BY created_at DESC;
     `,
     sql`
-      SELECT e.id, e.tipo AS type, e.fecha AS date,
-        COALESCE(w.nombre, p.nombre, 'Evento') AS "clientName",
-        COALESCE(w.lugar, p.lugar) AS location,
+      SELECT e.id, e.type AS type, e.event_date AS date,
+        COALESCE(w.name, p.name, 'Evento') AS "clientName",
+        COALESCE(w.location, p.location) AS location,
         COALESCE((
           SELECT json_agg(a.member_id)
           FROM event_assignments a
           WHERE a.event_id = e.id
         ), '[]'::json) AS "collaboratorIds"
-      FROM eventos e
+      FROM events e
       LEFT JOIN wedding_requests w
-        ON w.evento_id = COALESCE(e.parent_event_id, e.id)
-        AND e.tipo IN ('wedding', 'prewedding', 'postwedding')
+        ON w.event_id = COALESCE(e.parent_event_id, e.id)
+        AND e.type IN ('wedding', 'prewedding', 'postwedding')
       LEFT JOIN production_requests p
-        ON p.evento_id = e.id AND e.tipo = 'production'
-      WHERE e.status = 'confirmed' AND e.fecha IS NOT NULL
-      ORDER BY e.fecha, e.tipo;
+        ON p.event_id = e.id AND e.type = 'production'
+      WHERE e.status = 'confirmed' AND e.event_date IS NOT NULL
+      ORDER BY e.event_date, e.type;
     `,
   ]);
 
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
 
   const token = createToken();
   const [member] = await sql`
-    INSERT INTO team_members (name, token_hash)
+    INSERT INTO event_members (name, token_hash)
     VALUES (${name.trim()}, ${hashToken(token)})
     RETURNING id, name, created_at AS "createdAt", revoked_at AS "revokedAt";
   `;
@@ -122,7 +122,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const [member] = await sql`
-      SELECT id FROM team_members WHERE id = ${memberId} AND revoked_at IS NULL LIMIT 1;
+      SELECT id FROM event_members WHERE id = ${memberId} AND revoked_at IS NULL LIMIT 1;
     `;
     if (!member) {
       return NextResponse.json({ error: 'No se encontró un colaborador activo.' }, { status: 404 });
@@ -130,7 +130,7 @@ export async function PATCH(request: NextRequest) {
 
     const validEvents = uniqueEventIds.length
       ? await sql`
-        SELECT id FROM eventos
+        SELECT id FROM events
         WHERE id = ANY(${uniqueEventIds}::uuid[]) AND status = 'confirmed';
       `
       : [];
@@ -147,7 +147,7 @@ export async function PATCH(request: NextRequest) {
       ), inserted AS (
         INSERT INTO event_assignments (member_id, event_id)
         SELECT ${memberId}, e.id
-        FROM eventos e CROSS JOIN delete_barrier
+        FROM events e CROSS JOIN delete_barrier
         WHERE e.id = ANY(${uniqueEventIds}::uuid[]) AND e.status = 'confirmed'
         RETURNING event_id
       )
@@ -164,7 +164,7 @@ export async function PATCH(request: NextRequest) {
 
     const token = createToken();
     const [member] = await sql`
-      UPDATE team_members SET token_hash = ${hashToken(token)}
+      UPDATE event_members SET token_hash = ${hashToken(token)}
       WHERE id = ${memberId} AND revoked_at IS NULL
       RETURNING id;
     `;
@@ -198,7 +198,7 @@ export async function DELETE(request: NextRequest) {
 
   const [revoked] = await sql`
     WITH revoked AS (
-      UPDATE team_members SET revoked_at = NOW()
+      UPDATE event_members SET revoked_at = NOW()
       WHERE id = ${memberId} AND revoked_at IS NULL
       RETURNING id
     ), removed AS (
