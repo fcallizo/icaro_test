@@ -68,6 +68,7 @@ export type PrivateRequestUpdate = {
 
   // produccion
   telefono: string;
+  hora: string;
   tipo: string;
   presupuesto: string;
   setupCamara: string;
@@ -146,6 +147,7 @@ export type PrivateRequest = {
   
   // produccion
   telefono?: string;
+  hora?: string;
   presupuesto?: string;
   tipo?: string;
   setupCamara?: string | null;
@@ -207,6 +209,7 @@ return {
     precioExtraPostboda: String(request.precioExtraPostboda ?? '0,00'),
 
     telefono: request.telefono || '',
+    hora: request.hora || '',
     tipo: request.tipo || '',
     presupuesto: request.presupuesto || '',
     setupCamara: request.setupCamara || '',

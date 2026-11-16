@@ -22,16 +22,58 @@ const WEDDING_TYPES = new Set(['wedding', 'prewedding', 'postwedding']);
 const isWedding = (type: string) => WEDDING_TYPES.has(type);
 
 const WEDDING_SECTIONS: SectionDef[] = [
-  { title: 'Información de contacto', fields: ['name', 'email', 'groom_phone', 'bride_phone'], type: 'default' },
-  { title: 'Ubicación y hora', fields: ['groom_name', 'groom_departure_time', 'bride_name', 'bride_departure_time',
-    'ceremony_location', 'ceremony_time', 'location', 'cocktail_time', 'open_bar_time'], type: 'wedding' },
-  { title: 'Ubicación y hora', fields: ['prewedding_date', 'prewedding_location'], type: 'prewedding'},
-  { title: 'Ubicación y hora', fields: ['postwedding_date', 'postwedding_location'], type: 'postwedding' },
+  {
+    title: 'Ubicación y hora',
+    fields: [
+      'groom_name',
+      'groom_departure_time',
+      'bride_name',
+      'bride_departure_time',
+      'ceremony_location',
+      'ceremony_time',
+      'location',
+      'cocktail_time',
+      'open_bar_time',
+    ],
+    type: 'wedding',
+  },
+  {
+    title: 'Información de preboda',
+    fields: [
+      'prewedding_date',
+      'prewedding_location',
+    ],
+    type: 'prewedding',
+  },
+  {
+    title: 'Información de postboda',
+    fields: [
+      'postwedding_date',
+      'postwedding_location',
+    ],
+    type: 'postwedding',
+  },
 ];
+
 const PRODUCTION_SECTIONS: SectionDef[] = [
-  { title: 'Información de contacto', fields: ['name', 'email', 'phone', 'location'], type: 'default' },
-  { title: 'Material del evento', fields: ['camera_setup', 'drone_setup', 'lighting_setup', 'sound_setup', 'logistics'], type: 'default' },
+  {
+    title: 'Ubicación y hora',
+    fields: ['location', 'event_time'],
+    type: 'default',
+  },
+  {
+    title: 'Material del evento',
+    fields: [
+      'camera_setup',
+      'drone_setup',
+      'lighting_setup',
+      'sound_setup',
+      'logistics',
+    ],
+    type: 'default',
+  },
 ];
+
 
 function formatFieldName(value: string) {
   const labels: Record<string, string> = {
@@ -45,6 +87,7 @@ function formatFieldName(value: string) {
     ceremony_location: 'Ceremonia',
     ceremony_time: 'Hora de la ceremonia',
     location: 'Lugar',
+    event_time: 'Hora',
     cocktail_time: 'Hora del cóctel',
     open_bar_time: 'Hora de la barra libre',
     prewedding_date: 'Fecha de preboda',

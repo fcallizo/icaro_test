@@ -87,6 +87,7 @@ CREATE TABLE IF NOT EXISTS production_requests (
   project_type TEXT,
   budget TEXT,
   location TEXT,
+  event_time TEXT,
   details TEXT,
   camera_setup TEXT,
   camera_price NUMERIC(12, 2),
@@ -111,7 +112,7 @@ CREATE TABLE IF NOT EXISTS production_materials (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   category TEXT NOT NULL CHECK (category IN ('camera', 'drone', 'lighting', 'sound', 'format')),
   name TEXT NOT NULL,
-  base_price NUMERIC(12, 2) CHECK (base_price IS NULL OR base_price >= 0),
+  base_price NUMERIC(12, 2) CHECK (base_price IS NULL OR base_price >= 0) DEFAULT 0,
   active BOOLEAN NOT NULL DEFAULT TRUE,
   sort_order INTEGER NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -189,7 +190,7 @@ CREATE TABLE IF NOT EXISTS app_settings (
 );
 
 INSERT INTO app_settings (setting_key, boolean_value)
-VALUES ('unify_calendars', FALSE)
+VALUES ('unify_calendars', TRUE)
 ON CONFLICT (setting_key) DO NOTHING;
 
 INSERT INTO app_settings (setting_key, numeric_value)

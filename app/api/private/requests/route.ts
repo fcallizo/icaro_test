@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
       p.name AS nombre, p.email, COALESCE(p.identity_document_type, 'nif') AS "tipoDocumentoIdentidad",
       p.identity_document AS "documentoIdentidad",
       p.phone AS telefono, p.project_type AS tipo, p.budget AS presupuesto,
-      p.location AS lugar, p.details AS detalles,
+      p.location AS lugar, p.event_time AS hora, p.details AS detalles,
       p.camera_setup AS "setupCamara", p.camera_price AS "precioCamara",
       p.drone_setup AS "setupDrone", p.drone_price AS "precioDrone",
       p.lighting_setup AS "setupIluminacion", p.lighting_price AS "precioIluminacion",
@@ -112,7 +112,7 @@ export async function PATCH(request: NextRequest) {
   if (action === 'update') {
     const values = payload.values;
     const editableFields = [
-      'nombre', 'email', 'fecha', 'tipoDocumentoIdentidad', 'documentoIdentidad', 'telNovio', 'telNovia', 'telefono', 'lugar',
+      'nombre', 'email', 'fecha', 'tipoDocumentoIdentidad', 'documentoIdentidad', 'telNovio', 'telNovia', 'telefono', 'lugar', 'hora',
       'novia', 'novio', 'ceremonia', 'horaSalidaNovio', 'horaSalidaNovia',
       'horaCeremonia', 'horaCoctel', 'horaBarraLibre', 'detalles', 'tipo', 'presupuesto', 'detalles', 'tipoPack',
       'fechaPreboda', 'lugarPreboda', 'detallesPreboda', 'fechaPostboda', 'lugarPostboda', 'detallesPostboda',
@@ -220,7 +220,8 @@ export async function PATCH(request: NextRequest) {
           identity_document_type = ${documentType},
           identity_document = ${setNullValue(normalizedDocument)}, phone = ${values.telefono.trim()},
           project_type = ${values.tipo.trim()}, budget = ${values.presupuesto.trim()},
-          location = ${values.lugar.trim()}, details = ${values.detalles.trim()},
+          location = ${values.lugar.trim()}, event_time = ${setNullValue(values.hora)},
+          details = ${values.detalles.trim()},
           camera_setup = ${values.setupCamara.trim() || null}, camera_price = ${values.precioCamara.trim() === '' ? null : Number(values.precioCamara)},
           drone_setup = ${values.setupDrone.trim() || null}, drone_price = ${values.precioDrone.trim() === '' ? null : Number(values.precioDrone)},
           lighting_setup = ${values.setupIluminacion.trim() || null}, lighting_price = ${values.precioIluminacion.trim() === '' ? null : Number(values.precioIluminacion)},

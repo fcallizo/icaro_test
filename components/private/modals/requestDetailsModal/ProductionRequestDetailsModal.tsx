@@ -181,7 +181,8 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
         onValueChange={(documentoIdentidad) => setValues((current) => ({ ...current, documentoIdentidad }))}
       />
       {input('fecha', 'Fecha', 'date', true, false, false, '')}
-      {input('lugar', 'Lugar del evento', 'text', true, false, false, '')}
+      {input('hora', 'Hora', 'time', false, false, false, '')}
+      {input('lugar', 'Lugar del evento', 'text', true, false, false, '', undefined, 'col-100')}
       {input('tipo', 'Tipo de producción','text', true, false, false, '', undefined, 'col-75')}
       {inputSuffix('presupuesto', 'Presupuesto', true, false, false, '€', '', 'col-25')}
       {textarea('detalles', 'Descripción del trabajo', false, '', 7)}
