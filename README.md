@@ -51,7 +51,7 @@ npm run db:init
 
 `db:init` crea el esquema inicial y los datos de catálogo de `scripts/init-db.sql` en una base vacía. No es idempotente: úsalo solo tras crear una base de datos vacía en Neon. El comando usa `DATABASE_URL` del entorno o de `.env.local` y aplica el SQL con el cliente Neon dentro de una transacción, sin requerir `psql`.
 
-Para cargar datos de desarrollo sin enviar notificaciones, ejecuta `npm run db:seed-demo`. El script crea cinco solicitudes de boda, cuatro producciones cinematográficas, sus fechas asociadas, tres bloqueos de calendario y tres colaboradores. Los colaboradores se crean sin enlaces de acceso. Se puede volver a ejecutar para actualizar las solicitudes y bloqueos sin duplicarlos.
+Para cargar datos de desarrollo sin enviar notificaciones, ejecuta `npm run db:seed-demo`. Los eventos y bloqueos se sitúan entre noviembre de 2026 y febrero de 2027. Incluye conflictos pendiente/confirmada, pendiente/pendiente y una solicitud en un día bloqueado, además de documentos DNI, NIE y pasaporte. También crea tres colaboradores sin enlaces de acceso. Se puede volver a ejecutar para actualizar los registros sin duplicarlos.
 
 El login limita a 5 intentos por combinación de IP y correo, y a 20 por IP, en ventanas de 15 minutos. La solicitud de recuperación y el establecimiento de contraseña también tienen límites por IP/cuenta o token. El formulario público acepta hasta 5 solicitudes por IP cada 15 minutos; el exceso recibe HTTP 429 con `Retry-After`.
 

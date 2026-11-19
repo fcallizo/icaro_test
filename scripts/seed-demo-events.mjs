@@ -15,8 +15,11 @@ const weddings = [
     id: '8ac77bc3-c701-4b13-95da-000000000001',
     name: 'Clara Martin y Daniel Vega',
     email: 'clara.martin@example.com',
-    eventDate: '2027-05-15',
+    eventDate: '2026-11-21',
+    status: 'confirmed',
     phone: '+34 600 100 011',
+    identityDocumentType: 'nif',
+    identityDocument: '12345678Z',
     groomAddress: 'C/ Molinos Romero nº10 5ºD',
     groomDepartureTime: '11:30',
     brideAddress: 'Calle Nueva 24, 2.º A, 45001 Toledo',
@@ -39,8 +42,10 @@ const weddings = [
     id: '8ac77bc3-c701-4b13-95da-000000000002',
     name: 'Lucia Romero y Marcos Gil',
     email: 'lucia.romero@example.com',
-    eventDate: '2027-06-19',
+    eventDate: '2026-11-28',
     phone: '+34 600 100 012',
+    identityDocumentType: 'nif',
+    identityDocument: 'X0000000T',
     groomAddress: 'Calle Real 18, 3.º C, 45002 Toledo',
     groomDepartureTime: '11:15',
     brideAddress: 'Avenida de la Reconquista 6, 1.º B, 45004 Toledo',
@@ -51,7 +56,7 @@ const weddings = [
     location: 'Hotel Mirador del Tajo, Paseo de Recaredo 12, Toledo',
     details: 'Boda con preparativos en ambos domicilios, ceremonia y banquete.',
     preweddingService: 'duo',
-    preweddingDate: '2027-04-17',
+    preweddingDate: '2026-11-14',
     preweddingLocation: 'Casco historico de Toledo',
     preweddingDetails: 'Sesion de pareja al atardecer por el casco historico.',
     postweddingService: null,
@@ -63,8 +68,10 @@ const weddings = [
     id: '8ac77bc3-c701-4b13-95da-000000000003',
     name: 'Eva Torres y Pablo Leon',
     email: 'eva.torres@example.com',
-    eventDate: '2027-09-11',
+    eventDate: '2026-12-12',
     phone: '+34 600 100 013',
+    identityDocumentType: 'passport',
+    identityDocument: 'AB123456C',
     groomAddress: 'Calle del Prado 42, 4.º A, 28014 Madrid',
     groomDepartureTime: '10:45',
     brideAddress: 'Calle de Atocha 86, 2.º D, 28012 Madrid',
@@ -75,11 +82,11 @@ const weddings = [
     location: 'Quinta del Lago, Camino de la Quinta 5, Madrid',
     details: 'Pack completo con boda, preboda y postboda.',
     preweddingService: 'fotos',
-    preweddingDate: '2027-06-12',
+    preweddingDate: '2026-12-05',
     preweddingLocation: 'Parque del Retiro, Madrid',
     preweddingDetails: 'Sesion fotografica de pareja en el Retiro.',
     postweddingService: 'video',
-    postweddingDate: '2027-09-25',
+    postweddingDate: '2026-12-19',
     postweddingLocation: 'Playa de Bolonia, Cadiz',
     postweddingDetails: 'Grabacion informal de pareja en la playa.',
   },
@@ -87,8 +94,10 @@ const weddings = [
     id: '8ac77bc3-c701-4b13-95da-000000000009',
     name: 'Rocio Mendez y Hector Cano',
     email: 'rocio.mendez@example.com',
-    eventDate: '2027-10-23',
+    eventDate: '2027-01-16',
     phone: '+34 600 100 014',
+    identityDocumentType: 'nif',
+    identityDocument: 'Y0000000Z',
     groomAddress: 'Calle Feria 31, 2.º C, 41003 Sevilla',
     groomDepartureTime: '11:00',
     brideAddress: 'Calle San Vicente 45, 1.º A, 41002 Sevilla',
@@ -103,7 +112,7 @@ const weddings = [
     preweddingLocation: null,
     preweddingDetails: null,
     postweddingService: 'duo',
-    postweddingDate: '2027-11-06',
+    postweddingDate: '2027-01-30',
     postweddingLocation: 'Plaza de Espana, Sevilla',
     postweddingDetails: 'Sesion de fotos y video despues de la boda.',
   },
@@ -111,8 +120,10 @@ const weddings = [
     id: '8ac77bc3-c701-4b13-95da-000000000010',
     name: 'Marta Soler y Adrian Blanco',
     email: 'marta.soler@example.com',
-    eventDate: '2027-11-20',
+    eventDate: '2027-02-20',
     phone: '+34 600 100 015',
+    identityDocumentType: 'passport',
+    identityDocument: 'P12345678',
     groomAddress: 'Carrer del Riu 12, 3r 1a, 17001 Girona',
     groomDepartureTime: '10:30',
     brideAddress: 'Carrer de la Fira 28, 1r 2a, 17002 Girona',
@@ -139,7 +150,9 @@ const productions = [
     name: 'Alba Rios',
     email: 'alba.rios@example.com',
     phone: '+34 600 200 021',
-    eventDate: '2027-03-20',
+    identityDocumentType: 'nif',
+    identityDocument: 'Z0000000M',
+    eventDate: '2026-11-21',
     projectType: 'Spot comercial',
     budget: '1800',
     location: 'Madrid',
@@ -165,7 +178,9 @@ const productions = [
     name: 'Nicolas Fuentes',
     email: 'nicolas.fuentes@example.com',
     phone: '+34 600 200 022',
-    eventDate: '2027-04-10',
+    identityDocumentType: 'nif',
+    identityDocument: '00000000T',
+    eventDate: '2026-12-12',
     projectType: 'Videoclip cinematográfico',
     budget: '2200',
     location: 'Nave industrial, Alcalá de Henares',
@@ -191,7 +206,9 @@ const productions = [
     name: 'Daniela Pardo',
     email: 'daniela.pardo@example.com',
     phone: '+34 600 200 023',
-    eventDate: '2027-07-17',
+    identityDocumentType: 'passport',
+    identityDocument: 'C98765432',
+    eventDate: '2027-01-23',
     projectType: 'Sesión fotográfica',
     budget: '650',
     location: 'Estudio fotografico, Valencia',
@@ -217,7 +234,9 @@ const productions = [
     name: 'Samuel Ortega',
     email: 'samuel.ortega@example.com',
     phone: '+34 600 200 024',
-    eventDate: '2027-08-21',
+    identityDocumentType: 'nif',
+    identityDocument: 'X0000000T',
+    eventDate: '2027-02-20',
     projectType: 'Producción completa',
     budget: '3500',
     location: 'Complejo cultural, Zaragoza',
@@ -270,21 +289,21 @@ const secondaryEvents = [
 const calendarBlocks = [
   {
     id: '8ac77bc3-c701-4b13-95da-000000000014',
-    startDate: '2027-01-02',
-    endDate: '2027-01-07',
-    reason: 'Vacaciones de invierno',
+    startDate: '2026-11-11',
+    endDate: '2026-11-11',
+    reason: 'Huelga General',
   },
   {
     id: '8ac77bc3-c701-4b13-95da-000000000015',
-    startDate: '2027-08-02',
-    endDate: '2027-08-06',
-    reason: 'Descanso de verano',
+    startDate: '2026-12-24',
+    endDate: '2026-01-31',
+    reason: 'Cierre por fiestas',
   },
   {
     id: '8ac77bc3-c701-4b13-95da-000000000016',
-    startDate: '2027-12-24',
-    endDate: '2027-12-31',
-    reason: 'Cierre por fiestas',
+    startDate: '2027-01-17',
+    endDate: '2027-01-19',
+    reason: 'Descanso personal',
   },
 ];
 
@@ -301,33 +320,49 @@ const collaborators = [
 
 const sql = neon(process.env.DATABASE_URL);
 const primaryEvents = [
-  ...weddings.map((wedding) => ({ id: wedding.id, type: 'wedding', eventDate: wedding.eventDate })),
-  ...productions.map((production) => ({ id: production.id, type: 'production', eventDate: production.eventDate })),
+  ...weddings.map((wedding) => ({
+    id: wedding.id,
+    type: 'wedding',
+    eventDate: wedding.eventDate,
+    status: wedding.status || 'pending',
+  })),
+  ...productions.map((production) => ({
+    id: production.id,
+    type: 'production',
+    eventDate: production.eventDate,
+    status: 'pending',
+  })),
 ];
 
 const statements = [
   ...primaryEvents.map((event) => sql.query(
     `INSERT INTO events (id, type, event_date, status)
-     VALUES ($1, $2, $3, 'pending')
-     ON CONFLICT (id) DO NOTHING`,
-    [event.id, event.type, event.eventDate],
+     VALUES ($1, $2, $3, $4)
+     ON CONFLICT (id) DO UPDATE SET
+       type = EXCLUDED.type,
+       event_date = EXCLUDED.event_date,
+       status = EXCLUDED.status`,
+    [event.id, event.type, event.eventDate, event.status],
   )),
   ...weddings.map((wedding) => sql.query(
     `INSERT INTO wedding_requests (
-       event_id, name, email, bride_phone, groom_phone, groom_name,
-       groom_departure_time, bride_name, bride_departure_time, package_type,
+       event_id, name, email, identity_document_type, identity_document,
+       bride_phone, groom_phone, groom_name, groom_departure_time, bride_name,
+       bride_departure_time, package_type,
        ceremony_location, ceremony_time, location, cocktail_time, open_bar_time,
        details, wedding_service, prewedding_service,
        prewedding_location, prewedding_details, postwedding_service,
        postwedding_location, postwedding_details
      )
      VALUES (
-       $1, $2, $3, $4, $4, $5, $6, $7, $8, $9, $10, $11, $12, '14:30',
-       '21:00', $13, 'duo', $14, $15, $16, $17, $18, $19
+       $1, $2, $3, $4, $5, $6, $6, $7, $8, $9, $10, $11, $12, $13, $14,
+       '14:30', '21:00', $15, 'duo', $16, $17, $18, $19, $20, $21
      )
      ON CONFLICT (event_id) DO UPDATE SET
        name = EXCLUDED.name,
        email = EXCLUDED.email,
+       identity_document_type = EXCLUDED.identity_document_type,
+       identity_document = EXCLUDED.identity_document,
        bride_phone = EXCLUDED.bride_phone,
        groom_phone = EXCLUDED.groom_phone,
        groom_name = EXCLUDED.groom_name,
@@ -352,6 +387,8 @@ const statements = [
       wedding.id,
       wedding.name,
       wedding.email,
+      wedding.identityDocumentType,
+      wedding.identityDocument,
       wedding.phone,
       wedding.groomAddress,
       wedding.groomDepartureTime,
@@ -372,7 +409,8 @@ const statements = [
   )),
   ...productions.map((production) => sql.query(
     `INSERT INTO production_requests (
-       event_id, name, email, phone, project_type, budget, location, event_time,
+       event_id, name, email, identity_document_type, identity_document,
+       phone, project_type, budget, location, event_time,
        details, camera_setup, camera_price, drone_setup, drone_price,
        lighting_setup, lighting_price, sound_setup, sound_price, delivery_format,
        delivery_price, extra_staff, extra_staff_price, logistics, logistics_price,
@@ -380,11 +418,13 @@ const statements = [
      )
      VALUES (
        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15,
-       $16, $17, $18, $19, $20, $21, $22, $23, 21
+       $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 21
      )
      ON CONFLICT (event_id) DO UPDATE SET
        name = EXCLUDED.name,
        email = EXCLUDED.email,
+       identity_document_type = EXCLUDED.identity_document_type,
+       identity_document = EXCLUDED.identity_document,
        phone = EXCLUDED.phone,
        project_type = EXCLUDED.project_type,
        budget = EXCLUDED.budget,
@@ -410,6 +450,8 @@ const statements = [
       production.id,
       production.name,
       production.email,
+      production.identityDocumentType,
+      production.identityDocument,
       production.phone,
       production.projectType,
       production.budget,
@@ -435,7 +477,11 @@ const statements = [
   ...secondaryEvents.map((event) => sql.query(
     `INSERT INTO events (id, type, event_date, status, parent_event_id)
      VALUES ($1, $2, $3, 'pending', $4)
-     ON CONFLICT (id) DO NOTHING`,
+     ON CONFLICT (id) DO UPDATE SET
+       type = EXCLUDED.type,
+       event_date = EXCLUDED.event_date,
+       status = EXCLUDED.status,
+       parent_event_id = EXCLUDED.parent_event_id`,
     [event.id, event.type, event.eventDate, event.parentId],
   )),
   ...calendarBlocks.map((block) => sql.query(
