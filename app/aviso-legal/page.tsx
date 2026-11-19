@@ -1,4 +1,5 @@
 import { LegalDocument } from '@/components/legal/LegalDocument';
+import { STUDIO } from '@/lib/properties';
 
 export const metadata = {
   title: 'Aviso legal | Ícaro Studio',
@@ -8,20 +9,16 @@ export const metadata = {
 export default function LegalNoticePage() {
   return (
     <LegalDocument title="Aviso legal">
-      <aside className="legal-completion-notice" role="note">
-        Antes de publicar, sustituye todos los campos marcados como pendientes por los datos reales del titular y del servicio.
-      </aside>
-
       <section>
         <h2>Titular del sitio</h2>
         <dl className="legal-details-list">
           <div><dt>Marca</dt><dd>Ícaro Studio</dd></div>
-          <div><dt>Titular legal</dt><dd className="legal-pending">[PENDIENTE: nombre y apellidos o razón social]</dd></div>
-          <div><dt>NIF</dt><dd className="legal-pending">[PENDIENTE: NIF del titular]</dd></div>
-          <div><dt>Domicilio profesional</dt><dd className="legal-pending">[PENDIENTE: dirección postal del titular]</dd></div>
-          <div><dt>Email</dt><dd><a href="mailto:info@icarostudio.es">info@icarostudio.es</a></dd></div>
-          <div><dt>Teléfono</dt><dd><a href="tel:+34633716171">+34 633 716 171</a></dd></div>
-          <div><dt>Registro público</dt><dd>[Completar los datos registrales si el titular está inscrito]</dd></div>
+          <div><dt>Titular legal</dt><dd>{STUDIO.legal}</dd></div>
+          <div><dt>NIF</dt><dd>{STUDIO.cif}</dd></div>
+          <div><dt>Domicilio profesional</dt><dd>{STUDIO.address}</dd></div>
+          <div><dt>Email</dt><dd><a href={`mailto:${STUDIO.email}`}>{STUDIO.email}</a></dd></div>
+          <div><dt>Teléfono</dt><dd><a href={`tel:${STUDIO.phone}`}>{STUDIO.phone}</a></dd></div>
+          <div><dt>Registro público</dt><dd>No inscrito</dd></div>
         </dl>
         <p>Actividad: producción cinematográfica y audiovisual, fotografía y servicios de filmación de bodas y eventos.</p>
       </section>
@@ -41,6 +38,11 @@ export default function LegalNoticePage() {
       <section>
         <h2>Normativa aplicable</h2>
         <p>El sitio se rige por la normativa española y de la Unión Europea que resulte aplicable, incluida la Ley 34/2002, de servicios de la sociedad de la información y de comercio electrónico.</p>
+      </section>
+
+      <section>
+        <h2>Actualización de este aviso</h2>
+        <p>Última actualización: <strong>18 de noviembre de 2026</strong>.</p>
       </section>
     </LegalDocument>
   );

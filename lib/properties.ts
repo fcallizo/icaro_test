@@ -1,4 +1,17 @@
 
+// Info general ICARO
+
+export const STUDIO = {
+  brand: 'ÍCARO STUDIO',
+  legal: 'Guillermo Callizo Rodríguez',
+  cif: 'No publicado',
+  address: 'No publicado',
+  email: 'info@icarostudio.es',
+  phone: '+34 633 716 171',
+  tagline: 'Fotografía · Vídeo · Producciones',
+  insurance: 'Seguro de responsabilidad civil: Allianz, póliza R-0000000',
+} as const;
+
 // ruta iamgenes
 
 export const RUTA_LOGO_ALAS = "/logos/logo_alas.png";
@@ -25,18 +38,6 @@ export function setNullValue(value: string): string | null {
 
 
 // PDF
-
-export const STUDIO = {
-  brand: 'ÍCARO STUDIO',
-  legal: 'Ícaro Studio S.L.',
-  cif: 'B-00000000',
-  address: 'C/ Master 11, Bajo, 41013 Sevilla',
-  email: 'hola@icaro.studio',
-  phone: '+34 600 00 00 00',
-  tagline: 'Fotografía · Vídeo · Producciones',
-  insurance: 'Seguro de responsabilidad civil: Allianz, póliza R-0000000',
-} as const;
-
 
 export const GOLD = '#F5C31F';
 export const INK = '#111111';

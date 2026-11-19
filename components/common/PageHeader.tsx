@@ -1,4 +1,4 @@
-import { PageTheme, PageView, RUTA_LOGO_ALAS } from "@/lib/properties";
+import { PageTheme, PageView, RUTA_LOGO_ALAS, STUDIO } from "@/lib/properties";
 
 type PageHeaderProps = {
   view: PageView;
@@ -31,11 +31,11 @@ export function PageHeader({ view, theme, onHome, onCinema, onWedding }: PageHea
           <div className="nav-contact">
             <p className="contact-info">
                 <span className="icon-mask icon-phone" aria-hidden="true" />
-                <span className="nav-label">+34 633 716 171</span>
+                <span className="nav-label">{STUDIO.phone}</span>
             </p>
             <p className="contact-info">
                 <span className="icon-mask icon-mail" aria-hidden="true" />
-                <span className="nav-label"><a href="mailto:info@icarostudio.es">info@icarostudio.es</a></span>
+                <span className="nav-label"><a href={STUDIO.email}>{STUDIO.email}</a></span>
             </p>
           </div>
           <a href="/private" className="nav-link" aria-label="Panel privado" title="Panel privado">
