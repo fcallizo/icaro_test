@@ -131,7 +131,7 @@ export function WeddingOfferFormModal({ offer = null, onClose, onSaved }: Weddin
         event.preventDefault();
         void save();
       }}
-      submitLabel={isSaving ? 'Guardando...' : 'Guardar extra'}
+      submitLabel={offer ? (isSaving ? 'Guardando...' :'Guardar extra') : (isSaving ? 'Creando...' :'Crear extra')}
       error={error}
       isSaving={isSaving}
       isDirty={JSON.stringify(draft) !== JSON.stringify(initialDraft)}

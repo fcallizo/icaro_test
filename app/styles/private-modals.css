@@ -30,8 +30,6 @@
   --cof-danger-soft: rgba(255, 85, 85, .12);
   --cof-danger-line: rgba(255, 85, 85, .45);
   --cof-danger-ink: var(--priv-error-soft, #ff8a8a);
-  --cof-success-line: rgba(124, 219, 151, 0.45);
-  --cof-success-ink: var(--priv-success, #7cdb97);
 }
 
 @supports (color:color-mix(in srgb, red, blue)) {
@@ -43,7 +41,6 @@
     --cof-danger-soft: color-mix(in srgb, var(--cof-danger) 12%, transparent);
     --cof-danger-line: color-mix(in srgb, var(--cof-danger) 45%, transparent);
     --cof-danger-ink: var(--priv-error-soft, #ff8a8a);
-    --cof-success-line: color-mix(in srgb, var(--cof-success-ink) 45%, transparent);
   }
 }
 

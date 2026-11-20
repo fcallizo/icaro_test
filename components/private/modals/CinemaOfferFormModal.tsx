@@ -240,7 +240,7 @@ export function CinemaOfferFormModal({
       isSaving={isSaving}
       onClose={onClose}
       onSubmit={() => void saveOffer()}
-      submitLabel={isCreate ? 'Crear oferta' : 'Guardar oferta'}
+      submitLabel={isCreate ? (isSaving ? 'Creando...' :'Crear oferta') : (isSaving ? 'Guardando...' :'Guardar oferta')}
     >
       <div className="cofm__grid">
         <FormInputField
