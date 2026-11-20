@@ -72,7 +72,6 @@
   box-sizing: border-box
 }
 
-.pvm button,
 .pvm input,
 .pvm textarea,
 .pvm select,
@@ -243,8 +242,6 @@
   overscroll-behavior: contain
 }
 
-
-
 .pvm__confirm {
   display: flex;
   flex-wrap: wrap;
@@ -261,29 +258,6 @@
 .pvm__confirm>div {
   display: flex;
   gap: 8px
-}
-
-.pvm__confirm button {
-  padding: 8px 13px;
-  border: 1px solid var(--cof-line);
-  background: transparent;
-  color: inherit;
-  font-size: var(--font-size-private-small);
-  cursor: pointer
-}
-
-.pvm__confirm button:hover {
-  background: rgba(255, 255, 255, .07)
-}
-
-.pvm__confirm-danger {
-  border-color: var(--cof-danger-line) !important;
-  color: var(--cof-danger-ink) !important
-}
-
-.pvm__confirm-success {
-  border-color: var(--cof-success-line) !important;
-  color: var(--cof-success-ink) !important
 }
 
 .pvm__foot {
@@ -316,40 +290,27 @@
   gap: 8px;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: background .18s ease, opacity .18s ease, box-shadow .18s ease, border-color .18s ease
+}
+
+.pvm__actions :no-button:not(.private-gold-button):not(.private-material-toggle):not(.private-danger-button):not(.private-success-button) {
   padding: 11px 18px;
   border: 1px solid var(--cof-line);
   background: transparent;
   color: inherit;
   font-size: var(--font-size-private-small);
-  cursor: pointer;
-  transition: background .18s ease, opacity .18s ease, box-shadow .18s ease, border-color .18s ease
 }
 
 .pvm__actions button:disabled {
   cursor: not-allowed;
-  opacity: .5
 }
 
-.pvm__actions button:not(.pvm__submit):hover {
+.pvm__actions button:not(.private-gold-button):not(.private-material-toggle):not(.private-danger-button):not(.private-success-button):hover {
   background: rgba(255, 255, 255, .06)
 }
 
-.pvm__submit {
-  border-color: var(--cof-gold) !important;
-  background: var(--cof-tint-09) !important;
-  color: var(--cof-gold) !important;
-  font-weight: 700
-}
-
-.pvm__submit:hover:not(:disabled) {
-  background: var(--cof-tint-16) !important
-}
-
-.pvm__submit[data-dirty] {
-  box-shadow: 0 0 0 3px var(--cof-tint-16)
-}
-
-.pvm__submit svg {
+.private-gold-button svg {
   width: 15px;
   height: 15px;
   fill: none;

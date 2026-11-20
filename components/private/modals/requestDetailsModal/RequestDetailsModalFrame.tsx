@@ -40,7 +40,7 @@ export function RequestDetailsModalFrame({
         <>
           <button
             type="button"
-            className="pvm__confirm-success"
+            className="private-success-button"
             disabled={busy || !canConfirm}
             onClick={() => onAction('confirm', values)}
             title={
@@ -55,7 +55,7 @@ export function RequestDetailsModalFrame({
           </button>
           <button
             type="button"
-            className="pvm__confirm-danger"
+            className="private-danger-button"
             disabled={busy}
             onClick={() => onAction('reject')}
           >
@@ -63,7 +63,7 @@ export function RequestDetailsModalFrame({
           </button>
         </>
       )}
-      <button type="submit" className="pvm__submit" disabled={busy || !canSave}>
+      <button type="submit" className="private-gold-button" disabled={busy || !canSave}>
         {busy ? (
           <span className="pvm__spinner" aria-hidden="true" />
         ) : (

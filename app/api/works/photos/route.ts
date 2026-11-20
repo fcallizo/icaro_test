@@ -4,15 +4,19 @@ import { NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const revalidate = 300;
 
-type Resource = {
+type ImageResource = {
   public_id: string;
   secure_url: string;
   width: number;
   height: number;
 };
 
-type SearchResponse = {
-  resources?: Resource[];
+type VideoResource = {
+  secure_url: string;
+};
+
+type SearchResponse<T> = {
+  resources?: T[];
 };
 
 export async function GET(request: NextRequest) {
@@ -79,23 +83,34 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${cloud}/resources/search`,
-      {
+    const headers = {
+      Authorization: `Basic ${Buffer.from(`${key}:${secret}`).toString("base64")}`,
+      "Content-Type": "application/json",
+    };
+    const searchUrl = `https://api.cloudinary.com/v1_1/${cloud}/resources/search`;
+    const [response, trailerResponse] = await Promise.all([
+      fetch(searchUrl, {
         method: "POST",
-        headers: {
-          Authorization: `Basic ${Buffer.from(
-            `${key}:${secret}`
-          ).toString("base64")}`,
-          "Content-Type": "application/json",
-        },
+        headers,
         body: JSON.stringify({
           expression: `resource_type:image AND type:upload AND asset_folder="${folder}"`,
           max_results: 500,
         }),
         next: { revalidate: 300 },
-      }
-    );
+      }),
+      fetch(searchUrl, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          expression: `resource_type:video AND type:upload AND asset_folder="${folder}/Video" AND tags=trailer`,
+          max_results: 1,
+        }),
+        next: { revalidate: 300 },
+      }).catch((error: unknown) => {
+        console.error("Could not check Cloudinary trailer:", error);
+        return null;
+      }),
+    ]);
 
     if (!response.ok) {
       const details = await response.text();
@@ -107,7 +122,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const data = (await response.json()) as SearchResponse;
+    const data = (await response.json()) as SearchResponse<ImageResource>;
 
     const photos = (data.resources ?? [])
       .sort((a, b) =>
@@ -122,12 +137,38 @@ export async function GET(request: NextRequest) {
         height: photo.height,
       }));
 
+    let trailer: string | null = null;
+    let trailerError: string | null = null;
+
+    if (!trailerResponse) {
+      trailerError = "No se pudo comprobar si este proyecto tiene tráiler.";
+    } else if (!trailerResponse.ok) {
+      console.error(
+        "Cloudinary trailer search error:",
+        trailerResponse.status,
+        await trailerResponse.text()
+      );
+      trailerError = "No se pudo comprobar si este proyecto tiene tráiler.";
+    } else {
+      try {
+        const trailerData = (await trailerResponse.json()) as SearchResponse<
+          VideoResource
+        >;
+        trailer = trailerData.resources?.[0]?.secure_url ?? null;
+      } catch (error) {
+        console.error("Could not parse Cloudinary trailer search:", error);
+        trailerError = "No se pudo comprobar si este proyecto tiene tráiler.";
+      }
+    }
+
     return NextResponse.json(
-      { photos },
+      { photos, trailer, trailerError },
       {
         headers: {
           "Cache-Control":
-            "public, s-maxage=300, stale-while-revalidate=600",
+            trailerError
+              ? "no-store"
+              : "public, s-maxage=300, stale-while-revalidate=600",
         },
       }
     );

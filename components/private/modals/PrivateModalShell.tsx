@@ -318,12 +318,12 @@ export const PrivateModalShell = forwardRef<PrivateModalShellHandle, PrivateModa
           <div className="pvm__confirm" role="alertdialog" aria-live="assertive">
             <span>Tienes cambios sin guardar. ¿Descartar el formulario?</span>
             <div>
-              <button type="button" onClick={() => setConfirmDiscard(false)}>
+              <button type="button" className="private-material-toggle" onClick={() => setConfirmDiscard(false)}>
                 Seguir editando
               </button>
               <button
                 type="button"
-                className="pvm__confirm-danger"
+                className="private-danger-button"
                 onClick={() => animateOut()}
               >
                 Descartar
@@ -348,7 +348,7 @@ export const PrivateModalShell = forwardRef<PrivateModalShellHandle, PrivateModa
                 {submitLabel !== undefined && (
                   <button
                     type="submit"
-                    className="pvm__submit"
+                    className="private-gold-button"
                     disabled={isSaving}
                     data-dirty={isDirty || undefined}
                   >

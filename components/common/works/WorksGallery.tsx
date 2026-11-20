@@ -35,10 +35,13 @@ function getPlaceholderCount(photoCount: number): number {
 export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
   const [folders, setFolders] = useState<Folder[]>([]);
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [trailer, setTrailer] = useState<string | null>(null);
+  const [trailerError, setTrailerError] = useState("");
   const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [isTrailerOpen, setIsTrailerOpen] = useState(false);
   const placeholderCount = useMemo(
     () => getPlaceholderCount(photos.length),
     [photos.length]
@@ -56,8 +59,11 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
     setError("");
     setFolders([]);
     setPhotos([]);
+    setTrailer(null);
+    setTrailerError("");
     setSelectedFolder(null);
     setLightboxIndex(null);
+    setIsTrailerOpen(false);
 
     fetch(`/api/works/folders?kind=${kind}`, {
       signal: controller.signal,
@@ -83,11 +89,14 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
     return;
   }, [kind]);
 
-  // Cargar las fotos únicamente al abrir una carpeta.
+  // Cargar las fotos y el tráiler al abrir una carpeta.
   const openFolder = async (folder: Folder) => {
     setSelectedFolder(folder);
     setPhotos([]);
+    setTrailer(null);
+    setTrailerError("");
     setLightboxIndex(null);
+    setIsTrailerOpen(false);
     setLoading(true);
     setError("");
 
@@ -103,6 +112,8 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
       }
 
       setPhotos(data.photos ?? []);
+      setTrailer(data.trailer ?? null);
+      setTrailerError(data.trailerError ?? "");
     } catch (err) {
       setError(
         err instanceof Error
@@ -117,12 +128,16 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
   const goBack = () => {
     setSelectedFolder(null);
     setPhotos([]);
+    setTrailer(null);
+    setTrailerError("");
     setLightboxIndex(null);
+    setIsTrailerOpen(false);
     setError("");
   };
 
   const closeLightbox = useCallback(() => {
     setLightboxIndex(null);
+    setIsTrailerOpen(false);
   }, []);
 
   const showNext = useCallback(
@@ -137,10 +152,11 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
   );
 
   useEffect(() => {
-    if (lightboxIndex === null) return;
+    if (lightboxIndex === null && !isTrailerOpen) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") closeLightbox();
+      if (isTrailerOpen) return;
       if (event.key === "ArrowRight") showNext(1);
       if (event.key === "ArrowLeft") showNext(-1);
     };
@@ -152,13 +168,14 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
       document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = "";
     };
-  }, [lightboxIndex, closeLightbox, showNext]);
+  }, [lightboxIndex, isTrailerOpen, closeLightbox, showNext]);
 
   const currentPhoto = useMemo(
     () =>
       lightboxIndex === null ? null : photos[lightboxIndex] ?? null,
     [photos, lightboxIndex]
   );
+  const isLightboxOpen = currentPhoto !== null || isTrailerOpen;
 
   return (
     <section className={`works-gallery works-gallery-${kind}`}>
@@ -210,6 +227,21 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
               <span className="works-back-text">Regresar</span>
             </button>
           </div>
+          {trailer && !loading && (
+            <div className="works-trailer-actions">
+              <button
+                type="button"
+                className="works-back-button"
+                onClick={() => {
+                  setLightboxIndex(null);
+                  setIsTrailerOpen(true);
+                }}
+              >
+                <span className="icon-mask icon-clapperboard" aria-hidden="true" />
+                Ver tráiler
+              </button>
+            </div>
+          )}
           <div className="works-project-toolbar">
             <div style={{ textAlign: "center" }}>
               <h2>{modifyCardName(selectedFolder.name)}</h2>
@@ -224,10 +256,14 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
             <p className="works-state works-error">{error}</p>
           )}
 
-          {!loading && !error && photos.length === 0 && (
+          {!loading && !error && photos.length === 0 && !trailer && (
             <p className="works-state">
               Esta carpeta no contiene fotografías.
             </p>
+          )}
+
+          {trailerError && (
+            <p className="works-state works-error">{trailerError}</p>
           )}
 
           <div className="works-mosaic">
@@ -235,7 +271,10 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
               <button
                 key={photo.id}
                 className={`works-mosaic-item works-mosaic-item-${index % photNumber}`}
-                onClick={() => setLightboxIndex(index)}
+                onClick={() => {
+                  setIsTrailerOpen(false);
+                  setLightboxIndex(index);
+                }}
                 aria-label={`Ampliar fotografía ${index + 1}`}
               >
                 <img
@@ -249,12 +288,12 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
         </>
       )}
 
-      {currentPhoto && (
+      {isLightboxOpen && selectedFolder && (
         <div
           className="works-lightbox"
           role="dialog"
           aria-modal="true"
-          aria-label="Fotografía ampliada"
+          aria-label={isTrailerOpen ? "Tráiler del proyecto" : "Fotografía ampliada"}
           onClick={closeLightbox}
         >
           <button
@@ -265,7 +304,7 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
             ×
           </button>
 
-          {photos.length > 1 && (
+          {!isTrailerOpen && photos.length > 1 && (
             <button
               className="works-lightbox-arrow works-lightbox-prev"
               onClick={(event) => {
@@ -278,17 +317,31 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
             </button>
           )}
 
-          <img
-            src={currentPhoto.src}
-            alt={`${selectedFolder?.name}, fotografía ${(lightboxIndex ?? 0) + 1}`}
-            onClick={(event) => event.stopPropagation()}
-          />
+          {isTrailerOpen && trailer ? (
+            <video
+              className="works-lightbox-video"
+              src={trailer}
+              controls
+              autoPlay
+              playsInline
+              preload="metadata"
+              onClick={(event) => event.stopPropagation()}
+            />
+          ) : currentPhoto ? (
+            <img
+              src={currentPhoto.src}
+              alt={`${selectedFolder.name}, fotografía ${(lightboxIndex ?? 0) + 1}`}
+              onClick={(event) => event.stopPropagation()}
+            />
+          ) : null}
 
-          <span className="works-lightbox-count">
-            {(lightboxIndex ?? 0) + 1} / {photos.length}
-          </span>
+          {!isTrailerOpen && (
+            <span className="works-lightbox-count">
+              {(lightboxIndex ?? 0) + 1} / {photos.length}
+            </span>
+          )}
 
-          {photos.length > 1 && (
+          {!isTrailerOpen && photos.length > 1 && (
             <button
               className="works-lightbox-arrow works-lightbox-next"
               onClick={(event) => {

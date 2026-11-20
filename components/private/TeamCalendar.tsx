@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { AvailabilityCalendar, CalendarRequest } from '@/components/common/AvailabilityCalendar';
-import { RUTA_LOGO_ALAS } from '@/lib/properties';
+import { eventTypeLabel, RUTA_LOGO_ALAS } from '@/lib/properties';
 
 type AssignedEvent = {
   id: string;
@@ -19,6 +19,14 @@ type SectionDef = { title: string; fields: string[], type: string; };
 
 // ----- Layout por tipo (aquí ordenas los campos a tu gusto) -----
 const WEDDING_TYPES = new Set(['wedding', 'prewedding', 'postwedding']);
+const MAP_LOCATION_FIELDS = new Set([
+  'groom_name',
+  'bride_name',
+  'ceremony_location',
+  'location',
+  'prewedding_location',
+  'postwedding_location',
+]);
 const isWedding = (type: string) => WEDDING_TYPES.has(type);
 
 const WEDDING_SECTIONS: SectionDef[] = [
@@ -80,9 +88,9 @@ function formatFieldName(value: string) {
     name: 'Nombre',
     groom_phone: 'Teléfono del novio',
     bride_phone: 'Teléfono de la novia',
-    groom_name: 'Novio',
+    groom_name: 'Casa del novio',
     groom_departure_time: 'Hora de salida del novio',
-    bride_name: 'Novia',
+    bride_name: 'Casa de la novia',
     bride_departure_time: 'Hora de salida de la novia',
     ceremony_location: 'Ceremonia',
     ceremony_time: 'Hora de la ceremonia',
@@ -106,11 +114,12 @@ function formatFieldName(value: string) {
 function formatFieldValue(value: string | number) {
   return typeof value === 'number' ? new Intl.NumberFormat('es-ES').format(value) : value;
 }
-function typeLabel(type: string) {
-  if (type === 'production') return 'Producción';
-  if (type === 'prewedding') return 'Preboda';
-  if (type === 'postwedding') return 'Postboda';
-  return 'Boda';
+
+function getDirectionsUrl(destination: string) {
+  const url = new URL('https://www.google.com/maps/dir/');
+  url.searchParams.set('api', '1');
+  url.searchParams.set('destination', destination);
+  return url.toString();
 }
 
 // ----- Tarjeta tipo formulario, con secciones -----
@@ -122,7 +131,7 @@ function EventCard({ event }: { event: AssignedEvent }) {
     <article className={`team-assigned-event ${wedding ? 'is-wedding' : 'is-production'}`}>
       <div className="team-assigned-event-heading">
         <div>
-          <span className="event-type-tag">{typeLabel(event.type)}</span>
+          <span className="event-type-tag">{eventTypeLabel(event.type)}</span>
           <h3>{event.clientName}</h3>
         </div>
         <time dateTime={event.date}>
@@ -150,7 +159,21 @@ function EventCard({ event }: { event: AssignedEvent }) {
               {rows.map(([field, value]) => (
                 <div key={field}>
                   <dt>{formatFieldName(field)}</dt>
-                  <dd>{formatFieldValue(value as string | number)}</dd>
+                  <dd>
+                    {formatFieldValue(value)}
+                    {MAP_LOCATION_FIELDS.has(field) && typeof value === 'string' && (
+                      <div>
+                        <a
+                          className="team-event-map-link"
+                          href={getDirectionsUrl(value)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Cómo llegar
+                        </a>
+                      </div>
+                    )}
+                  </dd>
                 </div>
               ))}
             </dl>

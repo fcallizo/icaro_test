@@ -211,6 +211,26 @@
   white-space: pre-wrap;
 }
 
+.team-event-map-link {
+  display: inline-flex;
+  margin-top: 0.35rem;
+  color: var(--gold);
+  font-size: var(--font-size-private-caption);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.team-event-map-link:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+.team-event-map-link:hover {
+  color: var(--gold-dark);
+}
+
 .event-section h4 {
     margin: 20px 0px 5px;
     text-decoration: underline;

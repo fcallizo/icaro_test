@@ -56,7 +56,7 @@ export function ConfirmationDialog({
           <button
             ref={cancelButtonRef}
             type="button"
-            className="private-confirmation-cancel"
+            className="private-material-toggle"
             onClick={onCancel}
             disabled={isBusy}
           >
@@ -64,7 +64,7 @@ export function ConfirmationDialog({
           </button>
           <button
             type="button"
-            className={isDestructive ? 'private-confirmation-submit danger' : 'private-confirmation-submit'}
+            className={isDestructive ? 'private-danger-button' : 'private-gold-button'}
             onClick={onConfirm}
             disabled={isBusy}
           >

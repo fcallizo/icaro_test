@@ -290,6 +290,10 @@ textarea {
   --icon-image: url("/iconos/flecha.svg");
 }
 
+.icon-clapperboard {
+  --icon-image: url("/iconos/claqueta.svg");
+}
+
 .icon-inverted {
   transform: scaleX(-1);
 }
@@ -307,6 +311,11 @@ span.nav-label>a {
   color: var(--black);
   font-family: "Cormorant Garamond", Georgia, serif;
   font-size: 1.05rem;
+}
+
+.dark-link:hover,
+.wedding-link:hover {
+  color: var(--gold-dark);
 }
 
 .legal-page {
@@ -1330,6 +1339,10 @@ span.nav-label>a {
   span {
     height: 15px;
   }
+}
+
+.calendar-header button:hover span{
+  color: var(--gold-dark);
 }
 
 .weekday-row,

@@ -473,35 +473,6 @@
   margin-top: 1.5rem;
 }
 
-.private-confirmation-actions button {
-  min-height: 40px;
-  padding: 0.6rem 0.9rem;
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  background: transparent;
-  color: var(--text-tertiary);
-  font-size: var(--font-size-private-small);
-  cursor: pointer;
-}
-
-.private-confirmation-actions .private-confirmation-submit {
-  border-color: var(--gold);
-  background: var(--gold);
-  color: var(--black);
-  font-weight: 700;
-}
-
-.private-confirmation-actions .private-confirmation-submit.danger {
-  border-color: rgba(255, 85, 85, 0.6);
-  background: rgba(255, 85, 85, 0.14);
-  color: var(--priv-error-soft);
-}
-
-.private-confirmation-actions button:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-
 .private-tabs {
   display: flex;
   justify-content: center;
@@ -654,33 +625,64 @@
 }
 
 .private-gold-button,
-.private-material-toggle {
+.private-material-toggle,
+.private-danger-button,
+.private-success-button {
   min-height: 40px;
   padding: 0.55rem 0.75rem;
-  border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
-  background: color-mix(in srgb, var(--gold) 8%, transparent);
-  color: var(--gold);
   font-size: var(--font-size-private-small);
   font-weight: 700;
   cursor: pointer;
   height: 44px;
 }
 
+.private-gold-button {
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
+  color: var(--gold);
+}
+
 .private-material-toggle {
-  border-color: rgba(255,255,255,0.18);
+  border: 1px solid color-mix(in srgb, var(--text-tertiary) 45%, transparent);
   background: transparent;
   color: var(--text-tertiary);
 }
 
-.private-gold-button:hover,
+.private-danger-button {
+  border: 1px solid color-mix(in srgb, var(--priv-error) 45%, transparent);
+  background: transparent;
+  color: var(--priv-error-soft) !important;
+}
+
+.private-success-button {
+  border: 1px solid color-mix(in srgb, var(--priv-success) 45%, transparent);
+  background: transparent;
+  color: var(--priv-success) !important;
+}
+
+.private-gold-button:hover {
+  background: color-mix(in srgb, var(--gold) 16%, transparent);
+  outline: none;
+}
+
 .private-material-toggle:hover {
-    background: color-mix(in srgb, var(--gold) 16%, transparent);
-    outline: none;
+  background: color-mix(in srgb, var(--text-tertiary) 16%, transparent);
+  outline: none;
+}
+
+.private-danger-button:hover {
+  background: color-mix(in srgb, var(--priv-error-soft) 16%, transparent);
+}
+
+.private-success-button:hover {
+  background: color-mix(in srgb, var(--priv-success) 16%, transparent);
 }
 
 .private-gold-button:disabled,
-.private-material-toggle:disabled {
-  cursor: wait;
+.private-material-toggle:disabled,
+.private-danger-button:disabled,
+.private-success-button:disabled {
+  cursor: not-allowed;
   opacity: 0.6;
 }
 

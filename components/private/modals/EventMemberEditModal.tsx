@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 
-import type { EventType } from '@/lib/properties';
+import { eventTypeLabel, type EventType } from '@/lib/properties';
 
 import {
   PrivateModalShell,
@@ -43,20 +43,8 @@ export type EventMemberEditModalProps = {
   onSaved?: (message: string, extra?: { link?: string }) => void;
 };
 
-const EVENT_TYPE_LABELS: Record<EventType, string> = {
-  wedding: 'Boda',
-  production: 'Producción',
-  prewedding: 'Preboda',
-  postwedding: 'Postboda',
-};
-
 type Filter = 'all' | 'assigned' | 'pending';
 
-
-/** Etiqueta legible del tipo de evento (misma tabla que usaba el tab). */
-export function eventTypeLabel(type: EventType) {
-  return EVENT_TYPE_LABELS[type] ?? type;
-}
 
 /** Equivalente a [...set] sin depender de --downlevelIteration ni del target. */
 function setToArray<T>(set: Set<T>): T[] {

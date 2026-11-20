@@ -36,6 +36,18 @@ export function setNullValue(value: string): string | null {
   return trimmed || null;
 }
 
+/** Etiqueta legible del tipo de evento (misma tabla que usaba el tab). */
+
+const EVENT_TYPE_LABELS: Record<EventType, string> = {
+  wedding: 'Boda',
+  production: 'Producción',
+  prewedding: 'Preboda',
+  postwedding: 'Postboda',
+};
+
+export function eventTypeLabel(type: EventType) {
+  return EVENT_TYPE_LABELS[type] ?? type;
+}
 
 // PDF
 

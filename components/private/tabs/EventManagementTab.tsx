@@ -4,11 +4,11 @@ import { FormEvent, useCallback, useEffect, useState } from 'react';
 
 import {
   EventMemberEditModal,
-  eventTypeLabel,
   type ManagedEvent,
   type TeamMember,
 } from '../modals/EventMemberEditModal';
 import { ConfirmationDialog } from '@/components/private/ConfirmationDialog';
+import { eventTypeLabel } from '@/lib/properties';
 
 type ManagementData = {
   members: TeamMember[];

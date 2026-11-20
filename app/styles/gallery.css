@@ -30,6 +30,13 @@
   color: var(--priv-error);
 }
 
+.works-trailer-actions {
+  display: flex;
+  justify-content: right;
+  margin-top: -72px;
+  margin-bottom: 10px;
+}
+
 /* =========================================================
    TARJETAS DE PROYECTOS
    ========================================================= */
@@ -205,7 +212,8 @@
   cursor: zoom-out;
 }
 
-.works-lightbox > img {
+.works-lightbox > img,
+.works-lightbox > video {
   max-width: 100%;
   max-height: 100%;
   width: auto;
@@ -291,6 +299,7 @@
   z-index: 100;
   margin-bottom: 24px;
   margin-left: -60px;
+  width: fit-content;
 }
 
 .works-back-button {
@@ -305,6 +314,7 @@
   font-size: 14px;
   font-weight: 500;
   border: 2px solid var(--gold);
+  cursor: pointer;
 }
 
 .works-back-button:hover {

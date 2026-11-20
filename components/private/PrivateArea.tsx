@@ -15,7 +15,7 @@ import { SettingsTab } from './tabs/SettingsTab';
 import { DEFAULT_WEDDING_PRICES, WeddingPrices } from '@/lib/wedding-form';
 import { AdminUsersTab } from '@/components/private/tabs/AdminUsersTab';
 import { ConfirmationDialog } from '@/components/private/ConfirmationDialog';
-import { RUTA_LOGO_ALAS } from '@/lib/properties';
+import { eventTypeLabel, RUTA_LOGO_ALAS } from '@/lib/properties';
 
 async function getPrivateRequests() {
   const response = await fetch('/api/private/requests', { cache: 'no-store' });
@@ -55,6 +55,15 @@ async function getCalendarBlocks() {
   }));
 }
 
+function getRequestDates(request: PrivateRequest, values?: PrivateRequestUpdate) {
+  const dates = [values?.fecha ?? request.fecha];
+  if (request.type === 'wedding') {
+    dates.push(values?.fechaPreboda ?? request.fechaPreboda);
+    dates.push(values?.fechaPostboda ?? request.fechaPostboda);
+  }
+  return dates.filter((date): date is string => Boolean(date));
+}
+
 export function PrivateArea() {
   const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -86,7 +95,13 @@ export function PrivateArea() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
   const [toast, setToast] = useState<{ message: string; tone: StatusToastTone } | null>(null);
-  const [confirmation, setConfirmation] = useState<{ message: string; onConfirm: () => void } | null>(null);
+  const [confirmation, setConfirmation] = useState<{
+    message: string;
+    onConfirm: () => void;
+    title?: string;
+    confirmLabel?: string;
+    isDestructive?: boolean;
+  } | null>(null);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -188,9 +203,29 @@ export function PrivateArea() {
     request: PrivateRequest,
     action: RequestAction,
     values?: PrivateRequestUpdate,
-    confirmed = false,
+    confirmationAccepted = false,
   ) => {
-    if (action === 'reject' && !confirmed) {
+    if (action === 'confirm' && !confirmationAccepted) {
+      const requestDates = getRequestDates(request, values);
+      const hasConfirmedDateConflict = requests.some((otherRequest) =>
+        otherRequest.id !== request.id
+        && otherRequest.status === 'confirmed'
+        && getRequestDates(otherRequest).some((date) => requestDates.includes(date)),
+      );
+
+      if (hasConfirmedDateConflict) {
+        setConfirmation({
+          title: 'Conflicto de fecha',
+          message: `Ya tienes un evento asgnado para esta fecha. ¿Seguro quieres confirmar esta ${eventTypeLabel(request.type)}?`,
+          confirmLabel: 'Confirmar evento',
+          isDestructive: false,
+          onConfirm: () => void handleRequestAction(request, action, values, true),
+        });
+        return;
+      }
+    }
+
+    if (action === 'reject' && !confirmationAccepted) {
       setConfirmation({
         message: '¿Rechazar esta solicitud? Se conservará en el historial.',
         onConfirm: () => void handleRequestAction(request, action, values, true),
@@ -598,10 +633,10 @@ export function PrivateArea() {
       <StatusToast message={toast?.message || ''} tone={toast?.tone || 'success'} onDismiss={() => setToast(null)} />
       {confirmation && (
         <ConfirmationDialog
-          title="Confirmar acción"
+          title={confirmation.title ?? 'Confirmar acción'}
           message={confirmation.message}
-          confirmLabel="Continuar"
-          isDestructive
+          confirmLabel={confirmation.confirmLabel ?? 'Continuar'}
+          isDestructive={confirmation.isDestructive ?? true}
           onCancel={() => setConfirmation(null)}
           onConfirm={() => {
             const confirmAction = confirmation.onConfirm;

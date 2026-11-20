@@ -159,7 +159,7 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
         <>
           <button
             type="button"
-            className="pvm__submit"
+            className="private-gold-button"
             disabled={props.busy || generating || !hasValidIdentity}
             onClick={() => void handleDownloadContract()}
           >
