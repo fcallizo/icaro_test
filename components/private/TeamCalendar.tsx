@@ -150,7 +150,10 @@ function EventCard({ event }: { event: AssignedEvent }) {
         if (event.type !== section.type && section.type !== 'default') return null;
         const rows = section.fields
           .map((k) => [k, event.details[k]] as [string, string | number | null])
-          .filter(([, v]) => v !== null && v !== '');
+          .filter(
+            (row): row is [string, string | number] =>
+              row[1] !== null && row[1] !== ''
+          );
         if (rows.length === 0) return null; // oculta secciones vacías
         return (
           <section className="event-section" key={section.title}>
