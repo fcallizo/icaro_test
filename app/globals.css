@@ -1393,6 +1393,11 @@ span.nav-label>a {
   color: var(--priv-warning);
 }
 
+.day.pased {
+  background: rgba(199, 199, 199, 0.2);
+  color: var(--text-tertiary);
+}
+
 .calendar-day-button {
   appearance: none;
   padding: 0;

@@ -85,10 +85,14 @@ export function AvailabilityCalendar({
               const endDate = range.endDate.slice(0, 10);
               return date >= startDate && date <= endDate;
             });
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
             const isBooked = bookedDates.has(date) || isManuallyBlocked;
             const isPending = !isBooked && pendingDates.has(date);
+            const isPased = new Date(date) < today;
 
-            const dayClass = isBooked ? 'day busy' : isPending ? 'day pending' : 'day free';
+            const dayClass = isBooked ? 'day busy' : isPending ? 'day pending' : !isPased ? 'day free' : 'day pased';
             const dayTitle = isBooked ? (isManuallyBlocked && !bookedDates.has(date) ? 'Fecha no disponible' : 'Fecha ocupada') : isPending ? 'Solicitud pendiente' : 'Fecha disponible';
             const isSelected = selectedDate === date;
             const selectedClass = isSelected ? ' selected' : '';
