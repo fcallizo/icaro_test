@@ -26,8 +26,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const normalizedEmail = email.trim().toLowerCase();
-    const rawIp = request.ip
-      ?? request.headers.get('x-real-ip')
+    const rawIp = request.headers.get('x-real-ip')
       ?? request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
     const clientIp = rawIp && isIP(rawIp) ? rawIp : 'unknown';
     const rateLimitBuckets = [

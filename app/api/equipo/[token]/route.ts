@@ -19,9 +19,9 @@ function errorResponse(message: string, status: number) {
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { token: string } },
+  { params }: { params: Promise<{ token: string }> },
 ) {
-  const token = params.token;
+  const { token } = await params;
 
   if (!/^[A-Za-z0-9_-]{43}$/.test(token)) {
     return errorResponse(

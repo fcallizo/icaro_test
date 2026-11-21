@@ -4,7 +4,7 @@ import { sql } from '@/lib/db';
 import { setNullValue } from '@/lib/properties';
 
 type RouteContext = {
-  params: { token: string };
+  params: Promise<{ token: string }>;
 };
 
 const scheduleFields = [
@@ -81,7 +81,8 @@ async function findWedding(tokenHash: string) {
 }
 
 export async function GET(_request: NextRequest, { params }: RouteContext) {
-  const tokenHash = getTokenHash(params.token);
+  const { token } = await params;
+  const tokenHash = getTokenHash(token);
   if (!tokenHash) return NextResponse.json({ error: 'Enlace no válido o ya no disponible.' }, { status: 404 });
   if (!sql) return NextResponse.json({ error: 'El formulario no está disponible temporalmente.' }, { status: 503 });
 
@@ -91,7 +92,8 @@ export async function GET(_request: NextRequest, { params }: RouteContext) {
 }
 
 export async function PATCH(request: NextRequest, { params }: RouteContext) {
-  const tokenHash = getTokenHash(params.token);
+  const { token } = await params;
+  const tokenHash = getTokenHash(token);
   if (!tokenHash) return NextResponse.json({ error: 'Enlace no válido o ya no disponible.' }, { status: 404 });
   if (!sql) return NextResponse.json({ error: 'El formulario no está disponible temporalmente.' }, { status: 503 });
 

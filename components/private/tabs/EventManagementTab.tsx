@@ -55,12 +55,25 @@ export function EventManagementTab({ isAdmin }: EventManagementTabProps) {
   }, []);
 
   useEffect(() => {
-    loadManagementData()
+    let active = true;
+    requestManagement<ManagementData>()
+      .then((loadedData) => {
+        if (active) setData(loadedData);
+      })
       .catch((loadError: unknown) =>
-        setError(loadError instanceof Error ? loadError.message : 'No se pudo cargar la gestión de eventos.'),
+        {
+          if (active) {
+            setError(loadError instanceof Error ? loadError.message : 'No se pudo cargar la gestión de eventos.');
+          }
+        },
       )
-      .finally(() => setIsLoading(false));
-  }, [loadManagementData]);
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleCreate = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

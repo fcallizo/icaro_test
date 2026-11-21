@@ -33,10 +33,20 @@ export function AdminUsersTab() {
   }, []);
 
   useEffect(() => {
-    void refreshUsers().catch((loadError: unknown) => {
-      setError(loadError instanceof Error ? loadError.message : 'No se pudieron cargar los usuarios.');
-    });
-  }, [refreshUsers]);
+    let active = true;
+    void getUsers()
+      .then((loadedUsers) => {
+        if (active) setUsers(loadedUsers);
+      })
+      .catch((loadError: unknown) => {
+        if (active) {
+          setError(loadError instanceof Error ? loadError.message : 'No se pudieron cargar los usuarios.');
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleInvite = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

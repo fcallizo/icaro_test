@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { WeddingPrices } from '@/lib/wedding-form';
 import { createFormFields } from '@/components/common/FormFields';
 import { CinemaOffersManager } from '@/components/private/tabs/CinemaOffersManager';
@@ -37,10 +37,12 @@ export function SettingsTab({
   onSaveWeddingPrices,
 }: SettingsTabProps) {
   const [draft, setDraft] = useState<PriceDraft>(() => toDraft(weddingPrices));
+  const [previousWeddingPrices, setPreviousWeddingPrices] = useState(weddingPrices);
 
-  useEffect(() => {
+  if (previousWeddingPrices !== weddingPrices) {
+    setPreviousWeddingPrices(weddingPrices);
     setDraft(toDraft(weddingPrices));
-  }, [weddingPrices]);
+  }
 
   const { inputSuffix } = createFormFields({
     values: draft,

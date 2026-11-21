@@ -291,7 +291,7 @@
   transition: background .18s ease, opacity .18s ease, box-shadow .18s ease, border-color .18s ease
 }
 
-.pvm__actions :no-button:not(.private-gold-button):not(.private-material-toggle):not(.private-danger-button):not(.private-success-button) {
+.pvm__actions button:not(.private-gold-button):not(.private-material-toggle):not(.private-danger-button):not(.private-success-button) {
   padding: 11px 18px;
   border: 1px solid var(--cof-line);
   background: transparent;

@@ -144,8 +144,7 @@ export function PrivateArea() {
     const generation = materialsLoadGeneration.current;
     setIsLoadingMaterials(true);
     setMaterialsError('');
-    let request: Promise<void>;
-    request = getProductionMaterials()
+    const request = getProductionMaterials()
       .then((loadedMaterials) => {
         if (generation !== materialsLoadGeneration.current) return;
         setMaterials(loadedMaterials);

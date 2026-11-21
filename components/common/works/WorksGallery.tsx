@@ -54,16 +54,7 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
   // Cargar las carpetas de la galería.
   useEffect(() => {
     const controller = new AbortController();
-
-    setLoading(true);
-    setError("");
-    setFolders([]);
-    setPhotos([]);
-    setTrailer(null);
-    setTrailerError("");
-    setSelectedFolder(null);
-    setLightboxIndex(null);
-    setIsTrailerOpen(false);
+    let active = true;
 
     fetch(`/api/works/folders?kind=${kind}`, {
       signal: controller.signal,
@@ -75,18 +66,29 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
           throw new Error(data.error || "No se pudieron cargar las carpetas.");
         }
 
+        if (!active) return;
         setFolders(data.folders ?? []);
+        setPhotos([]);
+        setTrailer(null);
+        setTrailerError("");
+        setSelectedFolder(null);
+        setLightboxIndex(null);
+        setIsTrailerOpen(false);
+        setError("");
       })
       .catch((err: unknown) => {
-        if (err instanceof Error && err.name !== "AbortError") {
+        if (active && err instanceof Error && err.name !== "AbortError") {
           setError(err.message);
         }
       })
       .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
+        if (active && !controller.signal.aborted) setLoading(false);
       });
 
-    return;
+    return () => {
+      active = false;
+      controller.abort();
+    };
   }, [kind]);
 
   // Cargar las fotos y el tráiler al abrir una carpeta.

@@ -105,7 +105,7 @@ function isValidDate(value: string) {
 
 function getClientIp(request: NextRequest) {
   const forwardedIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
-  const ip = request.ip ?? request.headers.get('x-real-ip') ?? forwardedIp;
+  const ip = request.headers.get('x-real-ip') ?? forwardedIp;
   return ip && isIP(ip) ? ip : 'unknown';
 }
 
