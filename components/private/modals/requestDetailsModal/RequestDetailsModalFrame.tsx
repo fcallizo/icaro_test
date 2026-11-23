@@ -3,6 +3,7 @@
 import { FormEvent, ReactNode } from 'react';
 import { PrivateRequestUpdate, RequestDetailsModalProps } from '@/lib/private-types';
 import { PrivateModalShell } from '../PrivateModalShell';
+import { RequestHistoryTimeline } from './RequestHistoryTimeline';
 
 type RequestDetailsModalFrameProps = Omit<RequestDetailsModalProps, 'onSave'> & {
   title: string;
@@ -33,6 +34,7 @@ export function RequestDetailsModalFrame({
   const isWedding = request.type === 'wedding';
   const isPending = request.status === 'pending';
   const isConfirmed = request.status === 'confirmed';
+  const isEditable = isPending || isConfirmed;
 
   const footerActions = (
     <>
@@ -67,14 +69,14 @@ export function RequestDetailsModalFrame({
       {isConfirmed && (
         <button
           type="button"
-          className="private-success-button"
+          className="private-finished-button"
           disabled={busy}
           onClick={() => onAction('finish')}
         >
           Finalizar
         </button>
       )}
-      {isPending || isConfirmed &&  (
+      {isEditable && (
         <button type="submit" className="private-gold-button" disabled={busy || !canSave}>
           {busy ? (
             <span className="pvm__spinner" aria-hidden="true" />
@@ -93,11 +95,13 @@ export function RequestDetailsModalFrame({
     <PrivateModalShell
       eyebrow={isWedding ? '💍 BODA' : '🎬 PRODUCCIÓN'}
       title={title}
-      subtitle="Consulta y actualiza los datos de la solicitud."
+      subtitle={request.status === 'finished'
+        ? 'Consulta el evento finalizado y su historial.'
+        : 'Consulta y actualiza los datos de la solicitud.'}
       onClose={onClose}
-      onSubmit={onSubmit}
+      onSubmit={isEditable ? onSubmit : undefined}
       error={error}
-      isDirty={isDirty}
+      isDirty={isEditable && isDirty}
       isSaving={busy}
       footerActions={footerActions}
       hint={
@@ -109,7 +113,10 @@ export function RequestDetailsModalFrame({
       }
       className="request-details-modal"
     >
-      <div className="request-details-form-grid">{children}</div>
+      <div className="request-details-form-grid">
+        <RequestHistoryTimeline request={request} />
+        {children}
+      </div>
     </PrivateModalShell>
   );
 }

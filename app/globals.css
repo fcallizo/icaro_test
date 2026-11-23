@@ -49,6 +49,7 @@
   --priv-warning: #e4c968;
   --priv-error: #ff5555;
   --priv-error-soft: #ff8a8a;
+  --priv-delivered: #a78bfa;
   --priv-card-bg: #151617;
 
   --PhoneInput-color--focus: var(--gold);
@@ -1394,8 +1395,8 @@ span.nav-label>a {
 }
 
 .day.finished {
-  background: rgba(66, 179, 244, 0.2);
-  color: var(--priv-cinema);
+  background: rgba(128, 89, 235, 0.2);
+  color: var(--priv-delivered);
 }
 
 .day.pased {
@@ -1802,7 +1803,7 @@ input[type="time"] {
 
 .legend-finished {
   margin-left: 0.75rem;
-  background: var(--priv-cinema);
+  background: var(--priv-delivered);
 }
 
 .wedding-panel {

@@ -111,6 +111,8 @@ export type PrivateRequest = {
   documentoIdentidad?: string;
   fecha?: string;
   created_at?: string;
+  decided_at?: string | null;
+  finished_at?: string | null;
   detalles: string;
 
   // boda

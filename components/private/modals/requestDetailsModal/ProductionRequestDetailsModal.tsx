@@ -63,6 +63,7 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
     values,
     idPrefix: 'request',
     onChange: (field, value) => setValues((current) => ({ ...current, [field]: value })),
+    disabled: request.status === 'finished',
     wideClassName: 'col-100',
     emptyOption: 'Seleccionar...',
   });
@@ -83,6 +84,7 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
         <select
           id={`request-${field}`}
           value={currentValue}
+          disabled={request.status === 'finished'}
           onChange={(event) => {
             const material = options.find((option) => option.name === event.target.value);
             setValues((current) => ({

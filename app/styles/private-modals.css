@@ -276,6 +276,112 @@
   font-size: var(--font-size-private-caption)
 }
 
+.request-history {
+  grid-column: 1 / -1;
+  padding: 14px 16px;
+  border: 1px solid var(--cof-line);
+  background: rgba(255, 255, 255, .025)
+}
+
+.request-history > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--cof-ink);
+  font-size: var(--font-size-private-body);
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none
+}
+
+.request-history > summary::-webkit-details-marker {
+  display: none
+}
+
+.request-history > summary::after {
+  color: var(--cof-muted);
+  content: "+"
+}
+
+.request-history[open] > summary {
+  margin-bottom: 10px
+}
+
+.request-history[open] > summary::after {
+  content: "−"
+}
+
+.request-history > summary:focus-visible {
+  outline: 2px solid var(--cof-gold);
+  outline-offset: 4px
+}
+
+.request-history__list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  color: var(--cof-ink);
+  list-style: none
+}
+
+.request-history__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr);
+  gap: 10px;
+  padding: 4px 0 12px
+}
+
+.request-history__item:last-child {
+  padding-bottom: 0
+}
+
+.request-history__marker {
+  width: 9px;
+  height: 9px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: var(--cof-gold)
+}
+
+.request-history__item--accepted .request-history__marker {
+  background: var(--priv-success)
+}
+
+.request-history__item--rejected .request-history__marker {
+  background: var(--cof-danger)
+}
+
+.request-history__item--finished .request-history__marker {
+  background: var(--priv-cinema)
+}
+
+.request-history__item:not(:last-child)::before {
+  position: absolute;
+  top: 16px;
+  bottom: 0;
+  left: 4px;
+  width: 1px;
+  background: var(--cof-line);
+  content: ""
+}
+
+.request-history__content {
+  display: grid;
+  gap: 2px
+}
+
+.request-history__content strong {
+  color: var(--cof-ink);
+  font-size: var(--font-size-private-small)
+}
+
+.request-history__content time {
+  color: var(--cof-muted);
+  font-size: var(--font-size-private-caption)
+}
+
 .pvm__actions {
   display: flex;
   gap: 9px;
@@ -291,7 +397,7 @@
   transition: background .18s ease, opacity .18s ease, box-shadow .18s ease, border-color .18s ease
 }
 
-.pvm__actions button:not(.private-gold-button):not(.private-material-toggle):not(.private-danger-button):not(.private-success-button) {
+.pvm__actions button:not(.private-gold-button):not(.private-material-toggle):not(.private-danger-button):not(.private-success-button):not(.private-finished-button) {
   padding: 11px 18px;
   border: 1px solid var(--cof-line);
   background: transparent;
@@ -303,7 +409,7 @@
   cursor: not-allowed;
 }
 
-.pvm__actions button:not(.private-gold-button):not(.private-material-toggle):not(.private-danger-button):not(.private-success-button):hover {
+.pvm__actions button:not(.private-gold-button):not(.private-material-toggle):not(.private-danger-button):not(.private-success-button):not(.private-finished-button):hover {
   background: rgba(255, 255, 255, .06)
 }
 

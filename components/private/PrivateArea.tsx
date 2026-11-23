@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { NotificationsTab } from '@/components/private/tabs/NotificationsTab';
 import { ConfirmedTab } from '@/components/private/tabs/ConfirmedTab';
+import { FinishedTab } from '@/components/private/tabs/FinishedTab';
 import { ProductionMaterialsTab } from '@/components/private/tabs/ProductionMaterialsTab';
 import { CalendarBlocksTab } from '@/components/private/tabs/CalendarBlocksTab';
 import { EventManagementTab } from '@/components/private/tabs/EventManagementTab';
@@ -72,7 +73,7 @@ export function PrivateArea() {
   const [email, setEmail] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [password, setPassword] = useState('');
-  const [activeTab, setActiveTab] = useState<'notifications' | 'confirmed' | 'materials' | 'blocks' | 'events' | 'settings' | 'users'>('notifications');
+  const [activeTab, setActiveTab] = useState<'notifications' | 'confirmed' | 'finished' | 'materials' | 'blocks' | 'events' | 'settings' | 'users'>('notifications');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [unifyCalendars, setUnifyCalendars] = useState(false);
   const [isSavingCalendarSetting, setIsSavingCalendarSetting] = useState(false);
@@ -556,6 +557,10 @@ export function PrivateArea() {
                   <span className="private-tab__icon" aria-hidden="true">​✅</span>
                   Confirmados <span className="private-tab__count">{confirmedCount}</span>
                 </button>
+                <button type="button" role="tab" aria-selected={activeTab === 'finished'} className={activeTab === 'finished' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('finished')}>
+                  <span className="private-tab__icon" aria-hidden="true">📦</span>
+                  Finalizados
+                </button>
                 <button type="button" role="tab" aria-selected={activeTab === 'blocks'} className={activeTab === 'blocks' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('blocks')}>
                   <span className="private-tab__icon" aria-hidden="true">🚫​</span>
                   Inactividad <span className="private-tab__count">{visibleCalendarBlocks.length}</span>
@@ -588,6 +593,8 @@ export function PrivateArea() {
                 <NotificationsTab requests={requests} selectedDate={selectedDate} onView={handleViewRequest} />
               ) : activeTab === 'confirmed' ? (
                 <ConfirmedTab requests={requests} selectedDate={selectedDate} onView={handleViewRequest} />
+              ) : activeTab === 'finished' ? (
+                <FinishedTab requests={requests} selectedDate={selectedDate} onView={handleViewRequest} />
               ) : activeTab === 'materials' ? (
                 <ProductionMaterialsTab
                   materials={materials}

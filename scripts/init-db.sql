@@ -18,11 +18,15 @@ CREATE TABLE IF NOT EXISTS events (
   budget_id TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  decided_at TIMESTAMPTZ
+  decided_at TIMESTAMPTZ,
+  finished_at TIMESTAMPTZ
 );
 ALTER TABLE events DROP CONSTRAINT IF EXISTS events_status_check;
 ALTER TABLE events ADD CONSTRAINT events_status_check
   CHECK (status IN ('pending', 'confirmed', 'rejected', 'finished'));
+ALTER TABLE events ADD COLUMN IF NOT EXISTS finished_at TIMESTAMPTZ;
+UPDATE events SET finished_at = updated_at
+WHERE status = 'finished' AND finished_at IS NULL;
 CREATE UNIQUE INDEX events_budget_id_key
   ON events (budget_id) WHERE budget_id IS NOT NULL;
 

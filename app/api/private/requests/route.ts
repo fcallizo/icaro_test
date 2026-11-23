@@ -32,7 +32,8 @@ export async function GET(request: NextRequest) {
 
 
   const weddings = await sql`
-    SELECT e.id, e.type, e.status, e.event_date AS fecha, e.budget_id AS "idPresupuesto", e.created_at,
+    SELECT e.id, e.type, e.status, e.event_date AS fecha, e.budget_id AS "idPresupuesto",
+      e.created_at, e.decided_at, e.finished_at,
       w.name AS nombre, w.email, COALESCE(w.identity_document_type, 'nif') AS "tipoDocumentoIdentidad",
       w.identity_document AS "documentoIdentidad",
       w.groom_phone AS "telNovio", w.bride_phone AS "telNovia",
@@ -50,11 +51,20 @@ export async function GET(request: NextRequest) {
       w.postwedding_location AS "lugarPostboda", w.postwedding_details AS "detallesPostboda"
     FROM events e
     JOIN wedding_requests w ON w.event_id = e.id
-    WHERE e.type = 'wedding' AND e.status IN ('pending', 'confirmed', 'finished')
-    ORDER BY e.created_at DESC LIMIT 500;
+    WHERE e.type = 'wedding'
+      AND (
+        e.status = 'finished'
+        OR e.id IN (
+          SELECT id FROM events
+          WHERE type = 'wedding' AND status IN ('pending', 'confirmed')
+          ORDER BY created_at DESC LIMIT 500
+        )
+      )
+    ORDER BY e.created_at DESC;
   `;
   const productions = await sql`
-    SELECT e.id, e.type, e.status, e.event_date AS fecha, e.budget_id AS "idPresupuesto", e.created_at,
+    SELECT e.id, e.type, e.status, e.event_date AS fecha, e.budget_id AS "idPresupuesto",
+      e.created_at, e.decided_at, e.finished_at,
       p.name AS nombre, p.email, COALESCE(p.identity_document_type, 'nif') AS "tipoDocumentoIdentidad",
       p.identity_document AS "documentoIdentidad",
       p.phone AS telefono, p.project_type AS tipo, p.budget AS presupuesto,
@@ -68,8 +78,16 @@ export async function GET(request: NextRequest) {
       p.logistics AS logistica, p.logistics_price AS "precioLogistica", p.tax_percent AS "taxPercent"
     FROM events e
     JOIN production_requests p ON p.event_id = e.id
-    WHERE e.type = 'production' AND e.status IN ('pending', 'confirmed', 'finished')
-    ORDER BY e.created_at DESC LIMIT 500;
+    WHERE e.type = 'production'
+      AND (
+        e.status = 'finished'
+        OR e.id IN (
+          SELECT id FROM events
+          WHERE type = 'production' AND status IN ('pending', 'confirmed')
+          ORDER BY created_at DESC LIMIT 500
+        )
+      )
+    ORDER BY e.created_at DESC;
   `;
 
   return NextResponse.json({ requests: [...weddings, ...productions] });
@@ -256,11 +274,11 @@ export async function PATCH(request: NextRequest) {
   if (action === 'finish') {
     const result = await sql`
       WITH finished_event AS (
-        UPDATE events SET status = 'finished', updated_at = NOW()
+        UPDATE events SET status = 'finished', finished_at = NOW(), updated_at = NOW()
         WHERE id = ${id} AND type = ${requestType} AND status = 'confirmed'
         RETURNING id, type
       ), finished_related_events AS (
-        UPDATE events child SET status = 'finished', updated_at = NOW()
+        UPDATE events child SET status = 'finished', finished_at = NOW(), updated_at = NOW()
         FROM finished_event parent
         WHERE parent.type = 'wedding'
           AND child.parent_event_id = parent.id

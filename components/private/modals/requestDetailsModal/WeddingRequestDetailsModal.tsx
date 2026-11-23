@@ -123,6 +123,7 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
     values: formValues,
     idPrefix: 'request',
     onChange: (field, value) => setValues((current) => ({ ...current, [field]: value })),
+    disabled: request.status === 'finished',
     wideClassName: 'col-100',
     emptyOption: 'Seleccionar...',
   });
