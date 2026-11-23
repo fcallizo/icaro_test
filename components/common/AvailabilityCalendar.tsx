@@ -74,16 +74,16 @@ export function AvailabilityCalendar({
     isBooked: boolean;
     isPending: boolean;
     isFinished: boolean;
-    isPased: boolean;
+    isPassed: boolean;
   }
 
-  function getDayClass({ isBooked, isPending, isFinished, isPased }: DayClassProps) {
+  function getDayClass({ isBooked, isPending, isFinished, isPassed }: DayClassProps) {
     if (isFinished && showFinishing) return 'day finished';
     if (isBooked) return 'day busy';
     if (isPending) return 'day pending';
-    if (!isPased) return 'day free';
+    if (!isPassed) return 'day free';
 
-    return 'day pased';
+    return 'day passed';
   }
 
   return (
@@ -116,9 +116,14 @@ export function AvailabilityCalendar({
             const isBooked = bookedDates.has(date) || isManuallyBlocked;
             const isPending = !isBooked && pendingDates.has(date);
             const isFinished = finishedDates.has(date);
-            const isPased = new Date(date) < today;
-            const dayClass = getDayClass({ isBooked, isPending, isFinished, isPased });
-            const dayTitle = isBooked ? (isManuallyBlocked && !bookedDates.has(date) ? 'Fecha no disponible' : 'Fecha ocupada') : isPending ? 'Solicitud pendiente' : 'Fecha disponible';
+            const isPassed = new Date(date) < today; 
+            const dayClass = getDayClass({ isBooked, isPending, isFinished, isPassed });
+            const dayTitle = isBooked
+              ? isManuallyBlocked && !bookedDates.has(date)
+                ? 'Fecha no disponible' : 'Fecha ocupada'
+              : isPending
+                ? 'Solicitud pendiente'
+                : isPassed ? 'Fecha no disponible' : 'Fecha disponible';
             const isSelected = selectedDate === date;
             const selectedClass = isSelected ? ' selected' : '';
 

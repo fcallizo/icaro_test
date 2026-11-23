@@ -234,8 +234,20 @@ export function PrivateArea() {
     }
 
     if (action === 'finish' && !confirmationAccepted) {
+      const relatedWeddingEvents = request.type === 'wedding'
+        ? [
+            request.fechaPreboda ? 'la preboda' : '',
+            request.fechaPostboda ? 'la postboda' : '',
+          ].filter((event) => event !== '')
+        : [];
+      const relatedEventsWarning = relatedWeddingEvents.length === 2
+        ? ' También se finalizarán la preboda y la postboda a la vez.'
+        : relatedWeddingEvents.length === 1
+          ? ` También se finalizará ${relatedWeddingEvents[0]} a la vez.`
+          : '';
+
       setConfirmation({
-        message: '¿Finalizar este evento? Dejará de aparecer entre los eventos confirmados.',
+        message: `¿Finalizar esta ${eventTypeLabel(request.type)}?${relatedEventsWarning} Ya no se podrán realizar más cambios sobre este evento.`,
         confirmLabel: 'Finalizar evento',
         isDestructive: true,
         onConfirm: () => void handleRequestAction(request, action, values, true),
