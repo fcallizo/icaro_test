@@ -13,13 +13,16 @@ CREATE TABLE IF NOT EXISTS events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   type TEXT NOT NULL CHECK (type IN ('wedding', 'production', 'prewedding', 'postwedding')),
   event_date TEXT,
-  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'rejected')),
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'rejected', 'finished')),
   parent_event_id UUID REFERENCES events(id) ON DELETE CASCADE,
   budget_id TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   decided_at TIMESTAMPTZ
 );
+ALTER TABLE events DROP CONSTRAINT IF EXISTS events_status_check;
+ALTER TABLE events ADD CONSTRAINT events_status_check
+  CHECK (status IN ('pending', 'confirmed', 'rejected', 'finished'));
 CREATE UNIQUE INDEX events_budget_id_key
   ON events (budget_id) WHERE budget_id IS NOT NULL;
 

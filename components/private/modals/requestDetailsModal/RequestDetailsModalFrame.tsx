@@ -32,6 +32,7 @@ export function RequestDetailsModalFrame({
 }: RequestDetailsModalFrameProps) {
   const isWedding = request.type === 'wedding';
   const isPending = request.status === 'pending';
+  const isConfirmed = request.status === 'confirmed';
 
   const footerActions = (
     <>
@@ -63,16 +64,28 @@ export function RequestDetailsModalFrame({
           </button>
         </>
       )}
-      <button type="submit" className="private-gold-button" disabled={busy || !canSave}>
-        {busy ? (
-          <span className="pvm__spinner" aria-hidden="true" />
-        ) : (
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M5 13l4 4L19 7" />
-          </svg>
-        )}
-        {busy ? 'Guardando…' : 'Guardar cambios'}
-      </button>
+      {isConfirmed && (
+        <button
+          type="button"
+          className="private-success-button"
+          disabled={busy}
+          onClick={() => onAction('finish')}
+        >
+          Finalizar
+        </button>
+      )}
+      {isPending || isConfirmed &&  (
+        <button type="submit" className="private-gold-button" disabled={busy || !canSave}>
+          {busy ? (
+            <span className="pvm__spinner" aria-hidden="true" />
+          ) : (
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 13l4 4L19 7" />
+            </svg>
+          )}
+          {busy ? 'Guardando…' : 'Guardar cambios'}
+        </button>
+      )}
     </>
   );
 

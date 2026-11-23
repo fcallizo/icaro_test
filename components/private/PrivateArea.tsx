@@ -232,6 +232,16 @@ export function PrivateArea() {
       return;
     }
 
+    if (action === 'finish' && !confirmationAccepted) {
+      setConfirmation({
+        message: '¿Finalizar este evento? Dejará de aparecer entre los eventos confirmados.',
+        confirmLabel: 'Finalizar evento',
+        isDestructive: true,
+        onConfirm: () => void handleRequestAction(request, action, values, true),
+      });
+      return;
+    }
+
     setBusyId(request.id);
     setMessage('');
     try {
@@ -531,6 +541,7 @@ export function PrivateArea() {
                 requests={requests}
                 manualBlockedRanges={calendarBlocks}
                 showPending
+                showFinishing
                 selectedDate={selectedDate}
                 onDateSelect={setSelectedDate}
               />

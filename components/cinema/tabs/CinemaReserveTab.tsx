@@ -26,14 +26,17 @@ export function CinemaReserveTab({
   isSubmitting,
   onProductionSubmit,
 }: CinemaReserveTabProps) {
-    const { input, inputPhone, textarea, inputSuffix } = createFormFields({
-      values: productionForm,
-      idPrefix: 'wedding-reserve',
-      onChange: (field, value) => setProductionForm((current) => ({ ...current, [field]: value })),
-      dateInputWrapper: true,
-      textareaClassName: 'field-group',
-      emptyOption: 'Seleccionen una opción',
-    });
+  const today = new Date();
+  const minDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const { input, inputPhone, textarea, inputSuffix } = createFormFields({
+    values: productionForm,
+    idPrefix: 'wedding-reserve',
+    onChange: (field, value) => setProductionForm((current) => ({ ...current, [field]: value })),
+    dateInputWrapper: true,
+    minDate,
+    textareaClassName: 'field-group',
+    emptyOption: 'Seleccionen una opción',
+  });
 
   return (
     <div className="tab-panel" role="tabpanel">

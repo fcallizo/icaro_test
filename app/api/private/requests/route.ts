@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
       w.postwedding_location AS "lugarPostboda", w.postwedding_details AS "detallesPostboda"
     FROM events e
     JOIN wedding_requests w ON w.event_id = e.id
-    WHERE e.type = 'wedding' AND e.status IN ('pending', 'confirmed')
+    WHERE e.type = 'wedding' AND e.status IN ('pending', 'confirmed', 'finished')
     ORDER BY e.created_at DESC LIMIT 500;
   `;
   const productions = await sql`
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
       p.logistics AS logistica, p.logistics_price AS "precioLogistica", p.tax_percent AS "taxPercent"
     FROM events e
     JOIN production_requests p ON p.event_id = e.id
-    WHERE e.type = 'production' AND e.status IN ('pending', 'confirmed')
+    WHERE e.type = 'production' AND e.status IN ('pending', 'confirmed', 'finished')
     ORDER BY e.created_at DESC LIMIT 500;
   `;
 
@@ -85,29 +85,12 @@ export async function PATCH(request: NextRequest) {
 
   const payload = await request.json().catch(() => ({}));
   const { id, type, action } = payload;
-  if (typeof id !== 'string' || !/^[0-9a-f-]{36}$/i.test(id) || !['wedding', 'production'].includes(type) || !['confirm', 'reject', 'update'].includes(action)) {
+  if (typeof id !== 'string' || !/^[0-9a-f-]{36}$/i.test(id) || !['wedding', 'production'].includes(type) || !['confirm', 'reject', 'update', 'finish'].includes(action)) {
     return NextResponse.json({ error: 'Acción o solicitud no válida.' }, { status: 400 });
   }
 
 
   const requestType = type as RequestType;
-
-  if (action === 'confirm') {
-    const [manualBlock] = await sql`
-      SELECT e.id FROM events e
-      WHERE (e.id = ${id} OR e.parent_event_id = ${id})
-        AND e.status = 'pending'
-        AND EXISTS (
-          SELECT 1 FROM calendar_blocks b
-          WHERE e.event_date >= to_char(b.start_date, 'YYYY-MM-DD')
-            AND e.event_date <= to_char(b.end_date, 'YYYY-MM-DD')
-        )
-      LIMIT 1;
-    `;
-    if (manualBlock) {
-      return NextResponse.json({ error: 'No se puede confirmar: una de las fechas está bloqueada como no disponible.' }, { status: 409 });
-    }
-  }
 
   if (action === 'update') {
     const values = payload.values;
@@ -270,6 +253,47 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ success: true, action });
   }
 
+  if (action === 'finish') {
+    const result = await sql`
+      WITH finished_event AS (
+        UPDATE events SET status = 'finished', updated_at = NOW()
+        WHERE id = ${id} AND type = ${requestType} AND status = 'confirmed'
+        RETURNING id, type
+      ), finished_related_events AS (
+        UPDATE events child SET status = 'finished', updated_at = NOW()
+        FROM finished_event parent
+        WHERE parent.type = 'wedding'
+          AND child.parent_event_id = parent.id
+          AND child.status = 'confirmed'
+        RETURNING child.id
+      )
+      SELECT id FROM finished_event;
+    `;
+
+    if (result.length === 0) {
+      return NextResponse.json({ error: 'El evento ya no está confirmado.' }, { status: 409 });
+    }
+
+    return NextResponse.json({ success: true, action });
+  }
+
+  if (action === 'confirm') {
+    const [manualBlock] = await sql`
+      SELECT e.id FROM events e
+      WHERE (e.id = ${id} OR e.parent_event_id = ${id})
+        AND e.status = 'pending'
+        AND EXISTS (
+          SELECT 1 FROM calendar_blocks b
+          WHERE e.event_date >= to_char(b.start_date, 'YYYY-MM-DD')
+            AND e.event_date <= to_char(b.end_date, 'YYYY-MM-DD')
+        )
+      LIMIT 1;
+    `;
+    if (manualBlock) {
+      return NextResponse.json({ error: 'No se puede confirmar: una de las fechas está bloqueada como no disponible.' }, { status: 409 });
+    }
+  }
+
   if (action === 'confirm' && requestType === 'production') {
     const [technicalDetails] = await sql`
       SELECT p.camera_setup AS setup_camara, p.camera_price AS precio_camara,
@@ -297,7 +321,6 @@ export async function PATCH(request: NextRequest) {
   }
 
   const isConfirming = action === 'confirm';
-  const nextStatus = isConfirming ? 'confirmed' : 'rejected';
   const result: Array<Record<string, unknown>> = isConfirming
     ? await sql`
       WITH current_year AS MATERIALIZED (

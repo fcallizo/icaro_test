@@ -2,8 +2,8 @@ import { WeddingPrices } from '@/lib/wedding-form';
 import type { IdentityDocumentType } from '@/lib/spanish-tax-id';
 
 export type RequestType = 'wedding' | 'production';
-export type RequestStatus = 'pending' | 'confirmed' | 'rejected';
-export type RequestAction = 'confirm' | 'reject';
+export type RequestStatus = 'pending' | 'confirmed' | 'rejected' | 'finished';
+export type RequestAction = 'confirm' | 'reject' | 'finish';
 export type CalendarBlockRange = {
   startDate: string;
   endDate: string;

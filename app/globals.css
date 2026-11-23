@@ -1393,6 +1393,11 @@ span.nav-label>a {
   color: var(--priv-warning);
 }
 
+.day.finished {
+  background: rgba(66, 179, 244, 0.2);
+  color: var(--priv-cinema);
+}
+
 .day.pased {
   background: rgba(199, 199, 199, 0.2);
   color: var(--text-tertiary);
@@ -1774,7 +1779,8 @@ input[type="time"] {
 
 .legend-free,
 .legend-busy,
-.legend-pending {
+.legend-pending,
+.legend-finished {
   width: 0.7rem;
   height: 0.7rem;
   border-radius: 50%;
@@ -1794,13 +1800,10 @@ input[type="time"] {
   background: var(--priv-warning);
 }
 
-
-
-
-
-
-
-
+.legend-finished {
+  margin-left: 0.75rem;
+  background: var(--priv-cinema);
+}
 
 .wedding-panel {
   background: var(--bg-light-raised);

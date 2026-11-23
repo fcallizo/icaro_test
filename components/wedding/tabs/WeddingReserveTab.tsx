@@ -26,11 +26,14 @@ export function WeddingReserveTab({
   isSubmitting,
   onWeddingSubmit,
 }: WeddingReserveTabProps) {
+  const today = new Date();
+  const minDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   const { input, inputPhone, textarea, select } = createFormFields({
     values: weddingForm,
     idPrefix: 'wedding-reserve',
     onChange: (field, value) => setWeddingForm((current) => ({ ...current, [field]: value })),
     dateInputWrapper: true,
+    minDate,
     textareaClassName: 'field-group',
     emptyOption: 'Seleccionen una opción',
   });

@@ -103,6 +103,10 @@ function isValidDate(value: string) {
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
+function getTodayInMadrid() {
+  return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Madrid' }).format(new Date());
+}
+
 function getClientIp(request: NextRequest) {
   const forwardedIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
   const ip = request.headers.get('x-real-ip') ?? forwardedIp;
@@ -137,6 +141,7 @@ function validateSubmission(payload: unknown): { value: RequestSubmission } | { 
     return { error: 'Introduce un email de contacto válido.' };
   }
   if (fecha === null || !isValidDate(fecha)) return { error: 'Introduce una fecha válida.' };
+  if (fecha < getTodayInMadrid()) return { error: 'No puedes solicitar una fecha anterior a hoy.' };
   if (detalles === null) return { error: 'Los detalles no pueden superar los 3000 caracteres.' };
 
   if (type === 'wedding') {
@@ -190,7 +195,7 @@ export async function GET() {
     }, { status: 200 });
   }
 
-  const eventRows = await sql`SELECT id, event_date AS fecha, status, type FROM events WHERE status = 'confirmed' ORDER BY created_at DESC LIMIT 100;`;
+  const eventRows = await sql`SELECT id, event_date AS fecha, status, type FROM events WHERE status IN ('confirmed', 'finished') ORDER BY created_at DESC LIMIT 100;`;
   const blockedRanges = await sql`
     SELECT to_char(start_date, 'YYYY-MM-DD') AS "startDate",
       to_char(end_date, 'YYYY-MM-DD') AS "endDate"
@@ -289,6 +294,24 @@ export async function POST(request: NextRequest) {
   `;
   if (blockedDate) {
     return NextResponse.json({ error: 'Esa fecha no está disponible. Elige otra para tu solicitud.' }, { status: 409 });
+  }
+
+  const [occupiedDate] = await sql`
+    SELECT e.id FROM events e
+    WHERE e.event_date = ${fecha}
+      AND e.status IN ('confirmed', 'finished')
+      AND (
+        EXISTS (
+          SELECT 1 FROM app_settings
+          WHERE setting_key = 'unify_calendars' AND boolean_value = TRUE
+        )
+        OR e.type = ${type}
+        OR (${type} = 'wedding' AND e.type IN ('prewedding', 'postwedding'))
+      )
+    LIMIT 1;
+  `;
+  if (occupiedDate) {
+    return NextResponse.json({ error: 'Esa fecha ya está ocupada. Elige otra para tu solicitud.' }, { status: 409 });
   }
 
   if (type === 'wedding') {

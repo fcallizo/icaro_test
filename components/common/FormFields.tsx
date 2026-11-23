@@ -28,6 +28,7 @@ type FormFieldsOptions<Values extends { [Field in keyof Values]: string }> = {
   textareaClassName?: string;
   emptyOption?: string;
   dateInputWrapper?: boolean;
+  minDate?: string;
   disabled?: boolean;
   readOnlyFields?: readonly StringKey<Values>[];
 };
@@ -49,6 +50,7 @@ export function FormInputField<Field extends string>({
   dateInputWrapper = false,
   inputRef,
   inputMode,
+  min,
   maxLength,
   hint,
 }: FieldProps<Field> & {
@@ -60,6 +62,7 @@ export function FormInputField<Field extends string>({
   placeholder?: InputHTMLAttributes<HTMLInputElement>['placeholder'];
   autoComplete?: InputHTMLAttributes<HTMLInputElement>['autoComplete'];
   inputMode?: InputHTMLAttributes<HTMLInputElement>['inputMode'];
+  min?: InputHTMLAttributes<HTMLInputElement>['min'];
   maxLength?: InputHTMLAttributes<HTMLInputElement>['maxLength'];
   dateInputWrapper?: boolean;
 }) {
@@ -79,6 +82,7 @@ export function FormInputField<Field extends string>({
       placeholder={placeholder}
       autoComplete={autoComplete}
       inputMode={inputMode}
+      min={min}
       maxLength={maxLength}
     />
   );
@@ -259,6 +263,7 @@ export function createFormFields<Values extends { [Field in keyof Values]: strin
   textareaClassName,
   emptyOption,
   dateInputWrapper = false,
+  minDate,
   disabled: formDisabled = false,
   readOnlyFields = [],
 }: FormFieldsOptions<Values>) {
@@ -292,6 +297,7 @@ export function createFormFields<Values extends { [Field in keyof Values]: strin
         placeholder={placeholder}
         maxLength={maxLength}
         dateInputWrapper={dateInputWrapper}
+        min={type === 'date' ? minDate : undefined}
       />
     ),
     inputPhone: (

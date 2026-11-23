@@ -238,7 +238,7 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
             disabled={props.busy || generating || !hasValidIdentity}
             onClick={() => void handleDownload()}
           >
-            {generating ? 'Generando…' : 'Descargar PDF'}
+            {generating ? 'Generando…' : 'Generar contrato PDF'}
           </button>
           {pdfError && <span role="alert" className="private-download-error">{pdfError}</span>}
         </>
