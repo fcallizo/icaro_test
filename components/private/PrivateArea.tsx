@@ -3,8 +3,6 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { NotificationsTab } from '@/components/private/tabs/NotificationsTab';
-import { ConfirmedTab } from '@/components/private/tabs/ConfirmedTab';
-import { FinishedTab } from '@/components/private/tabs/FinishedTab';
 import { ProductionMaterialsTab } from '@/components/private/tabs/ProductionMaterialsTab';
 import { CalendarBlocksTab } from '@/components/private/tabs/CalendarBlocksTab';
 import { EventManagementTab } from '@/components/private/tabs/EventManagementTab';
