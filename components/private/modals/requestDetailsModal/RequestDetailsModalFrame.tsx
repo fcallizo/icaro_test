@@ -29,17 +29,18 @@ export function RequestDetailsModalFrame({
   canConfirm = true,
   canSave = true,
   rightAction,
+  isCreating,
   children,
 }: RequestDetailsModalFrameProps) {
   const isWedding = request.type === 'wedding';
   const isPending = request.status === 'pending';
   const isConfirmed = request.status === 'confirmed';
-  const isEditable = isPending || isConfirmed;
+  const isEditable = isCreating || isPending || isConfirmed;
 
   const footerActions = (
     <>
       {rightAction}
-      {isPending && (
+      {!isCreating && isPending && (
         <>
           <button
             type="button"
@@ -66,7 +67,7 @@ export function RequestDetailsModalFrame({
           </button>
         </>
       )}
-      {isConfirmed && (
+      {!isCreating && isConfirmed && (
         <button
           type="button"
           className="private-finished-button"
@@ -85,7 +86,7 @@ export function RequestDetailsModalFrame({
               <path d="M5 13l4 4L19 7" />
             </svg>
           )}
-          {busy ? 'Guardando…' : 'Guardar cambios'}
+          {busy ? 'Guardando…' : isCreating ? 'Crear evento' : 'Guardar cambios'}
         </button>
       )}
     </>
@@ -95,26 +96,30 @@ export function RequestDetailsModalFrame({
     <PrivateModalShell
       eyebrow={isWedding ? '💍 BODA' : '🎬 PRODUCCIÓN'}
       title={title}
-      subtitle={request.status === 'finished'
-        ? 'Consulta el evento finalizado y su historial.'
-        : 'Consulta y actualiza los datos de la solicitud.'}
+      subtitle={isCreating
+        ? 'Completa los datos para añadir el evento directamente como confirmado.'
+        : request.status === 'finished'
+          ? 'Consulta el evento finalizado y su historial.'
+          : 'Consulta y actualiza los datos de la solicitud.'}
       onClose={onClose}
       onSubmit={isEditable ? onSubmit : undefined}
       error={error}
       isDirty={isEditable && isDirty}
       isSaving={busy}
       footerActions={footerActions}
-      hint={
+      hint={isCreating
+        ? 'El evento aparecerá como confirmado al guardarlo.'
+        : (
         isPending && !canSave
           ? 'Corrige el documento de identidad antes de guardar o confirmar.'
           : isPending && !canConfirm
             ? 'Completa el desglose técnico y guarda los importes antes de confirmar.'
             : 'Esc para cerrar'
-      }
+        )}
       className="request-details-modal"
     >
       <div className="request-details-form-grid">
-        <RequestHistoryTimeline request={request} />
+        {!isCreating && <RequestHistoryTimeline request={request} />}
         {children}
       </div>
     </PrivateModalShell>

@@ -56,8 +56,8 @@ async function findWedding(tokenHash: string) {
   if (!sql) return null;
   const rows = await sql`
     SELECT e.id, e.event_date AS fecha, w.name AS nombre, w.email, w.groom_phone AS "telNovio", e.status,
-      w.bride_phone AS "telNovia", w.location AS lugar, w.bride_name AS novia,
-      w.groom_name AS novio, w.ceremony_location AS ceremonia,
+      w.bride_phone AS "telNovia", w.location AS lugar, w.bride_location AS novia,
+      w.groom_location AS novio, w.ceremony_location AS ceremonia,
       w.groom_departure_time AS "horaSalidaNovio",
       w.bride_departure_time AS "horaSalidaNovia",
       w.ceremony_time AS "horaCeremonia",
@@ -180,9 +180,9 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
     UPDATE wedding_requests AS w SET
       name = ${values.nombre}, email = ${values.email},
       groom_phone = ${values.telNovio}, bride_phone = ${values.telNovia},
-      groom_name = ${setNullValue(values.novio)},
+      groom_location = ${setNullValue(values.novio)},
       groom_departure_time = ${setNullValue(values.horaSalidaNovio)},
-      bride_name = ${setNullValue(values.novia)},
+      bride_location = ${setNullValue(values.novia)},
       bride_departure_time = ${setNullValue(values.horaSalidaNovia)},
       ceremony_location = ${setNullValue(values.ceremonia)},
       ceremony_time = ${setNullValue(values.horaCeremonia)},

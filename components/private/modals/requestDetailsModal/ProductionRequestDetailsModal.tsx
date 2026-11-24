@@ -157,7 +157,7 @@ export function ProductionRequestDetailsModal(props: RequestDetailsModalProps) {
         event.preventDefault();
         if (hasValidIdentity) onSave(values);
       }}
-      rightAction={request.status !== 'pending' ? (
+      rightAction={!props.isCreating && request.status !== 'pending' ? (
         <>
           <button
             type="button"

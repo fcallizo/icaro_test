@@ -8,6 +8,7 @@ type ConfirmationDialogProps = {
   confirmLabel?: string;
   isDestructive?: boolean;
   isBusy?: boolean;
+  choices?: { label: string; onSelect: () => void }[];
   onCancel: () => void;
   onConfirm: () => void;
 };
@@ -18,6 +19,7 @@ export function ConfirmationDialog({
   confirmLabel = 'Confirmar',
   isDestructive = false,
   isBusy = false,
+  choices,
   onCancel,
   onConfirm,
 }: ConfirmationDialogProps) {
@@ -53,6 +55,17 @@ export function ConfirmationDialog({
         <h2 id="private-confirmation-title">{title}</h2>
         <p>{message}</p>
         <div className="private-confirmation-actions">
+          {choices?.map((choice) => (
+            <button
+              key={choice.label}
+              type="button"
+              className="private-gold-button"
+              onClick={choice.onSelect}
+              disabled={isBusy}
+            >
+              {choice.label}
+            </button>
+          ))}
           <button
             ref={cancelButtonRef}
             type="button"
@@ -60,16 +73,16 @@ export function ConfirmationDialog({
             onClick={onCancel}
             disabled={isBusy}
           >
-            Cancelar
+            {choices ? 'Cerrar' : 'Cancelar'}
           </button>
-          <button
+          {!choices && <button
             type="button"
             className={isDestructive ? 'private-danger-button' : 'private-gold-button'}
             onClick={onConfirm}
             disabled={isBusy}
           >
             {isBusy ? 'Procesando...' : confirmLabel}
-          </button>
+          </button>}
         </div>
       </section>
     </dialog>

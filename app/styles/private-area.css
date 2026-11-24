@@ -82,6 +82,28 @@
 
 .private-calendar-section {
   margin-top: 1.5rem;
+  .calendar-block{
+    border-radius: 0px;
+  }
+}
+
+.private-calendar-add-event {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  background: var(--bg-dark-raised);
+}
+
+.private-calendar-add-event p {
+  color: var(--text-secondary);
+  font-size: var(--font-size-private-small);
+  line-height: 1.5;
 }
 
 .private-calendar-controls {
@@ -163,7 +185,6 @@
   margin-top: 1.5rem;
   overflow: hidden;
   border: 1px solid var(--border);
-  border-radius: 8px;
   background: var(--bg-dark-raised);
 }
 

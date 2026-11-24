@@ -8,6 +8,19 @@ import type { IdentityDocumentType } from '@/lib/spanish-tax-id';
 
 type RequestType = 'wedding' | 'production';
 
+const EDITABLE_FIELDS = [
+  'nombre', 'email', 'fecha', 'tipoDocumentoIdentidad', 'documentoIdentidad', 'telNovio', 'telNovia', 'telefono', 'lugar', 'hora',
+  'novia', 'novio', 'ceremonia', 'horaSalidaNovio', 'horaSalidaNovia',
+  'horaCeremonia', 'horaCoctel', 'horaBarraLibre', 'detalles', 'tipo', 'presupuesto', 'detalles', 'tipoPack',
+  'fechaPreboda', 'lugarPreboda', 'detallesPreboda', 'fechaPostboda', 'lugarPostboda', 'detallesPostboda',
+  'servicioBoda', 'extraBoda', 'precioExtraBoda', 'descuentoBoda',
+  'servicioPreboda', 'extraPreboda', 'precioExtraPreboda',
+  'servicioPostboda', 'extraPostboda', 'precioExtraPostboda',
+  'setupCamara', 'precioCamara', 'setupDrone', 'precioDrone', 'setupIluminacion', 'precioIluminacion',
+  'setupSonido', 'precioSonido', 'formatoEntrega', 'precioFormato', 'personalExtra', 'precioPersonalExtra',
+  'logistica', 'precioLogistica', 'taxPercent',
+];
+
 function isValidDate(value: string) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const parsed = new Date(`${value}T00:00:00.000Z`);
@@ -16,6 +29,65 @@ function isValidDate(value: string) {
 
 function isIdentityDocumentType(value: unknown): value is IdentityDocumentType {
   return value === 'nif' || value === 'passport';
+}
+
+function validateRequestValues(requestType: RequestType, rawValues: unknown) {
+  if (!rawValues || typeof rawValues !== 'object' || Array.isArray(rawValues)) {
+    return { error: 'Los datos del evento no son válidos.' } as const;
+  }
+
+  const raw = rawValues as Record<string, unknown>;
+  if (EDITABLE_FIELDS.some((field) => typeof raw[field] !== 'string' || raw[field].length > 10000)) {
+    return { error: 'Los datos del evento no son válidos.' } as const;
+  }
+  const values = raw as Record<string, string>;
+  if (values.documentoIdentidad.length > 32) {
+    return { error: 'El documento de identidad no puede superar los 32 caracteres.' } as const;
+  }
+  if (!isIdentityDocumentType(values.tipoDocumentoIdentidad)) {
+    return { error: 'El tipo de documento no es válido.' } as const;
+  }
+
+  const normalizedDocument = normalizeSpanishTaxId(values.documentoIdentidad);
+  if (normalizedDocument && !isValidIdentityDocument(values.tipoDocumentoIdentidad, normalizedDocument)) {
+    return {
+      error: values.tipoDocumentoIdentidad === 'passport'
+        ? 'El pasaporte debe tener entre 5 y 20 letras o números.'
+        : 'El documento debe ser un DNI, NIE o CIF español válido.',
+    } as const;
+  }
+  if (!values.nombre.trim()
+    || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())
+    || !isValidDate(values.fecha)) {
+    return { error: 'Nombre, email y fecha son obligatorios y deben ser válidos.' } as const;
+  }
+  if (requestType === 'wedding'
+    && [values.fechaPreboda.trim(), values.fechaPostboda.trim()].some((date) => date !== '' && !isValidDate(date))) {
+    return { error: 'Las fechas de preboda y postboda deben ser válidas.' } as const;
+  }
+  if (requestType === 'wedding' && (!values.telNovio.trim() || !values.telNovia.trim())) {
+    return { error: 'Los teléfonos son obligatorios.' } as const;
+  }
+  if (requestType === 'production'
+    && (!values.telefono.trim() || !values.presupuesto.trim()
+      || !Number.isFinite(Number(values.presupuesto)) || Number(values.presupuesto) < 0)) {
+    return { error: 'El teléfono y un presupuesto válido son obligatorios.' } as const;
+  }
+
+  const amountFields = ['precioCamara', 'precioDrone', 'precioIluminacion', 'precioSonido', 'precioFormato', 'precioPersonalExtra', 'precioLogistica'];
+  if (requestType === 'production' && amountFields.some((field) =>
+    values[field].trim() !== '' && (!Number.isFinite(Number(values[field])) || Number(values[field]) < 0))) {
+    return { error: 'Los importes técnicos deben ser números iguales o superiores a cero.' } as const;
+  }
+  if (requestType === 'production' && !['', '0', '21'].includes(values.taxPercent)) {
+    return { error: 'El IVA debe ser 0 % o 21 %.' } as const;
+  }
+
+  return {
+    values,
+    normalizedDocument,
+    documentType: normalizedDocument ? values.tipoDocumentoIdentidad : null,
+  } as const;
 }
 
 async function isAuthenticated(request: NextRequest) {
@@ -37,7 +109,7 @@ export async function GET(request: NextRequest) {
       w.name AS nombre, w.email, COALESCE(w.identity_document_type, 'nif') AS "tipoDocumentoIdentidad",
       w.identity_document AS "documentoIdentidad",
       w.groom_phone AS "telNovio", w.bride_phone AS "telNovia",
-      w.location AS lugar, w.bride_name AS novia, w.groom_name AS novio,
+      w.location AS lugar, w.bride_location AS novia, w.groom_location AS novio,
       w.ceremony_location AS ceremonia,
       w.groom_departure_time AS "horaSalidaNovio", w.bride_departure_time AS "horaSalidaNovia",
       w.ceremony_time AS "horaCeremonia", w.cocktail_time AS "horaCoctel",
@@ -93,6 +165,162 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({ requests: [...weddings, ...productions] });
 }
 
+export async function POST(request: NextRequest) {
+  if (!(await isAuthenticated(request))) {
+    return NextResponse.json({ error: 'No autorizado.' }, { status: 401 });
+  }
+  if (!sql) {
+    return NextResponse.json({ error: 'La base de datos no está configurada.' }, { status: 503 });
+  }
+
+  const payload = await request.json().catch(() => ({}));
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)
+    || (payload.type !== 'wedding' && payload.type !== 'production')) {
+    return NextResponse.json({ error: 'El tipo de evento no es válido.' }, { status: 400 });
+  }
+  const requestType = payload.type as RequestType;
+  const validation = validateRequestValues(requestType, payload.values);
+  if ('error' in validation) {
+    return NextResponse.json({ error: validation.error }, { status: 400 });
+  }
+
+  const { values, normalizedDocument, documentType } = validation;
+  const preweddingDate = values.fechaPreboda.trim() || null;
+  const postweddingDate = values.fechaPostboda.trim() || null;
+  const hasPreweddingDate = preweddingDate !== null;
+  const hasPostweddingDate = postweddingDate !== null;
+  const [dateConflict] = await sql`
+    SELECT id FROM events
+    WHERE status IN ('confirmed', 'finished')
+      AND event_date IN (${values.fecha}, ${preweddingDate}, ${postweddingDate})
+    LIMIT 1;
+  `;
+  if (dateConflict) {
+    return NextResponse.json({ error: 'Ya existe un evento confirmado o finalizado en una de las fechas seleccionadas.' }, { status: 409 });
+  }
+
+  const [manualBlock] = await sql`
+    SELECT id FROM calendar_blocks
+    WHERE ${values.fecha}::date BETWEEN start_date AND end_date
+      OR (${preweddingDate}::date IS NOT NULL AND ${preweddingDate}::date BETWEEN start_date AND end_date)
+      OR (${postweddingDate}::date IS NOT NULL AND ${postweddingDate}::date BETWEEN start_date AND end_date)
+    LIMIT 1;
+  `;
+  if (manualBlock) {
+    return NextResponse.json({ error: 'No se puede crear el evento: una de sus fechas está bloqueada como no disponible.' }, { status: 409 });
+  }
+
+  const createdEvents = requestType === 'wedding'
+    ? await sql`
+      WITH current_year AS MATERIALIZED (
+        SELECT EXTRACT(YEAR FROM CURRENT_DATE)::INTEGER AS year
+      ), allocation AS (
+        INSERT INTO annual_budget_counters (year, last_number)
+        SELECT year, 1 FROM current_year
+        ON CONFLICT (year) DO UPDATE
+        SET last_number = annual_budget_counters.last_number + 1
+        WHERE annual_budget_counters.last_number < 9999
+        RETURNING year, last_number
+      ), created_event AS (
+        INSERT INTO events (type, event_date, status, budget_id, decided_at)
+        SELECT 'wedding', ${values.fecha}, 'confirmed',
+          allocation.year::TEXT || '-' || LPAD(allocation.last_number::TEXT, 4, '0'), NOW()
+        FROM allocation
+        RETURNING id
+      ), created_request AS (
+        INSERT INTO wedding_requests (
+          event_id, name, email, identity_document_type, identity_document, groom_phone, bride_phone,
+          package_type, details, groom_location, groom_departure_time, bride_location, bride_departure_time,
+          ceremony_location, ceremony_time, location, cocktail_time, open_bar_time, wedding_service,
+          wedding_extra, wedding_extra_price, wedding_discount, prewedding_service, prewedding_location,
+          prewedding_details, prewedding_extra, prewedding_extra_price, postwedding_service,
+          postwedding_location, postwedding_details, postwedding_extra, postwedding_extra_price
+        )
+        SELECT created_event.id, ${values.nombre.trim()}, ${values.email.trim()}, ${documentType},
+          ${setNullValue(normalizedDocument)}, ${values.telNovio.trim()}, ${values.telNovia.trim()},
+          ${values.tipoPack}, ${values.detalles.trim()}, ${setNullValue(values.novio)},
+          ${setNullValue(values.horaSalidaNovio)}, ${setNullValue(values.novia)},
+          ${setNullValue(values.horaSalidaNovia)}, ${setNullValue(values.ceremonia)},
+          ${setNullValue(values.horaCeremonia)}, ${setNullValue(values.lugar)},
+          ${setNullValue(values.horaCoctel)}, ${setNullValue(values.horaBarraLibre)},
+          ${values.servicioBoda}, ${setNullValue(values.extraBoda)},
+          ${values.precioExtraBoda || null}, ${values.descuentoBoda || null}, ${values.servicioPreboda},
+          ${setNullValue(values.lugarPreboda)}, ${setNullValue(values.detallesPreboda)},
+          ${setNullValue(values.extraPreboda)}, ${values.precioExtraPreboda || null},
+          ${values.servicioPostboda}, ${setNullValue(values.lugarPostboda)},
+          ${setNullValue(values.detallesPostboda)}, ${setNullValue(values.extraPostboda)},
+          ${values.precioExtraPostboda || null}
+        FROM created_event
+        RETURNING event_id
+      ), created_pre_event AS (
+        INSERT INTO events (type, event_date, status, parent_event_id, decided_at)
+        SELECT 'prewedding', ${preweddingDate}, 'confirmed', created_event.id, NOW()
+        FROM created_event
+        WHERE ${hasPreweddingDate}
+        RETURNING id
+      ), created_post_event AS (
+        INSERT INTO events (type, event_date, status, parent_event_id, decided_at)
+        SELECT 'postwedding', ${postweddingDate}, 'confirmed', created_event.id, NOW()
+        FROM created_event
+        WHERE ${hasPostweddingDate}
+        RETURNING id
+      )
+      SELECT event_id AS id FROM created_request;
+    `
+    : await sql`
+      WITH current_year AS MATERIALIZED (
+        SELECT EXTRACT(YEAR FROM CURRENT_DATE)::INTEGER AS year
+      ), allocation AS (
+        INSERT INTO annual_budget_counters (year, last_number)
+        SELECT year, 1 FROM current_year
+        ON CONFLICT (year) DO UPDATE
+        SET last_number = annual_budget_counters.last_number + 1
+        WHERE annual_budget_counters.last_number < 9999
+        RETURNING year, last_number
+      ), created_event AS (
+        INSERT INTO events (type, event_date, status, budget_id, decided_at)
+        SELECT 'production', ${values.fecha}, 'confirmed',
+          allocation.year::TEXT || '-' || LPAD(allocation.last_number::TEXT, 4, '0'), NOW()
+        FROM allocation
+        RETURNING id
+      ), created_request AS (
+        INSERT INTO production_requests (
+          event_id, name, email, identity_document_type, identity_document, phone, project_type,
+          budget, location, event_time, details, camera_setup, camera_price, drone_setup, drone_price,
+          lighting_setup, lighting_price, sound_setup, sound_price, delivery_format, delivery_price,
+          extra_staff, extra_staff_price, logistics, logistics_price, tax_percent
+        )
+        SELECT created_event.id, ${values.nombre.trim()}, ${values.email.trim()}, ${documentType},
+          ${setNullValue(normalizedDocument)}, ${values.telefono.trim()}, ${values.tipo.trim()},
+          ${values.presupuesto.trim()}, ${values.lugar.trim()}, ${setNullValue(values.hora)},
+          ${values.detalles.trim()}, ${values.setupCamara.trim() || null},
+          ${values.precioCamara.trim() === '' ? null : Number(values.precioCamara)},
+          ${values.setupDrone.trim() || null},
+          ${values.precioDrone.trim() === '' ? null : Number(values.precioDrone)},
+          ${values.setupIluminacion.trim() || null},
+          ${values.precioIluminacion.trim() === '' ? null : Number(values.precioIluminacion)},
+          ${values.setupSonido.trim() || null},
+          ${values.precioSonido.trim() === '' ? null : Number(values.precioSonido)},
+          ${values.formatoEntrega.trim() || null},
+          ${values.precioFormato.trim() === '' ? null : Number(values.precioFormato)},
+          ${values.personalExtra.trim() || null},
+          ${values.precioPersonalExtra.trim() === '' ? null : Number(values.precioPersonalExtra)},
+          ${values.logistica.trim() || null},
+          ${values.precioLogistica.trim() === '' ? null : Number(values.precioLogistica)},
+          ${values.taxPercent === '' ? null : Number(values.taxPercent)}
+        FROM created_event
+        RETURNING event_id
+      )
+      SELECT event_id AS id FROM created_request;
+    `;
+
+  if (createdEvents.length === 0) {
+    return NextResponse.json({ error: 'Se alcanzó el límite anual de 9999 presupuestos.' }, { status: 409 });
+  }
+
+  return NextResponse.json({ success: true, id: createdEvents[0].id }, { status: 201 });
+}
+
 export async function PATCH(request: NextRequest) {
   if (!(await isAuthenticated(request))) {
     return NextResponse.json({ error: 'No autorizado.' }, { status: 401 });
@@ -111,64 +339,11 @@ export async function PATCH(request: NextRequest) {
   const requestType = type as RequestType;
 
   if (action === 'update') {
-    const values = payload.values;
-    const editableFields = [
-      'nombre', 'email', 'fecha', 'tipoDocumentoIdentidad', 'documentoIdentidad', 'telNovio', 'telNovia', 'telefono', 'lugar', 'hora',
-      'novia', 'novio', 'ceremonia', 'horaSalidaNovio', 'horaSalidaNovia',
-      'horaCeremonia', 'horaCoctel', 'horaBarraLibre', 'detalles', 'tipo', 'presupuesto', 'detalles', 'tipoPack',
-      'fechaPreboda', 'lugarPreboda', 'detallesPreboda', 'fechaPostboda', 'lugarPostboda', 'detallesPostboda',
-      'servicioBoda', 'extraBoda', 'precioExtraBoda', 'descuentoBoda',
-      'servicioPreboda', 'extraPreboda', 'precioExtraPreboda',
-      'servicioPostboda', 'extraPostboda', 'precioExtraPostboda',
-      'setupCamara', 'precioCamara', 'setupDrone', 'precioDrone', 'setupIluminacion', 'precioIluminacion',
-      'setupSonido', 'precioSonido', 'formatoEntrega', 'precioFormato', 'personalExtra', 'precioPersonalExtra',
-      'logistica', 'precioLogistica', 'taxPercent',
-    ];
-    if (!values || editableFields.some((field) => typeof values[field] !== 'string' || values[field].length > 10000)) {
-      return NextResponse.json({ error: 'Los datos del evento no son válidos.' }, { status: 400 });
+    const validation = validateRequestValues(requestType, payload.values);
+    if ('error' in validation) {
+      return NextResponse.json({ error: validation.error }, { status: 400 });
     }
-    if (values.documentoIdentidad.length > 32) {
-      return NextResponse.json({ error: 'El documento de identidad no puede superar los 32 caracteres.' }, { status: 400 });
-    }
-
-    const hasValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim());
-    const hasValidDate = isValidDate(values.fecha);
-    if (!isIdentityDocumentType(values.tipoDocumentoIdentidad)) {
-      return NextResponse.json({ error: 'El tipo de documento no es válido.' }, { status: 400 });
-    }
-    const normalizedDocument = normalizeSpanishTaxId(values.documentoIdentidad);
-    if (normalizedDocument && !isValidIdentityDocument(values.tipoDocumentoIdentidad, normalizedDocument)) {
-      return NextResponse.json({
-        error: values.tipoDocumentoIdentidad === 'passport'
-          ? 'El pasaporte debe tener entre 5 y 20 letras o números.'
-          : 'El documento debe ser un DNI, NIE o CIF español válido.',
-      }, { status: 400 });
-    }
-    const documentType = normalizedDocument ? values.tipoDocumentoIdentidad : null;
-    if (!values.nombre.trim() || !hasValidEmail || !hasValidDate) {
-      return NextResponse.json({ error: 'Nombre, email y fecha son obligatorios y deben ser válidos.' }, { status: 400 });
-    }
-    const secondaryDates = requestType === 'wedding'
-      ? [values.fechaPreboda.trim(), values.fechaPostboda.trim()]
-      : [];
-    if (secondaryDates.some((date) => date !== '' && !isValidDate(date))) {
-      return NextResponse.json({ error: 'Las fechas de preboda y postboda deben ser válidas.' }, { status: 400 });
-    }
-
-    if (requestType === 'wedding' && (!values.telNovio.trim() || !values.telNovia.trim())) {
-      return NextResponse.json({ error: 'Los teléfonos son obligatorios.' }, { status: 400 });
-    }
-    if (requestType === 'production' && (!values.telefono.trim() || !values.presupuesto.trim() || !Number.isFinite(Number(values.presupuesto)) || Number(values.presupuesto) < 0)) {
-      return NextResponse.json({ error: 'El teléfono y un presupuesto válido son obligatorios.' }, { status: 400 });
-    }
-
-    const amountFields = ['precioCamara', 'precioDrone', 'precioIluminacion', 'precioSonido', 'precioFormato', 'precioPersonalExtra', 'precioLogistica'];
-    if (requestType === 'production' && amountFields.some((field) => values[field].trim() !== '' && (!Number.isFinite(Number(values[field])) || Number(values[field]) < 0))) {
-      return NextResponse.json({ error: 'Los importes técnicos deben ser números iguales o superiores a cero.' }, { status: 400 });
-    }
-    if (requestType === 'production' && !['', '0', '21'].includes(values.taxPercent)) {
-      return NextResponse.json({ error: 'El IVA debe ser 0 % o 21 %.' }, { status: 400 });
-    }
+    const { values, normalizedDocument, documentType } = validation;
 
     const result = requestType === 'wedding'
       ? await sql`
@@ -182,9 +357,9 @@ export async function PATCH(request: NextRequest) {
           identity_document_type = ${documentType},
           identity_document = ${setNullValue(normalizedDocument)},
           groom_phone = ${values.telNovio.trim()}, bride_phone = ${values.telNovia.trim()},
-          groom_name = ${setNullValue(values.novio)},
+          groom_location = ${setNullValue(values.novio)},
           groom_departure_time = ${setNullValue(values.horaSalidaNovio)},
-          bride_name = ${setNullValue(values.novia)},
+          bride_location = ${setNullValue(values.novia)},
           bride_departure_time = ${setNullValue(values.horaSalidaNovia)},
           ceremony_location = ${setNullValue(values.ceremonia)},
           ceremony_time = ${setNullValue(values.horaCeremonia)},

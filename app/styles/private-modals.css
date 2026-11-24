@@ -354,7 +354,7 @@
 }
 
 .request-history__item--finished .request-history__marker {
-  background: var(--priv-cinema)
+  background: var(--priv-delivered)
 }
 
 .request-history__item:not(:last-child)::before {

@@ -1,505 +1,636 @@
+// scripts/seed.mjs
 import { createHash, randomBytes } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { neon } from '@neondatabase/serverless';
 
 const require = createRequire(import.meta.url);
 const { loadEnvConfig } = require('@next/env');
-loadEnvConfig(process.cwd());
+loadEnvConfig(process.cwd(), true);
 
-if (!process.env.DATABASE_URL) {
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
   throw new Error('Define DATABASE_URL en el entorno o en .env.local.');
 }
 
+const sql = neon(databaseUrl);
+const now = Date.now();
+const nowIso = new Date(now).toISOString();
+const uuid = (n) => `8ac77bc3-c701-4b13-95da-${String(n).padStart(12, '0')}`;
+
+const madrid = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Europe/Madrid',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
+function madridDate(ms) {
+  const parts = Object.fromEntries(
+    madrid.formatToParts(ms).map(({ type, value }) => [type, value]),
+  );
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+
+function timestamp(iso) {
+  const ms = Date.parse(iso);
+  if (!Number.isFinite(ms) || !/(?:Z|[+-]\d{2}:\d{2})$/.test(iso)) {
+    throw new Error(`Timestamp inválido o sin zona horaria: ${iso}`);
+  }
+  return ms;
+}
+
+const confirm = (at) => ({ status: 'confirmed', at });
+const reject = (at) => ({ status: 'rejected', at });
+const session = (n, date, location, service, details) => ({
+  n, date, location, service, details,
+});
+
+// Si la confirmación de ejemplo aún es futura, desplaza también el alta y
+// la edición para conservar el orden. No adelanta la fecha de cierre.
+function confirmationForAlerts({ createdAt, editedAt = createdAt, at }, latest = now) {
+  const shift = Math.max(0, timestamp(at) - latest);
+  const move = (iso) => shift === 0
+    ? iso
+    : new Date(timestamp(iso) - shift).toISOString();
+
+  return {
+    createdAt: move(createdAt),
+    editedAt: move(editedAt),
+    decision: confirm(move(at)),
+  };
+}
+
+const P = {
+  catedral: 'Catedral de Murcia, Plaza del Cardenal Belluga, Murcia',
+  santoDomingo: 'Iglesia de Santo Domingo, Plaza de Santo Domingo, Murcia',
+  aytoMurcia: 'Ayuntamiento de Murcia, Glorieta de España 1, Murcia',
+  nelva: 'Hotel Nelva, Avenida Primero de Mayo 5, Murcia',
+  hesperia: 'Hesperia Murcia Centro, Calle Madre de Dios 4, Murcia',
+  coronas: 'Barceló Murcia Siete Coronas, Paseo de Garay 5, Murcia',
+  casino: 'Real Casino de Murcia, Calle Trapería 18, Murcia',
+  malecon: 'Paseo del Malecón, Murcia',
+  floridablanca: 'Jardín de Floridablanca, Alameda de Colón, Murcia',
+  fuensanta: 'Santuario de la Fuensanta, Algezares, Murcia',
+  villegas: 'Auditorio Víctor Villegas, Avenida Primero de Mayo, Murcia',
+  cuartel: 'Cuartel de Artillería, Calle Madre Elisea Oliver Molina, Murcia',
+
+  palacio: 'Palacio Consistorial, Plaza del Ayuntamiento, Cartagena, Murcia',
+  santaMaria: 'Iglesia de Santa María de Gracia, Calle del Aire, Cartagena, Murcia',
+  nh: 'NH Cartagena, Calle Real 2, Cartagena, Murcia',
+  alfonso: 'Sercotel Alfonso XIII, Paseo Alfonso XIII 40, Cartagena, Murcia',
+  batel: 'Auditorio El Batel, Paseo Alfonso XII, Cartagena, Murcia',
+  parqueTorres: 'Parque Torres, Cartagena, Murcia',
+  calaCortina: 'Playa de Cala Cortina, Cartagena, Murcia',
+
+  basilica: 'Basílica de Santa María, Plaça de Santa Maria, Elche, Alicante',
+  hotelHuerto: 'Hotel Huerto del Cura, Porta de la Morera 14, Elche, Alicante',
+  jardinHuerto: 'Jardín Huerto del Cura, Porta de la Morera 49, Elche, Alicante',
+  milenio: 'Hotel Jardín Milenio, Carrer de Curtidors 17, Elche, Alicante',
+  parqueElche: "Parque Municipal de Elche, Passeig de l'Estació, Elche, Alicante",
+  pinet: 'Playa del Pinet, La Marina, Elche, Alicante',
+
+  concatedral: 'Concatedral de San Nicolás, Plaza del Abad Penalva, Alicante',
+  aytoAlicante: 'Ayuntamiento de Alicante, Plaza del Ayuntamiento 1, Alicante',
+  melia: 'Meliá Alicante, Plaza del Puerto 3, Alicante',
+  granSol: 'Hotel Alicante Gran Sol, Rambla de Méndez Núñez 3, Alicante',
+  postiguet: 'Playa del Postiguet, Alicante',
+  cigarreras: 'Centro Cultural Las Cigarreras, Calle San Carlos 78, Alicante',
+  adda: 'Auditorio de la Diputación de Alicante, Avenida de Jijona 5, Alicante',
+
+  jardinesLorca: 'Hotel Spa Jardines de Lorca, Alameda de Rafael Méndez, Lorca, Murcia',
+  parador: 'Parador de Lorca, Castillo de Lorca, Lorca, Murcia',
+  patricio: 'Colegiata de San Patricio, Plaza de España, Lorca, Murcia',
+  plazaLorca: 'Plaza de España, Lorca, Murcia',
+};
+
 const weddings = [
   {
-    id: '8ac77bc3-c701-4b13-95da-000000000001',
-    name: 'Clara Martin y Daniel Vega',
-    email: 'clara.martin@example.com',
-    eventDate: '2026-11-21',
-    status: 'confirmed',
-    phone: '+34 600 100 011',
-    identityDocumentType: 'nif',
-    identityDocument: '12345678Z',
-    groomAddress: 'C/ Molinos Romero nº10 5ºD',
-    groomDepartureTime: '11:30',
-    brideAddress: 'Calle Nueva 24, 2.º A, 45001 Toledo',
-    brideDepartureTime: '12:00',
-    packageType: 'boda',
-    ceremony: 'Iglesia de Santa Clara, Calle de la Iglesia 12, Toledo',
-    ceremonyTime: '13:00',
-    location: 'Finca Los Olivos, Carretera Toledo-Mocejón km 6, Toledo',
-    details: 'Celebracion con ceremonia religiosa y banquete al aire libre.',
-    preweddingService: null,
-    preweddingDate: null,
-    preweddingLocation: null,
-    preweddingDetails: null,
-    postweddingService: null,
-    postweddingDate: null,
-    postweddingLocation: null,
-    postweddingDetails: null,
+    n: 1, bride: 'Clara Martín', groom: 'Daniel Vega',
+    email: 'clara.martin@example.com', eventDate: '2026-11-21',
+    groomLocation: P.nelva, brideLocation: P.hesperia,
+    ceremony: P.catedral, location: P.coronas,
+    details: 'Ceremonia religiosa y cóctel en la terraza si acompaña el tiempo.',
+    // Caso de alerta: confirmed el mismo día que Alba Ríos (pending).
+    ...confirmationForAlerts({
+      createdAt: '2026-08-06T09:00:00+02:00',
+      editedAt: '2026-08-19T11:00:00+02:00',
+      at: '2026-08-24T10:30:00+02:00',
+    }),
   },
   {
-    id: '8ac77bc3-c701-4b13-95da-000000000002',
-    name: 'Lucia Romero y Marcos Gil',
-    email: 'lucia.romero@example.com',
-    eventDate: '2026-11-28',
-    phone: '+34 600 100 012',
-    identityDocumentType: 'nif',
-    identityDocument: 'X0000000T',
-    groomAddress: 'Calle Real 18, 3.º C, 45002 Toledo',
-    groomDepartureTime: '11:15',
-    brideAddress: 'Avenida de la Reconquista 6, 1.º B, 45004 Toledo',
-    brideDepartureTime: '11:45',
-    packageType: 'duo-pre',
-    ceremony: 'Juzgado de Toledo, Calle del Juzgado 4, Toledo',
-    ceremonyTime: '13:30',
-    location: 'Hotel Mirador del Tajo, Paseo de Recaredo 12, Toledo',
-    details: 'Boda con preparativos en ambos domicilios, ceremonia y banquete.',
-    preweddingService: 'duo',
-    preweddingDate: '2026-11-14',
-    preweddingLocation: 'Casco historico de Toledo',
-    preweddingDetails: 'Sesion de pareja al atardecer por el casco historico.',
-    postweddingService: null,
-    postweddingDate: null,
-    postweddingLocation: null,
-    postweddingDetails: null,
+    n: 2, bride: 'Lucía Romero', groom: 'Marcos Gil',
+    email: 'lucia.romero@example.com', eventDate: '2026-11-28',
+    groomLocation: P.nh, brideLocation: P.alfonso,
+    ceremony: P.palacio, ceremonyTime: '13:30',
+    location: P.alfonso, cocktailTime: '15:00',
+    details: 'Preparativos en dos hoteles, ceremonia civil y banquete.',
+    pre: session(6, '2026-11-14', P.parqueTorres, 'duo',
+      'Fotos y vídeo de pareja al atardecer.'),
+    createdAt: '2026-09-04T10:45:00+02:00',
   },
   {
-    id: '8ac77bc3-c701-4b13-95da-000000000003',
-    name: 'Eva Torres y Pablo Leon',
-    email: 'eva.torres@example.com',
-    eventDate: '2026-12-12',
-    phone: '+34 600 100 013',
-    identityDocumentType: 'passport',
-    identityDocument: 'AB123456C',
-    groomAddress: 'Calle del Prado 42, 4.º A, 28014 Madrid',
-    groomDepartureTime: '10:45',
-    brideAddress: 'Calle de Atocha 86, 2.º D, 28012 Madrid',
-    brideDepartureTime: '11:30',
-    packageType: 'trio',
-    ceremony: 'Iglesia de San Miguel, Plaza de San Miguel 3, Madrid',
-    ceremonyTime: '12:30',
-    location: 'Quinta del Lago, Camino de la Quinta 5, Madrid',
-    details: 'Pack completo con boda, preboda y postboda.',
-    preweddingService: 'fotos',
-    preweddingDate: '2026-12-05',
-    preweddingLocation: 'Parque del Retiro, Madrid',
-    preweddingDetails: 'Sesion fotografica de pareja en el Retiro.',
-    postweddingService: 'video',
-    postweddingDate: '2026-12-19',
-    postweddingLocation: 'Playa de Bolonia, Cadiz',
-    postweddingDetails: 'Grabacion informal de pareja en la playa.',
+    n: 3, bride: 'Eva Torres', groom: 'Pablo León',
+    email: 'eva.torres@example.com', passport: 'AB123456C', eventDate: '2026-12-12',
+    groomLocation: P.milenio, brideLocation: P.hotelHuerto,
+    ceremony: P.basilica, ceremonyTime: '12:30', location: P.hotelHuerto,
+    details: 'Reportaje completo de boda, con preboda de fotos y postboda de vídeo.',
+    pre: session(7, '2026-12-05', P.jardinHuerto, 'fotos',
+      'Retratos en el jardín a primera hora.'),
+    post: session(8, '2026-12-19', P.pinet, 'video',
+      'Pieza de pareja junto a las dunas y la orilla.'),
+    createdAt: '2026-09-15T09:20:00+02:00',
+    editedAt: '2026-09-21T09:20:00+02:00',
   },
   {
-    id: '8ac77bc3-c701-4b13-95da-000000000009',
-    name: 'Rocio Mendez y Hector Cano',
-    email: 'rocio.mendez@example.com',
-    eventDate: '2027-01-16',
-    phone: '+34 600 100 014',
-    identityDocumentType: 'nif',
-    identityDocument: 'Y0000000Z',
-    groomAddress: 'Calle Feria 31, 2.º C, 41003 Sevilla',
-    groomDepartureTime: '11:00',
-    brideAddress: 'Calle San Vicente 45, 1.º A, 41002 Sevilla',
-    brideDepartureTime: '11:45',
-    packageType: 'duo-post',
-    ceremony: 'Iglesia de San Lorenzo, Calle San Lorenzo 8, Sevilla',
-    ceremonyTime: '13:00',
-    location: 'Hacienda La Encina, Carretera de Carmona km 8, Sevilla',
-    details: 'Boda con reportaje y sesion postboda.',
-    preweddingService: null,
-    preweddingDate: null,
-    preweddingLocation: null,
-    preweddingDetails: null,
-    postweddingService: 'duo',
-    postweddingDate: '2027-01-30',
-    postweddingLocation: 'Plaza de Espana, Sevilla',
-    postweddingDetails: 'Sesion de fotos y video despues de la boda.',
+    n: 9, bride: 'Rocío Méndez', groom: 'Héctor Cano',
+    email: 'rocio.mendez@example.com', eventDate: '2027-01-16',
+    groomLocation: P.granSol, brideLocation: P.melia,
+    ceremony: P.concatedral, location: P.melia,
+    details: 'Reportaje de boda y una segunda sesión con luz de mañana.',
+    post: session(13, '2027-01-30', P.postiguet, 'duo',
+      'Fotos y vídeo de pareja junto al mar.'),
+    createdAt: '2026-10-06T17:00:00+02:00',
   },
   {
-    id: '8ac77bc3-c701-4b13-95da-000000000010',
-    name: 'Marta Soler y Adrian Blanco',
-    email: 'marta.soler@example.com',
-    eventDate: '2027-02-20',
-    phone: '+34 600 100 015',
-    identityDocumentType: 'passport',
-    identityDocument: 'P12345678',
-    groomAddress: 'Carrer del Riu 12, 3r 1a, 17001 Girona',
-    groomDepartureTime: '10:30',
-    brideAddress: 'Carrer de la Fira 28, 1r 2a, 17002 Girona',
-    brideDepartureTime: '11:15',
+    n: 10, bride: 'Marta Soler', groom: 'Adrián Blanco',
+    email: 'marta.soler@example.com', passport: 'P12345678', eventDate: '2027-02-20',
+    groomLocation: P.jardinesLorca, brideLocation: P.parador,
+    ceremony: P.parador, ceremonyTime: '12:00', location: P.parador,
     packageType: 'indeciso',
-    ceremony: 'Juzgado de Girona, Avenida de la Justicia 2, Girona',
-    ceremonyTime: '12:00',
-    location: 'Masia Can Riera, Camino del Lago s/n, Girona',
-    details: 'La pareja aun esta decidiendo entre fotografia y video.',
-    preweddingService: null,
-    preweddingDate: null,
-    preweddingLocation: null,
-    preweddingDetails: null,
-    postweddingService: null,
-    postweddingDate: null,
-    postweddingLocation: null,
-    postweddingDetails: null,
+    details: 'Ceremonia civil en el hotel. La pareja aún está valorando fotografía y vídeo.',
+    // Caso de alerta: pending el mismo día que Samuel Ortega (pending).
+    createdAt: '2026-11-10T12:20:00+01:00',
+  },
+  {
+    n: 22, bride: 'Nuria Vidal', groom: 'Álvaro Costa',
+    email: 'nuria.vidal@example.com', eventDate: '2026-10-17',
+    groomLocation: P.nelva, brideLocation: P.coronas,
+    ceremony: P.santoDomingo, location: P.nelva,
+    details: 'Boda de otoño con ceremonia religiosa y banquete en salón.',
+    pre: session(34, '2026-10-04', P.malecon, 'fotos',
+      'Paseo y retratos informales al final de la tarde.'),
+    post: session(35, '2026-10-24', P.fuensanta, 'duo',
+      'Retratos y planos de pareja en los alrededores del santuario.'),
+    createdAt: '2026-08-26T10:00:00+02:00',
+    editedAt: '2026-09-01T10:00:00+02:00',
+    decision: confirm('2026-09-03T10:30:00+02:00'),
+    finishedAt: '2026-10-26T10:00:00+01:00',
+  },
+  {
+    n: 23, bride: 'Paula Serrano', groom: 'Miguel Soto',
+    email: 'paula.serrano@example.com', eventDate: '2026-11-07',
+    groomLocation: P.alfonso, brideLocation: P.nh,
+    ceremony: P.santaMaria, location: P.alfonso,
+    details: 'Reportaje centrado en los preparativos, la entrada y los discursos.',
+    pre: session(36, '2026-10-31', P.parqueTorres, 'video',
+      'Grabación breve con vistas a la ciudad.'),
+    post: session(37, '2026-11-15', P.calaCortina, 'fotos',
+      'Retratos con luz suave a primera hora.'),
+    createdAt: '2026-09-09T11:00:00+02:00',
+    decision: confirm('2026-09-18T12:00:00+02:00'),
+  },
+  {
+    n: 24, bride: 'Irene Molina', groom: 'Jorge Beltrán',
+    email: 'irene.molina@example.com', eventDate: '2026-12-20',
+    groomLocation: P.jardinesLorca, brideLocation: P.parador,
+    ceremony: P.patricio, location: P.parador,
+    details: 'Boda de invierno con retratos en el casco histórico de Lorca.',
+    pre: session(38, '2026-12-03', P.plazaLorca, 'fotos',
+      'Retratos urbanos y recorrido a pie por el centro.'),
+    post: session(39, '2027-01-09', P.parador, 'duo',
+      'Sesión exterior en el entorno del castillo después de Reyes.'),
+    createdAt: '2026-09-23T09:30:00+02:00',
+    editedAt: '2026-10-05T11:00:00+02:00',
+    decision: confirm('2026-10-08T09:30:00+02:00'),
+    finishedAt: '2027-01-11T09:45:00+01:00',
+  },
+  {
+    n: 25, bride: 'Elena Ruiz', groom: 'Sergio Campos',
+    email: 'elena.ruiz@example.com', eventDate: '2027-02-06',
+    groomLocation: P.milenio, brideLocation: P.hotelHuerto,
+    ceremony: P.hotelHuerto, location: P.hotelHuerto,
+    details: 'Ceremonia civil y banquete en el mismo recinto, con plan interior si llueve.',
+    pre: session(40, '2027-01-24', P.parqueElche, 'fotos',
+      'Retratos de pareja entre las palmeras.'),
+    post: session(41, '2027-02-14', P.pinet, 'duo',
+      'Sesión en la playa al final de la tarde si el tiempo lo permite.'),
+    createdAt: '2026-12-17T12:00:00+01:00',
+    editedAt: '2026-12-18T10:00:00+01:00',
+    decision: confirm('2026-12-21T12:00:00+01:00'),
+  },
+  {
+    n: 26, bride: 'Beatriz Lara', groom: 'Óscar Lozano',
+    email: 'beatriz.lara@example.com', eventDate: '2027-02-13',
+    groomLocation: P.hesperia, brideLocation: P.coronas,
+    ceremony: P.aytoMurcia, location: P.coronas,
+    details: 'Consulta para una ceremonia civil pequeña y una preboda en el centro.',
+    pre: session(42, '2027-02-07', P.floridablanca, 'fotos',
+      'Retratos junto a los ficus del jardín.'),
+    createdAt: '2026-12-10T11:30:00+01:00',
+    decision: reject('2027-01-12T10:30:00+01:00'),
+  },
+  {
+    n: 27, bride: 'Alicia Navarro', groom: 'Rubén Sáez',
+    email: 'alicia.navarro@example.com', eventDate: '2027-02-21',
+    groomLocation: P.granSol, brideLocation: P.melia,
+    ceremony: P.aytoAlicante, location: P.melia,
+    details: 'Ceremonia civil y comida familiar. Prefieren hacer los retratos otro día.',
+    post: session(43, '2027-02-27', P.postiguet, 'video',
+      'Pieza corta de pareja por el paseo marítimo.'),
+    createdAt: '2026-12-15T11:00:00+01:00',
   },
 ];
+
+function kit(camera, lighting, sound, delivery, staff, logistics) {
+  return {
+    camera_setup: camera[0], camera_price: camera[1],
+    lighting_setup: lighting[0], lighting_price: lighting[1],
+    sound_setup: sound[0], sound_price: sound[1],
+    delivery_format: delivery[0], delivery_price: delivery[1],
+    extra_staff: staff[0], extra_staff_price: staff[1],
+    logistics: logistics[0], logistics_price: logistics[1],
+  };
+}
+
+const kits = {
+  spot: kit(
+    ['Sony FX3 II', 500], ['Iluminación básica (Paneles LED)', 120],
+    ['Sonido profesional (Pértiga y Lavaliers)', 180], ['Spot Comercial', 200],
+    ['Ayudante de produccion', 180], ['Desplazamiento local', 60],
+  ),
+  video: kit(
+    ['Sony Alpha 7 V', 350], ['Iluminación cinematográfica (Aputure/Nanlite)', 300],
+    ['Sonido directo a cámara', 80], ['Paquete Completo (Largo + Reels)', 450],
+    ['Auxiliar de camara', 160], ['Alquiler y transporte de equipo', 220],
+  ),
+  foto: kit(
+    ['Sony Alpha 7 V', 250], ['Iluminación básica (Paneles LED)', 100],
+    ['Sin sonido', 0], ['Solo brutos', 80],
+    ['Sin personal adicional', 0], ['Desplazamiento local', 40],
+  ),
+  corporativo: kit(
+    ['Sony FX3 II', 600], ['Iluminación cinematográfica (Aputure/Nanlite)', 350],
+    ['Sonido profesional (Pértiga y Lavaliers)', 220], ['Vídeo corporativo largo', 600],
+    ['Ayudante de produccion', 200], ['Equipo y desplazamiento', 250],
+  ),
+  musical: kit(
+    ['Sony FX3 II', 600], ['Iluminación cinematográfica (Aputure/Nanlite)', 350],
+    ['Sonido profesional (Pértiga y Lavaliers)', 220], ['Paquete Completo (Largo + Reels)', 450],
+    ['-', 0], ['-', 0],
+  ),
+};
 
 const productions = [
   {
-    id: '8ac77bc3-c701-4b13-95da-000000000004',
-    name: 'Alba Rios',
-    email: 'alba.rios@example.com',
-    phone: '+34 600 200 021',
-    identityDocumentType: 'nif',
-    identityDocument: 'Z0000000M',
-    eventDate: '2026-11-21',
-    projectType: 'Spot comercial',
-    budget: '1800',
-    location: 'Madrid',
-    eventTime: '10:00',
-    details: 'Spot para el lanzamiento de una marca local de cafe.',
-    camera: 'Sony FX3 II',
-    cameraPrice: 500,
-    drone: 'DJI Mini 4 Pro',
-    dronePrice: 150,
-    lighting: 'Iluminación básica (Paneles LED)',
-    lightingPrice: 120,
-    sound: 'Sonido profesional (Pértiga y Lavaliers)',
-    soundPrice: 180,
-    delivery: 'Spot Comercial',
-    deliveryPrice: 200,
-    extraStaff: 'Ayudante de produccion',
-    extraStaffPrice: 180,
-    logistics: 'Desplazamiento local',
-    logisticsPrice: 60,
+    n: 4, name: 'Alba Ríos', email: 'alba.rios@example.com',
+    eventDate: '2026-11-21', eventTime: '10:00',
+    projectType: 'Spot comercial', budget: '1800', kit: 'spot',
+    location: P.casino, drone: ['DJI Mini 4 Pro', 150],
+    details: 'Spot para una marca local de café. Rodaje de producto en una sala reservada.',
+    createdAt: '2026-09-24T10:00:00+02:00',
   },
   {
-    id: '8ac77bc3-c701-4b13-95da-000000000005',
-    name: 'Nicolas Fuentes',
-    email: 'nicolas.fuentes@example.com',
-    phone: '+34 600 200 022',
-    identityDocumentType: 'nif',
-    identityDocument: '00000000T',
-    eventDate: '2026-12-12',
-    projectType: 'Videoclip cinematográfico',
-    budget: '2200',
-    location: 'Nave industrial, Alcalá de Henares',
-    eventTime: '18:30',
-    details: 'Videoclip musical con rodaje nocturno y puesta en escena.',
-    camera: 'Sony Alpha 7 V',
-    cameraPrice: 350,
-    drone: 'Sin dron',
-    dronePrice: 0,
-    lighting: 'Iluminación cinematográfica (Aputure/Nanlite)',
-    lightingPrice: 300,
-    sound: 'Sonido directo a cámara',
-    soundPrice: 80,
-    delivery: 'Paquete Completo (Largo + Reels)',
-    deliveryPrice: 450,
-    extraStaff: 'Auxiliar de camara',
-    extraStaffPrice: 160,
-    logistics: 'Alquiler y transporte de equipo',
-    logisticsPrice: 220,
+    n: 5, name: 'Nicolás Fuentes', email: 'nicolas.fuentes@example.com',
+    eventDate: '2026-12-11', eventTime: '18:30',
+    projectType: 'Videoclip cinematográfico', budget: '2200', kit: 'video',
+    location: P.cuartel,
+    details: 'Videoclip nocturno con iluminación de color y planos de interpretación.',
+    createdAt: '2026-10-09T12:00:00+02:00',
   },
   {
-    id: '8ac77bc3-c701-4b13-95da-000000000011',
-    name: 'Daniela Pardo',
-    email: 'daniela.pardo@example.com',
-    phone: '+34 600 200 023',
-    identityDocumentType: 'passport',
-    identityDocument: 'C98765432',
-    eventDate: '2027-01-23',
-    projectType: 'Sesión fotográfica',
-    budget: '650',
-    location: 'Estudio fotografico, Valencia',
-    eventTime: '11:00',
-    details: 'Retrato editorial y fotografia de producto.',
-    camera: 'Sony Alpha 7 V',
-    cameraPrice: 250,
-    drone: 'Sin dron',
-    dronePrice: 0,
-    lighting: 'Iluminación básica (Paneles LED)',
-    lightingPrice: 100,
-    sound: 'Sin sonido',
-    soundPrice: 0,
-    delivery: 'Solo brutos',
-    deliveryPrice: 80,
-    extraStaff: 'Sin personal adicional',
-    extraStaffPrice: 0,
-    logistics: 'Desplazamiento local',
-    logisticsPrice: 40,
+    n: 11, name: 'Daniela Pardo', email: 'daniela.pardo@example.com',
+    passport: 'C98765432', eventDate: '2027-01-23', eventTime: '11:00',
+    projectType: 'Sesión fotográfica', budget: '650', kit: 'foto',
+    location: P.hotelHuerto,
+    details: 'Retrato editorial y fotografía de producto en una sala reservada.',
+    createdAt: '2026-11-26T10:15:00+01:00',
   },
   {
-    id: '8ac77bc3-c701-4b13-95da-000000000012',
-    name: 'Samuel Ortega',
-    email: 'samuel.ortega@example.com',
-    phone: '+34 600 200 024',
-    identityDocumentType: 'nif',
-    identityDocument: 'X0000000T',
-    eventDate: '2027-02-20',
-    projectType: 'Producción completa',
-    budget: '3500',
-    location: 'Complejo cultural, Zaragoza',
-    eventTime: '09:00',
-    details: 'Produccion integral de una pieza corporativa.',
-    camera: 'Sony FX3 II',
-    cameraPrice: 600,
-    drone: 'DJI Mavic 3 Cine',
-    dronePrice: 300,
-    lighting: 'Iluminación cinematográfica (Aputure/Nanlite)',
-    lightingPrice: 350,
-    sound: 'Sonido profesional (Pértiga y Lavaliers)',
-    soundPrice: 220,
-    delivery: 'Vídeo corporativo largo',
-    deliveryPrice: 600,
-    extraStaff: 'Ayudante de produccion',
-    extraStaffPrice: 200,
-    logistics: 'Equipo y desplazamiento',
-    logisticsPrice: 250,
+    n: 12, name: 'Samuel Ortega', email: 'samuel.ortega@example.com',
+    eventDate: '2027-02-20', eventTime: '09:00',
+    projectType: 'Producción completa', budget: '3500', kit: 'corporativo',
+    location: P.adda, drone: ['DJI Mavic 3 Cine', 300],
+    details: 'Pieza corporativa con entrevistas en sala y recursos del exterior.',
+    createdAt: '2026-12-09T10:45:00+01:00',
+  },
+  {
+    n: 20, name: 'Sarah Martínez', email: 'sarah.martinez@example.com',
+    eventDate: '2026-11-20', eventTime: '09:00',
+    projectType: 'Videoclip musical', budget: '3500', kit: 'musical',
+    location: P.cigarreras, drone: ['DJI Mavic 3 Cine', 300],
+    details: 'Videoclip para presentar a una audición, con una pieza principal y cortes cortos.',
+    // Sarah se confirma antes que Clara, incluso si se adelantan ambas fechas.
+    ...confirmationForAlerts({
+      createdAt: '2026-08-11T10:00:00+02:00',
+      at: '2026-08-18T10:00:00+02:00',
+    }, now - 1000),
+    finishedAt: '2026-11-23T10:30:00+01:00',
+  },
+  {
+    n: 28, name: 'Celia Ortega', email: 'celia.ortega@example.com',
+    eventDate: '2026-10-09', eventTime: '09:30',
+    projectType: 'Spot comercial', budget: '1800', kit: 'spot',
+    location: P.nelva,
+    details: 'Anuncio de 30 segundos para promocionar un congreso gastronómico.',
+    createdAt: '2026-09-01T11:00:00+02:00',
+    decision: confirm('2026-09-10T12:00:00+02:00'),
+    finishedAt: '2026-10-13T10:30:00+02:00',
+  },
+  {
+    n: 29, name: 'Javier Costa', email: 'javier.costa@example.com',
+    eventDate: '2026-10-29', eventTime: '09:30',
+    projectType: 'Producción completa', budget: '3500', kit: 'corporativo',
+    location: P.villegas,
+    details: 'Entrevistas a ponentes y vídeo resumen de una jornada empresarial.',
+    createdAt: '2026-09-15T10:00:00+02:00',
+    decision: confirm('2026-10-02T10:45:00+02:00'),
+  },
+  {
+    n: 30, name: 'Miriam Rubio', email: 'miriam.rubio@example.com',
+    eventDate: '2026-11-25', eventTime: '10:30',
+    projectType: 'Sesión fotográfica', budget: '650', kit: 'foto',
+    location: P.hesperia,
+    details: 'Solicitud para fotografiar una colección de accesorios para una tienda en línea.',
+    createdAt: '2026-10-20T10:00:00+02:00',
+    decision: reject('2026-11-04T11:30:00+01:00'),
+  },
+  {
+    n: 31, name: 'Hugo Navarro', email: 'hugo.navarro@example.com',
+    eventDate: '2026-12-22', eventTime: '17:00',
+    projectType: 'Videoclip cinematográfico', budget: '2200', kit: 'video',
+    location: P.batel,
+    details: 'Grabación en sala de una versión acústica, con un plano secuencia y planos de apoyo.',
+    createdAt: '2026-10-22T09:30:00+02:00',
+    decision: confirm('2026-11-05T09:30:00+01:00'),
+    finishedAt: '2027-01-07T10:00:00+01:00',
+  },
+  {
+    n: 32, name: 'Laura Paredes', email: 'laura.paredes@example.com',
+    eventDate: '2027-01-28', eventTime: '10:00',
+    projectType: 'Spot comercial', budget: '1800', kit: 'spot',
+    location: P.melia,
+    details: 'Pieza promocional sobre la oferta del hotel para reuniones de empresa.',
+    createdAt: '2026-12-16T12:00:00+01:00',
+    decision: confirm('2027-01-04T12:00:00+01:00'),
+    finishedAt: '2027-02-01T12:00:00+01:00',
+  },
+  {
+    n: 33, name: 'Iván Marín', email: 'ivan.marin@example.com',
+    eventDate: '2027-02-25', eventTime: '09:00',
+    projectType: 'Producción completa', budget: '3500', kit: 'corporativo',
+    location: P.batel,
+    details: 'Cobertura de un congreso, entrevistas a asistentes y montaje del vídeo resumen.',
+    createdAt: '2027-01-13T11:00:00+01:00',
+    decision: confirm('2027-02-02T11:45:00+01:00'),
   },
 ];
 
-const secondaryEvents = [
-  {
-    id: '8ac77bc3-c701-4b13-95da-000000000006',
-    parentId: weddings[1].id,
-    type: 'prewedding',
-    eventDate: weddings[1].preweddingDate,
-  },
-  {
-    id: '8ac77bc3-c701-4b13-95da-000000000007',
-    parentId: weddings[2].id,
-    type: 'prewedding',
-    eventDate: weddings[2].preweddingDate,
-  },
-  {
-    id: '8ac77bc3-c701-4b13-95da-000000000008',
-    parentId: weddings[2].id,
-    type: 'postwedding',
-    eventDate: weddings[2].postweddingDate,
-  },
-  {
-    id: '8ac77bc3-c701-4b13-95da-000000000013',
-    parentId: weddings[3].id,
-    type: 'postwedding',
-    eventDate: weddings[3].postweddingDate,
-  },
+const blocks = [
+  { id: uuid(14), start_date: '2026-11-11', end_date: '2026-11-11', reason: 'Huelga general' },
+  { id: uuid(15), start_date: '2026-12-24', end_date: '2027-01-02', reason: 'Vacaciones de Navidad' },
+  { id: uuid(16), start_date: '2027-01-17', end_date: '2027-01-19', reason: 'Descanso personal' },
 ];
 
-const calendarBlocks = [
-  {
-    id: '8ac77bc3-c701-4b13-95da-000000000014',
-    startDate: '2026-11-11',
-    endDate: '2026-11-11',
-    reason: 'Huelga General',
-  },
-  {
-    id: '8ac77bc3-c701-4b13-95da-000000000015',
-    startDate: '2026-12-24',
-    endDate: '2026-01-31',
-    reason: 'Cierre por fiestas',
-  },
-  {
-    id: '8ac77bc3-c701-4b13-95da-000000000016',
-    startDate: '2027-01-17',
-    endDate: '2027-01-19',
-    reason: 'Descanso personal',
-  },
+const members = [
+  { id: uuid(17), name: 'Sofía Navarro - Fotografía' },
+  { id: uuid(18), name: 'Mateo Ruiz - Vídeo' },
+  { id: uuid(19), name: 'Inés Campos - Producción' },
+  { id: uuid(21), name: 'Guillermo Callizo - Dron' },
 ];
 
-const collaborators = [
-  { id: '8ac77bc3-c701-4b13-95da-000000000017', name: 'Sofia Navarro - Fotografia' },
-  { id: '8ac77bc3-c701-4b13-95da-000000000018', name: 'Mateo Ruiz - Video' },
-  { id: '8ac77bc3-c701-4b13-95da-000000000019', name: 'Ines Campos - Produccion' },
-].map((collaborator) => ({
-  ...collaborator,
-  tokenHash: createHash('sha256')
-    .update(randomBytes(32).toString('base64url'))
-    .digest('hex'),
-}));
+function primaryEvent(fixture, type) {
+  const { createdAt, editedAt = createdAt, decision, finishedAt } = fixture;
+  const created = timestamp(createdAt);
+  const edited = timestamp(editedAt);
+  const decided = decision ? timestamp(decision.at) : null;
+  const finished = finishedAt ? timestamp(finishedAt) : null;
+  const lastSessionDate = fixture.post?.date ?? fixture.eventDate;
 
-const sql = neon(process.env.DATABASE_URL);
-const primaryEvents = [
-  ...weddings.map((wedding) => ({
-    id: wedding.id,
-    type: 'wedding',
-    eventDate: wedding.eventDate,
-    status: wedding.status || 'pending',
-  })),
-  ...productions.map((production) => ({
-    id: production.id,
-    type: 'production',
-    eventDate: production.eventDate,
-    status: 'pending',
-  })),
+  if (
+    edited < created ||
+    (decision && (decided < created || !['confirmed', 'rejected'].includes(decision.status))) ||
+    (fixture.pre && fixture.pre.date >= fixture.eventDate) ||
+    (fixture.post && fixture.post.date <= fixture.eventDate) ||
+    (finished !== null && (
+      decision?.status !== 'confirmed' ||
+      finished < decided ||
+      finished < edited ||
+      madridDate(finished) <= lastSessionDate
+    ))
+  ) {
+    throw new Error(`Cronología incoherente en el evento ${fixture.n}.`);
+  }
+
+  // Si la fecha de alta de ejemplo aún es futura, crea la solicitud ahora.
+  const created_at = created <= now ? createdAt : nowIso;
+  const updated_at = edited <= now ? editedAt : created_at;
+  const decided_at = decided !== null && decided <= now ? decision.at : null;
+  const finished_at = finished !== null && finished < now ? finishedAt : null;
+
+  return {
+    id: uuid(fixture.n),
+    type,
+    event_date: fixture.eventDate,
+    status: finished_at ? 'finished' : (decided_at ? decision.status : 'pending'),
+    budget_id: null,
+    parent_event_id: null,
+    created_at,
+    updated_at,
+    decided_at,
+    finished_at,
+  };
+}
+
+const couples = weddings.map((w) => ({ w, parent: primaryEvent(w, 'wedding') }));
+
+const primary = [
+  ...couples.map(({ parent }) => parent),
+  ...productions.map((p) => primaryEvent(p, 'production')),
 ];
+
+// Las sesiones no tienen decisión ni presupuesto propios.
+// La aplicación las bloquea cuando finaliza la boda padre.
+const secondary = couples.flatMap(({ w, parent }) =>
+  [['prewedding', w.pre], ['postwedding', w.post]]
+    .filter(([, s]) => s)
+    .map(([type, s]) => ({
+      id: uuid(s.n),
+      type,
+      event_date: s.date,
+      status: 'pending',
+      budget_id: null,
+      parent_event_id: parent.id,
+      created_at: parent.created_at,
+      updated_at: parent.updated_at,
+      decided_at: null,
+      finished_at: null,
+    })),
+);
+
+const seen = new Set();
+for (const { id, event_date: date } of [...primary, ...secondary]) {
+  const ms = Date.parse(`${date}T00:00:00Z`);
+  if (
+    !Number.isFinite(ms) ||
+    new Date(ms).toISOString().slice(0, 10) !== date ||
+    date < '2026-10-01' ||
+    date > '2027-02-28'
+  ) {
+    throw new Error(`Fecha de evento inválida o fuera de rango: ${id} (${date}).`);
+  }
+  if (seen.has(id)) {
+    throw new Error(`UUID de evento duplicado: ${id}.`);
+  }
+  if (blocks.some((b) => b.start_date <= date && date <= b.end_date)) {
+    throw new Error(`El evento ${id} coincide con un bloqueo (${date}).`);
+  }
+  seen.add(id);
+}
+
+// El año del presupuesto es el de la confirmación en Europe/Madrid,
+// no el de la celebración ni el del cierre.
+const lastNumberByYear = new Map();
+const withBudget = primary
+  .filter((e) => e.status === 'confirmed' || e.status === 'finished')
+  .sort((a, b) =>
+    timestamp(a.decided_at) - timestamp(b.decided_at) || a.id.localeCompare(b.id),
+  );
+
+for (const event of withBudget) {
+  const year = Number(madridDate(timestamp(event.decided_at)).slice(0, 4));
+  const number = (lastNumberByYear.get(year) ?? 0) + 1;
+  if (number > 9999) {
+    throw new Error(`Contador de presupuestos agotado para ${year}.`);
+  }
+
+  event.budget_id = `${year}-${String(number).padStart(4, '0')}`;
+  lastNumberByYear.set(year, number);
+}
+
+function identity(fixture) {
+  if (fixture.passport) {
+    return {
+      identity_document_type: 'passport',
+      identity_document: fixture.passport,
+    };
+  }
+
+  const n = 99_999_000 + fixture.n;
+  return {
+    identity_document_type: 'nif',
+    identity_document: `${n}${'TRWAGMYFPDXBNJZSQVHLCKE'[n % 23]}`,
+  };
+}
+
+const phone = (n, suffix = 0) => `+34600${String(n * 10 + suffix).padStart(6, '0')}`;
+
+function weddingRow(w) {
+  const packageType = w.pre && w.post ? 'trio'
+    : w.pre ? 'duo-pre'
+    : w.post ? 'duo-post'
+    : 'boda';
+
+  return {
+    event_id: uuid(w.n),
+    name: `${w.bride} y ${w.groom}`,
+    email: w.email,
+    ...identity(w),
+    bride_phone: phone(w.n, 1),
+    groom_phone: phone(w.n, 2),
+    groom_location: w.groomLocation,
+    groom_departure_time: '11:15',
+    bride_location: w.brideLocation,
+    bride_departure_time: '11:45',
+    package_type: w.packageType ?? packageType,
+    ceremony_location: w.ceremony,
+    ceremony_time: w.ceremonyTime ?? '13:00',
+    location: w.location,
+    cocktail_time: w.cocktailTime ?? '14:30',
+    open_bar_time: '21:00',
+    details: w.details,
+    wedding_service: 'duo',
+    prewedding_service: w.pre?.service ?? null,
+    prewedding_location: w.pre?.location ?? null,
+    prewedding_details: w.pre?.details ?? null,
+    postwedding_service: w.post?.service ?? null,
+    postwedding_location: w.post?.location ?? null,
+    postwedding_details: w.post?.details ?? null,
+  };
+}
+
+function productionRow(p) {
+  const [drone_setup, drone_price] = p.drone ?? ['Sin dron', 0];
+  if (!kits[p.kit]) {
+    throw new Error(`Configuración de producción desconocida: ${p.kit}.`);
+  }
+
+  return {
+    event_id: uuid(p.n),
+    name: p.name,
+    email: p.email,
+    ...identity(p),
+    phone: phone(p.n),
+    project_type: p.projectType,
+    budget: p.budget,
+    location: p.location,
+    event_time: p.eventTime,
+    details: p.details,
+    ...kits[p.kit],
+    drone_setup,
+    drone_price,
+    tax_percent: 21,
+  };
+}
+
+// Los identificadores de tabla y columna son internos al script.
+// Los valores se pasan siempre como parámetros.
+function upsert(table, key, row, ignoreConflict = false) {
+  const columns = Object.keys(row);
+  const placeholders = columns.map((_, i) => `$${i + 1}`).join(', ');
+  const assignments = columns
+    .filter((column) => column !== key)
+    .map((column) => `${column} = EXCLUDED.${column}`)
+    .join(', ');
+
+  const onConflict = ignoreConflict
+    ? 'DO NOTHING'
+    : `DO UPDATE SET ${assignments}`;
+
+  return sql.query(
+    `INSERT INTO ${table} (${columns.join(', ')})
+     VALUES (${placeholders})
+     ON CONFLICT (${key}) ${onConflict}`,
+    columns.map((column) => row[column]),
+  );
+}
 
 const statements = [
-  ...primaryEvents.map((event) => sql.query(
-    `INSERT INTO events (id, type, event_date, status)
-     VALUES ($1, $2, $3, $4)
-     ON CONFLICT (id) DO UPDATE SET
-       type = EXCLUDED.type,
-       event_date = EXCLUDED.event_date,
-       status = EXCLUDED.status`,
-    [event.id, event.type, event.eventDate, event.status],
-  )),
-  ...weddings.map((wedding) => sql.query(
-    `INSERT INTO wedding_requests (
-       event_id, name, email, identity_document_type, identity_document,
-       bride_phone, groom_phone, groom_name, groom_departure_time, bride_name,
-       bride_departure_time, package_type,
-       ceremony_location, ceremony_time, location, cocktail_time, open_bar_time,
-       details, wedding_service, prewedding_service,
-       prewedding_location, prewedding_details, postwedding_service,
-       postwedding_location, postwedding_details
-     )
-     VALUES (
-       $1, $2, $3, $4, $5, $6, $6, $7, $8, $9, $10, $11, $12, $13, $14,
-       '14:30', '21:00', $15, 'duo', $16, $17, $18, $19, $20, $21
-     )
-     ON CONFLICT (event_id) DO UPDATE SET
-       name = EXCLUDED.name,
-       email = EXCLUDED.email,
-       identity_document_type = EXCLUDED.identity_document_type,
-       identity_document = EXCLUDED.identity_document,
-       bride_phone = EXCLUDED.bride_phone,
-       groom_phone = EXCLUDED.groom_phone,
-       groom_name = EXCLUDED.groom_name,
-       groom_departure_time = EXCLUDED.groom_departure_time,
-       bride_name = EXCLUDED.bride_name,
-       bride_departure_time = EXCLUDED.bride_departure_time,
-       package_type = EXCLUDED.package_type,
-       ceremony_location = EXCLUDED.ceremony_location,
-       ceremony_time = EXCLUDED.ceremony_time,
-       location = EXCLUDED.location,
-       cocktail_time = EXCLUDED.cocktail_time,
-       open_bar_time = EXCLUDED.open_bar_time,
-       details = EXCLUDED.details,
-       wedding_service = EXCLUDED.wedding_service,
-       prewedding_service = EXCLUDED.prewedding_service,
-       prewedding_location = EXCLUDED.prewedding_location,
-       prewedding_details = EXCLUDED.prewedding_details,
-       postwedding_service = EXCLUDED.postwedding_service,
-       postwedding_location = EXCLUDED.postwedding_location,
-       postwedding_details = EXCLUDED.postwedding_details`,
-    [
-      wedding.id,
-      wedding.name,
-      wedding.email,
-      wedding.identityDocumentType,
-      wedding.identityDocument,
-      wedding.phone,
-      wedding.groomAddress,
-      wedding.groomDepartureTime,
-      wedding.brideAddress,
-      wedding.brideDepartureTime,
-      wedding.packageType,
-      wedding.ceremony,
-      wedding.ceremonyTime,
-      wedding.location,
-      wedding.details,
-      wedding.preweddingService,
-      wedding.preweddingLocation,
-      wedding.preweddingDetails,
-      wedding.postweddingService,
-      wedding.postweddingLocation,
-      wedding.postweddingDetails,
-    ],
-  )),
-  ...productions.map((production) => sql.query(
-    `INSERT INTO production_requests (
-       event_id, name, email, identity_document_type, identity_document,
-       phone, project_type, budget, location, event_time,
-       details, camera_setup, camera_price, drone_setup, drone_price,
-       lighting_setup, lighting_price, sound_setup, sound_price, delivery_format,
-       delivery_price, extra_staff, extra_staff_price, logistics, logistics_price,
-       tax_percent
-     )
-     VALUES (
-       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15,
-       $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, 21
-     )
-     ON CONFLICT (event_id) DO UPDATE SET
-       name = EXCLUDED.name,
-       email = EXCLUDED.email,
-       identity_document_type = EXCLUDED.identity_document_type,
-       identity_document = EXCLUDED.identity_document,
-       phone = EXCLUDED.phone,
-       project_type = EXCLUDED.project_type,
-       budget = EXCLUDED.budget,
-       location = EXCLUDED.location,
-       event_time = EXCLUDED.event_time,
-       details = EXCLUDED.details,
-       camera_setup = EXCLUDED.camera_setup,
-       camera_price = EXCLUDED.camera_price,
-       drone_setup = EXCLUDED.drone_setup,
-       drone_price = EXCLUDED.drone_price,
-       lighting_setup = EXCLUDED.lighting_setup,
-       lighting_price = EXCLUDED.lighting_price,
-       sound_setup = EXCLUDED.sound_setup,
-       sound_price = EXCLUDED.sound_price,
-       delivery_format = EXCLUDED.delivery_format,
-       delivery_price = EXCLUDED.delivery_price,
-       extra_staff = EXCLUDED.extra_staff,
-       extra_staff_price = EXCLUDED.extra_staff_price,
-       logistics = EXCLUDED.logistics,
-       logistics_price = EXCLUDED.logistics_price,
-       tax_percent = EXCLUDED.tax_percent`,
-    [
-      production.id,
-      production.name,
-      production.email,
-      production.identityDocumentType,
-      production.identityDocument,
-      production.phone,
-      production.projectType,
-      production.budget,
-      production.location,
-      production.eventTime,
-      production.details,
-      production.camera,
-      production.cameraPrice,
-      production.drone,
-      production.dronePrice,
-      production.lighting,
-      production.lightingPrice,
-      production.sound,
-      production.soundPrice,
-      production.delivery,
-      production.deliveryPrice,
-      production.extraStaff,
-      production.extraStaffPrice,
-      production.logistics,
-      production.logisticsPrice,
-    ],
-  )),
-  ...secondaryEvents.map((event) => sql.query(
-    `INSERT INTO events (id, type, event_date, status, parent_event_id)
-     VALUES ($1, $2, $3, 'pending', $4)
-     ON CONFLICT (id) DO UPDATE SET
-       type = EXCLUDED.type,
-       event_date = EXCLUDED.event_date,
-       status = EXCLUDED.status,
-       parent_event_id = EXCLUDED.parent_event_id`,
-    [event.id, event.type, event.eventDate, event.parentId],
-  )),
-  ...calendarBlocks.map((block) => sql.query(
-    `INSERT INTO calendar_blocks (id, start_date, end_date, reason)
-     VALUES ($1, $2::date, $3::date, $4)
-     ON CONFLICT (id) DO UPDATE SET
-       start_date = EXCLUDED.start_date,
-       end_date = EXCLUDED.end_date,
-       reason = EXCLUDED.reason`,
-    [block.id, block.startDate, block.endDate, block.reason],
-  )),
-  ...collaborators.map((collaborator) => sql.query(
-    `INSERT INTO event_members (id, name, token_hash)
-     VALUES ($1, $2, $3)
-     ON CONFLICT (id) DO NOTHING`,
-    [collaborator.id, collaborator.name, collaborator.tokenHash],
+  ...primary.map((row) => upsert('events', 'id', row)),
+  ...weddings.map((w) => upsert('wedding_requests', 'event_id', weddingRow(w))),
+  ...productions.map((p) => upsert('production_requests', 'event_id', productionRow(p))),
+  ...secondary.map((row) => upsert('events', 'id', row)),
+  ...blocks.map((row) => upsert('calendar_blocks', 'id', row)),
+  ...members.map((member) => upsert('event_members', 'id', {
+    ...member,
+    token_hash: createHash('sha256')
+      .update(randomBytes(32).toString('base64url'))
+      .digest('hex'),
+  }, true)),
+  ...Array.from(lastNumberByYear, ([year, lastNumber]) => sql.query(
+    `INSERT INTO annual_budget_counters (year, last_number)
+     VALUES ($1, $2)
+     ON CONFLICT (year) DO UPDATE
+       SET last_number = GREATEST(annual_budget_counters.last_number, EXCLUDED.last_number)`,
+    [year, lastNumber],
   )),
 ];
 
 await sql.transaction(statements);
-console.log('Carga completada: 5 bodas, 4 producciones, 4 fechas asociadas, 3 bloqueos y 3 colaboradores.');
+
+const count = (type) => secondary.filter((e) => e.type === type).length;
+console.log(
+  `Carga completada: ${weddings.length} bodas, ${productions.length} producciones, ` +
+  `${count('prewedding')} prebodas, ${count('postwedding')} postbodas, ` +
+  `${blocks.length} bloqueos y ${members.length} colaboradores.`,
+);
+console.log('Últimos números de presupuesto del seed:', Object.fromEntries(lastNumberByYear));

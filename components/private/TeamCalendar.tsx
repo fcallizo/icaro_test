@@ -20,8 +20,8 @@ type SectionDef = { title: string; fields: string[], type: string; };
 // ----- Layout por tipo (aquí ordenas los campos a tu gusto) -----
 const WEDDING_TYPES = new Set(['wedding', 'prewedding', 'postwedding']);
 const MAP_LOCATION_FIELDS = new Set([
-  'groom_name',
-  'bride_name',
+  'groom_location',
+  'bride_location',
   'ceremony_location',
   'location',
   'prewedding_location',
@@ -33,9 +33,9 @@ const WEDDING_SECTIONS: SectionDef[] = [
   {
     title: 'Ubicación y hora',
     fields: [
-      'groom_name',
+      'groom_location',
       'groom_departure_time',
-      'bride_name',
+      'bride_location',
       'bride_departure_time',
       'ceremony_location',
       'ceremony_time',
@@ -88,9 +88,9 @@ function formatFieldName(value: string) {
     name: 'Nombre',
     groom_phone: 'Teléfono del novio',
     bride_phone: 'Teléfono de la novia',
-    groom_name: 'Casa del novio',
+    groom_location: 'Casa del novio',
     groom_departure_time: 'Hora de salida del novio',
-    bride_name: 'Casa de la novia',
+    bride_location: 'Casa de la novia',
     bride_departure_time: 'Hora de salida de la novia',
     ceremony_location: 'Ceremonia',
     ceremony_time: 'Hora de la ceremonia',

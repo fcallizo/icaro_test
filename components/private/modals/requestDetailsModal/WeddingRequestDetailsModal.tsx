@@ -231,7 +231,7 @@ export function WeddingRequestDetailsModal(props: RequestDetailsModalProps) {
         if (hasValidIdentity) onSave(valuesToSave);
       }}
       isDirty={isDirty}
-      rightAction={request.status !== 'pending' ? (
+      rightAction={!props.isCreating && request.status !== 'pending' ? (
         <>
           <button
             type="button"

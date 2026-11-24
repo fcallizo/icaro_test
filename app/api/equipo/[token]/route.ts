@@ -80,9 +80,9 @@ export async function GET(
       CASE
         WHEN w.event_id IS NOT NULL THEN
           jsonb_build_object(
-            'groom_name', w.groom_name,
+            'groom_location', w.groom_location,
             'groom_departure_time', w.groom_departure_time,
-            'bride_name', w.bride_name,
+            'bride_location', w.bride_location,
             'bride_departure_time', w.bride_departure_time,
             'ceremony_location', w.ceremony_location,
             'ceremony_time', w.ceremony_time,

@@ -92,6 +92,7 @@ export type RequestDetailsModalProps = {
   request: PrivateRequest;
   weddingPrices: WeddingPrices;
   materials?: ProductionMaterial[];
+  isCreating?: boolean;
   busy: boolean;
   error?: string;
   onClose: () => void;

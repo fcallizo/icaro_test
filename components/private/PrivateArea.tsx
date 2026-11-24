@@ -8,7 +8,7 @@ import { FinishedTab } from '@/components/private/tabs/FinishedTab';
 import { ProductionMaterialsTab } from '@/components/private/tabs/ProductionMaterialsTab';
 import { CalendarBlocksTab } from '@/components/private/tabs/CalendarBlocksTab';
 import { EventManagementTab } from '@/components/private/tabs/EventManagementTab';
-import { CalendarBlock, ProductionMaterial, ProductionMaterialCategory, PrivateRequest, PrivateRequestUpdate, RequestAction } from '@/lib/private-types';
+import { CalendarBlock, ProductionMaterial, ProductionMaterialCategory, PrivateRequest, PrivateRequestUpdate, RequestAction, RequestType } from '@/lib/private-types';
 import { AvailabilityCalendar } from '@/components/common/AvailabilityCalendar';
 import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
 import { RequestDetailsModal } from '@/components/private/modals/requestDetailsModal/RequestDetailsModal';
@@ -92,6 +92,8 @@ export function PrivateArea() {
   const materialsLoadRequest = useRef<Promise<void> | null>(null);
   const materialsLoadGeneration = useRef(0);
   const [selectedRequest, setSelectedRequest] = useState<PrivateRequest | null>(null);
+  const [isCreatingRequest, setIsCreatingRequest] = useState(false);
+  const [isChoosingEventType, setIsChoosingEventType] = useState(false);
   const [busyId, setBusyId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
@@ -307,6 +309,66 @@ export function PrivateArea() {
     }
   };
 
+  const handleCreateRequest = async (request: PrivateRequest, values: PrivateRequestUpdate) => {
+    setBusyId(request.id);
+    setMessage('');
+    try {
+      const response = await fetch('/api/private/requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: request.type, values }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'No se pudo crear el evento.');
+
+      setRequests(await getPrivateRequests());
+      setSelectedRequest(null);
+      setIsCreatingRequest(false);
+      setToast({ message: 'Evento creado como confirmado.', tone: 'success' });
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'No se pudo crear el evento.');
+    } finally {
+      setBusyId('');
+    }
+  };
+
+  const handleStartCreatingRequest = (type: RequestType) => {
+    if (!selectedDate) return;
+
+    const request: PrivateRequest = {
+      id: `new-${type}-${selectedDate}`,
+      type,
+      status: 'confirmed',
+      fecha: selectedDate,
+      detalles: '',
+      tipoDocumentoIdentidad: 'nif',
+      ...(type === 'production'
+        ? {
+            taxPercent: '0',
+            precioCamara: '0',
+            precioDrone: '0',
+            precioIluminacion: '0',
+            precioSonido: '0',
+            precioFormato: '0',
+            precioPersonalExtra: '0',
+            precioLogistica: '0',
+          }
+        : {
+            tipoPack: 'boda',
+            precioExtraBoda: '0',
+            descuentoBoda: '0',
+            precioExtraPreboda: '0',
+            precioExtraPostboda: '0',
+          }),
+    };
+
+    setIsChoosingEventType(false);
+    setIsCreatingRequest(true);
+    setMessage('');
+    setSelectedRequest(request);
+    if (type === 'production') void loadMaterials();
+  };
+
   const handleCreateCalendarBlock = async (startDate: string, endDate: string, reason: string) => {
     setIsCreatingBlock(true);
     try {
@@ -424,6 +486,7 @@ export function PrivateArea() {
 
   const handleViewRequest = (request: PrivateRequest) => {
     setMessage('');
+    setIsCreatingRequest(false);
     if (request.type === 'production') void loadMaterials();
     setSelectedRequest(request);
   };
@@ -497,6 +560,23 @@ export function PrivateArea() {
   const selectedDateLabel = selectedDate
     ? new Date(`${selectedDate}T00:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
     : '';
+  const selectedDateHasConfirmedOrFinishedEvent = selectedDate
+    ? requests.some((request) => (request.status === 'confirmed' || request.status === 'finished')
+      && getRequestDates(request).includes(selectedDate))
+    : false;
+  const selectedDateHasPendingRequest = selectedDate
+    ? requests.some((request) => request.status === 'pending' && getRequestDates(request).includes(selectedDate))
+    : false;
+  const selectedDateIsBlocked = selectedDate
+    ? calendarBlocks.some((block) => block.startDate <= selectedDate && block.endDate >= selectedDate)
+    : false;
+  const eventCreationWarning = [
+    selectedDateHasPendingRequest
+      ? 'Ya hay una solicitud pendiente para esta fecha. Si creas el evento igualmente, la solicitud pendiente quedará marcada en rojo por conflicto de fecha.'
+      : '',
+    selectedDateIsBlocked ? 'Esta fecha está marcada como no disponible.' : '',
+  ].filter(Boolean).join(' ');
+  const eventTypePrompt = `¿Qué tipo de evento quieres añadir para el ${selectedDateLabel}?`;
 
   return (
     <main className="page-shell private-page">
@@ -558,20 +638,23 @@ export function PrivateArea() {
                 selectedDate={selectedDate}
                 onDateSelect={setSelectedDate}
               />
+              {selectedDate && !selectedDateHasConfirmedOrFinishedEvent && (
+                <div className="private-calendar-add-event" role="status">
+                  <p>
+                    {(selectedDateHasPendingRequest ? ' Ya existe una solicitud pendiente' : 'No hay eventos fijados')
+                    + ` para el día ${selectedDateLabel}.`}
+                  </p>
+                  <button type="button" className="private-gold-button" onClick={() => setIsChoosingEventType(true)}>
+                    Añadir evento
+                  </button>
+                </div>
+              )}
             </div>
             <section className="private-workspace" aria-label="Gestión de solicitudes">
               <div className="private-tabs" role="tablist" aria-label="Gestión privada">
                 <button type="button" role="tab" aria-selected={activeTab === 'notifications'} className={activeTab === 'notifications' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('notifications')}>
                   <span className="private-tab__icon" aria-hidden="true">​🔔</span>
-                  Notificaciones <span className="private-tab__count">{pendingCount}</span>
-                </button>
-                <button type="button" role="tab" aria-selected={activeTab === 'confirmed'} className={activeTab === 'confirmed' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('confirmed')}>
-                  <span className="private-tab__icon" aria-hidden="true">​✅</span>
-                  Confirmados <span className="private-tab__count">{confirmedCount}</span>
-                </button>
-                <button type="button" role="tab" aria-selected={activeTab === 'finished'} className={activeTab === 'finished' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('finished')}>
-                  <span className="private-tab__icon" aria-hidden="true">📦</span>
-                  Finalizados
+                  Eventos <span className="private-tab__count">{pendingCount + confirmedCount}</span>
                 </button>
                 <button type="button" role="tab" aria-selected={activeTab === 'blocks'} className={activeTab === 'blocks' ? 'private-tab active' : 'private-tab'} onClick={() => setActiveTab('blocks')}>
                   <span className="private-tab__icon" aria-hidden="true">🚫​</span>
@@ -602,11 +685,13 @@ export function PrivateArea() {
 
               {message && <p className="private-error-message" role="alert">{message}</p>}
               {activeTab === 'notifications' ? (
-                <NotificationsTab requests={requests} selectedDate={selectedDate} onView={handleViewRequest} />
-              ) : activeTab === 'confirmed' ? (
-                <ConfirmedTab requests={requests} selectedDate={selectedDate} onView={handleViewRequest} />
-              ) : activeTab === 'finished' ? (
-                <FinishedTab requests={requests} selectedDate={selectedDate} onView={handleViewRequest} />
+                <NotificationsTab
+                  pendingCount={pendingCount}
+                  confirmedCount={confirmedCount}
+                  requests={requests}
+                  selectedDate={selectedDate}
+                  onView={handleViewRequest}
+                />
               ) : activeTab === 'materials' ? (
                 <ProductionMaterialsTab
                   materials={materials}
@@ -652,11 +737,18 @@ export function PrivateArea() {
           request={selectedRequest}
           weddingPrices={weddingPrices}
           materials={selectedRequest.type === 'production' ? materials : undefined}
+          isCreating={isCreatingRequest}
           busy={busyId === selectedRequest.id}
           error={message}
-          onClose={() => setSelectedRequest(null)}
+          onClose={() => {
+            setSelectedRequest(null);
+            setIsCreatingRequest(false);
+            setMessage('');
+          }}
           onAction={(action, values) => void handleRequestAction(selectedRequest, action, values)}
-          onSave={(values) => void handleRequestUpdate(selectedRequest, values)}
+          onSave={(values) => void (isCreatingRequest
+            ? handleCreateRequest(selectedRequest, values)
+            : handleRequestUpdate(selectedRequest, values))}
         />
       )}
       <StatusToast message={toast?.message || ''} tone={toast?.tone || 'success'} onDismiss={() => setToast(null)} />
@@ -672,6 +764,18 @@ export function PrivateArea() {
             setConfirmation(null);
             confirmAction();
           }}
+        />
+      )}
+      {isChoosingEventType && selectedDate && (
+        <ConfirmationDialog
+          title="Añadir evento"
+          message={eventCreationWarning ? `${eventCreationWarning} ${eventTypePrompt}` : eventTypePrompt}
+          choices={[
+            { label: 'Producción', onSelect: () => handleStartCreatingRequest('production') },
+            { label: 'Boda', onSelect: () => handleStartCreatingRequest('wedding') },
+          ]}
+          onCancel={() => setIsChoosingEventType(false)}
+          onConfirm={() => setIsChoosingEventType(false)}
         />
       )}
     </main>
