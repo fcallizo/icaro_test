@@ -8,8 +8,10 @@ import { WeddingOffersManager } from '@/components/private/tabs/WeddingOffersMan
 
 type SettingsTabProps = {
   unifyCalendars: boolean;
+  historyRange: number;
   isSavingCalendarSetting: boolean;
   onCalendarUnificationChange: (unify: boolean) => void;
+  onHistoryRangeChange: (range: number) => void;
   weddingPrices: WeddingPrices;
   isSavingWeddingPrices: boolean;
   onSaveWeddingPrices: (prices: WeddingPrices) => void;
@@ -30,8 +32,10 @@ const toDraft = (prices: WeddingPrices): PriceDraft => ({
 
 export function SettingsTab({
   unifyCalendars,
+  historyRange,
   isSavingCalendarSetting,
   onCalendarUnificationChange,
+  onHistoryRangeChange,
   weddingPrices,
   isSavingWeddingPrices,
   onSaveWeddingPrices,
@@ -85,8 +89,28 @@ export function SettingsTab({
             </label>
 
             <p>
-              Las fechas confirmadas de bodas y cine se bloquearán en ambos
-              calendarios públicos.
+              Las fechas confirmadas de bodas y cine se bloquearán en ambos calendarios públicos.
+            </p>
+          </div>
+          <div className="private-calendar-controls">
+            <label className="finished-events-filter" htmlFor="finished-events-period">
+              Periodo de búsqueda
+              <select
+                id="finished-events-period"
+                disabled={isSavingCalendarSetting}
+                value={historyRange}
+                onChange={(event) => {onHistoryRangeChange(parseInt(event.target.value))}}
+                >
+                <option value={1}>Último mes</option>
+                <option value={6}>Últimos 6 meses</option>
+                <option value={12}>Último año</option>
+                <option value={60}>Últimos 5 años</option>
+                <option value={-1}>Siempre</option>
+              </select>
+            </label>
+
+            <p>
+              Muestra los eventos finalizados yrechazados dentro del periodo seleccionado.
             </p>
           </div>
         </div>

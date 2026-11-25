@@ -201,7 +201,8 @@ VALUES
   ('wedding_complementary_video_price', 150),
   ('wedding_complementary_complete_price', 300),
   ('wedding_discount_duo', 5),
-  ('wedding_discount_trio', 15)
+  ('wedding_discount_trio', 15),
+  ('history_range', 6)
 ON CONFLICT (setting_key) DO UPDATE
   SET numeric_value = COALESCE(app_settings.numeric_value, EXCLUDED.numeric_value);
 

@@ -17,6 +17,7 @@ export async function GET(request: NextRequest) {
 
 
   const [setting] = await sql`SELECT boolean_value FROM app_settings WHERE setting_key = 'unify_calendars' LIMIT 1;`;
+  const [history] = await sql`SELECT numeric_value FROM app_settings WHERE setting_key = 'history_range' LIMIT 1;`;
   const weddingPriceRows = (await sql`
   SELECT setting_key, numeric_value FROM app_settings WHERE setting_key IN (
       'wedding_photo_price',
@@ -32,6 +33,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({
     unifyCalendars: Boolean(setting?.boolean_value),
     weddingPrices: readWeddingPrices(weddingPriceRows),
+    historyRange: parseInt(history?.numeric_value ?? 1),
   });
 }
 
@@ -49,11 +51,15 @@ export async function PATCH(request: NextRequest) {
     : {};
   const hasCalendarSetting = Object.prototype.hasOwnProperty.call(payload, 'unifyCalendars');
   const hasWeddingPrices = Object.prototype.hasOwnProperty.call(payload, 'weddingPrices');
-  if (!hasCalendarSetting && !hasWeddingPrices) {
+  const hasHistoryRange = Object.prototype.hasOwnProperty.call(payload, 'historyRange');
+  if (!hasCalendarSetting && !hasWeddingPrices && !hasHistoryRange) {
     return NextResponse.json({ error: 'No se recibieron ajustes válidos.' }, { status: 400 });
   }
   if (hasCalendarSetting && typeof payload.unifyCalendars !== 'boolean') {
     return NextResponse.json({ error: 'El valor de unificación no es válido.' }, { status: 400 });
+  }
+  if (hasCalendarSetting && typeof payload.historyRange !== 'number') {
+    return NextResponse.json({ error: 'El valor de rango de fecha no es válido.' }, { status: 400 });
   }
 
   let weddingPrices: WeddingPrices | undefined;
@@ -85,6 +91,18 @@ export async function PATCH(request: NextRequest) {
     unifyCalendars = Boolean(setting.boolean_value);
   }
 
+  let historyRange: number | undefined;
+  if (hasHistoryRange) {
+    const [history] = await sql`
+      INSERT INTO app_settings (setting_key, numeric_value, updated_at)
+      VALUES ('history_range', ${payload.historyRange}, NOW())
+      ON CONFLICT (setting_key) DO UPDATE
+        SET numeric_value = EXCLUDED.numeric_value, updated_at = NOW()
+      RETURNING numeric_value;
+    `;
+    historyRange = parseInt(history.numeric_value);
+  }
+
   if (weddingPrices) {
     await sql`
       INSERT INTO app_settings (setting_key, numeric_value, updated_at)
@@ -102,5 +120,5 @@ export async function PATCH(request: NextRequest) {
     `;
   }
 
-  return NextResponse.json({ unifyCalendars, weddingPrices });
+  return NextResponse.json({ unifyCalendars, weddingPrices, historyRange });
 }

@@ -123,9 +123,17 @@ export async function GET(request: NextRequest) {
       w.postwedding_location AS "lugarPostboda", w.postwedding_details AS "detallesPostboda"
     FROM events e
     JOIN wedding_requests w ON w.event_id = e.id
-    WHERE e.type = 'wedding'
+      WHERE e.type = 'wedding'
       AND (
-        e.status = 'finished'
+        e.id IN ( 
+          SELECT id
+          FROM events e2
+          WHERE e2.type = 'wedding' 
+            AND e2.event_date::DATE > CURRENT_DATE - 
+              ((SELECT numeric_value FROM app_settings WHERE setting_key = 'history_range' LIMIT 1) * INTERVAL '1 month')
+            AND e2.status in ('finished', 'rejected')
+            ORDER BY created_at DESC LIMIT 500
+        )
         OR e.id IN (
           SELECT id FROM events
           WHERE type = 'wedding' AND status IN ('pending', 'confirmed')
@@ -152,7 +160,15 @@ export async function GET(request: NextRequest) {
     JOIN production_requests p ON p.event_id = e.id
     WHERE e.type = 'production'
       AND (
-        e.status = 'finished'
+        e.id IN ( 
+          SELECT id
+          FROM events e2
+          WHERE e2.type = 'production' 
+            AND e2.event_date::DATE > CURRENT_DATE - 
+              ((SELECT numeric_value FROM app_settings WHERE setting_key = 'history_range' LIMIT 1) * INTERVAL '1 month')
+            AND e2.status in ('finished', 'rejected')
+            ORDER BY created_at DESC LIMIT 500
+        )
         OR e.id IN (
           SELECT id FROM events
           WHERE type = 'production' AND status IN ('pending', 'confirmed')

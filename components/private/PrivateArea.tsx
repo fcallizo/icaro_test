@@ -30,6 +30,7 @@ async function getPrivateSettings() {
   return {
     unifyCalendars: Boolean(data.unifyCalendars),
     weddingPrices: data.weddingPrices as WeddingPrices,
+    historyRange: data.historyRange,
   };
 }
 
@@ -74,6 +75,7 @@ export function PrivateArea() {
   const [activeTab, setActiveTab] = useState<'notifications' | 'confirmed' | 'finished' | 'materials' | 'blocks' | 'events' | 'settings' | 'users'>('notifications');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [unifyCalendars, setUnifyCalendars] = useState(false);
+  const [historyRange, setHistoryRange] = useState(1);
   const [isSavingCalendarSetting, setIsSavingCalendarSetting] = useState(false);
   const [weddingPrices, setWeddingPrices] = useState<WeddingPrices>(DEFAULT_WEDDING_PRICES);
   const [isSavingWeddingPrices, setIsSavingWeddingPrices] = useState(false);
@@ -125,6 +127,7 @@ export function PrivateArea() {
           setRequests(privateRequests);
           setUnifyCalendars(privateSettings.unifyCalendars);
           setWeddingPrices(privateSettings.weddingPrices);
+          setHistoryRange(privateSettings.historyRange);
           setCalendarBlocks(privateCalendarBlocks);
         }
       } catch (error) {
@@ -191,6 +194,7 @@ export function PrivateArea() {
       setRequests(privateRequests);
       setUnifyCalendars(privateSettings.unifyCalendars);
       setWeddingPrices(privateSettings.weddingPrices);
+      setHistoryRange(privateSettings.historyRange);
       setCalendarBlocks(privateCalendarBlocks);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'No se pudo iniciar sesión.');
@@ -527,6 +531,28 @@ export function PrivateArea() {
     }
   };
 
+  const handleHistoryRangeChange = async (range: number) => {
+    setIsSavingCalendarSetting(true);
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/private/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ historyRange: range }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'No se pudo guardar la preferencia.');
+
+      setHistoryRange(parseInt(data.historyRange));
+      setRequests(await getPrivateRequests());
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'No se pudo guardar la preferencia.');
+    } finally {
+      setIsSavingCalendarSetting(false);
+    }
+  };
+
   const handleWeddingPricesSave = async (prices: WeddingPrices) => {
     setIsSavingWeddingPrices(true);
     setMessage('');
@@ -707,8 +733,10 @@ export function PrivateArea() {
               ) : activeTab === 'settings' ? (
                 <SettingsTab
                   unifyCalendars={unifyCalendars}
+                  historyRange={historyRange}
                   isSavingCalendarSetting={isSavingCalendarSetting}
                   onCalendarUnificationChange={handleCalendarUnificationChange}
+                  onHistoryRangeChange={handleHistoryRangeChange}
                   weddingPrices={weddingPrices}
                   isSavingWeddingPrices={isSavingWeddingPrices}
                   onSaveWeddingPrices={handleWeddingPricesSave}
