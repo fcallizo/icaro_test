@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, use, useEffect, useState } from 'react';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { createFormFields } from '@/components/common/FormFields';
 import { PACK_OPTIONS, SERVICE_OPTIONS, WeddingFormValues } from '@/lib/wedding-form';
@@ -18,7 +18,8 @@ const emptyValues: WeddingFormValues = {
 
 const getString = (value: unknown) => (typeof value === 'string' ? value : '');
 
-export default function CustomerWeddingFormPage({ params }: { params: { token: string } }) {
+export default function CustomerWeddingFormPage({ params }: { params: Promise<{ token: string }> }) {
+  const { token } = use(params);
   const [values, setValues] = useState<WeddingFormValues>(emptyValues);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -33,7 +34,7 @@ export default function CustomerWeddingFormPage({ params }: { params: { token: s
     let isCurrent = true;
     const loadForm = async () => {
       try {
-        const response = await fetch(`/api/customer/wedding/${encodeURIComponent(params.token)}`, { cache: 'no-store' });
+        const response = await fetch(`/api/customer/wedding/${encodeURIComponent(token)}`, { cache: 'no-store' });
         const data: { wedding?: Record<string, unknown>; error?: string } = await response.json();
         if (!response.ok) throw new Error(data.error || LOAD_ERROR);
         if (!data.wedding) throw new Error(LOAD_ERROR);
@@ -61,7 +62,7 @@ export default function CustomerWeddingFormPage({ params }: { params: { token: s
     return () => {
       isCurrent = false;
     };
-  }, [params.token]);
+  }, [token]);
 
   const setFieldValue = (field: keyof WeddingFormValues, value: string) => {
     setValues((current) => ({ ...current, [field]: value }));
@@ -105,7 +106,7 @@ export default function CustomerWeddingFormPage({ params }: { params: { token: s
     }
 
     try {
-      const response = await fetch(`/api/customer/wedding/${encodeURIComponent(params.token)}`, {
+      const response = await fetch(`/api/customer/wedding/${encodeURIComponent(token)}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ values }),

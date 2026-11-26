@@ -87,7 +87,6 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
 
     return () => {
       active = false;
-      controller.abort();
     };
   }, [kind]);
 

@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   referrer: 'no-referrer',
 };
 
-export default function TeamCalendarPage({ params }: { params: { token: string } }) {
-  return <TeamCalendar token={params.token} />;
+export default async function TeamCalendarPage({params,}: { params: Promise<{ token: string }>;}) {
+  const { token } = await params;
+  return <TeamCalendar token={token} />;
 }

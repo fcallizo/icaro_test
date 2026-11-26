@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function SetPasswordPage({ searchParams }: { searchParams: { token?: string } }) {
-  return <SetPrivatePasswordForm token={searchParams.token || ''} />;
+export default async function SetPasswordPage({ searchParams }: { searchParams: { token: string } }) {
+  const { token } = await searchParams;
+  return <SetPrivatePasswordForm token={token} />;
 }
