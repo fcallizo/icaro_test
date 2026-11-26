@@ -8,7 +8,7 @@ type ConfirmationDialogProps = {
   confirmLabel?: string;
   isDestructive?: boolean;
   isBusy?: boolean;
-  choices?: { label: string; onSelect: () => void }[];
+  choices?: { label: string; style?: string, onSelect: () => void }[];
   onCancel: () => void;
   onConfirm: () => void;
 };
@@ -59,7 +59,7 @@ export function ConfirmationDialog({
             <button
               key={choice.label}
               type="button"
-              className="private-gold-button"
+              className={choice.style ?? "private-gold-button"}
               onClick={choice.onSelect}
               disabled={isBusy}
             >

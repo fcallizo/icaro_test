@@ -112,7 +112,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.8rem 1.2rem;
-  margin-bottom: 0.8rem;
+  margin-bottom: 1.5rem;
 }
 
 .private-calendar-controls p {
@@ -148,6 +148,10 @@
   border-radius: 999px;
   background: var(--bg-dark-raised);
   transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.private-calendar-toggle-text {
+  font-size: var(--font-size-private-body);
 }
 
 .private-calendar-toggle-track::after {
@@ -310,25 +314,6 @@
   color: var(--text-secondary);
   font-size: var(--font-size-private-small);
   line-height: 1.6;
-}
-
-.private-users-panel {
-  max-height: none;
-}
-
-.private-users-heading {
-  margin-bottom: 1.2rem;
-}
-
-.private-users-heading h2 {
-  margin-bottom: 0.35rem;
-  color: var(--white);
-  font-size: var(--font-size-private-large);
-}
-
-.private-users-heading p {
-  color: var(--text-secondary);
-  font-size: var(--font-size-private-small);
 }
 
 .private-user-invite-form {
@@ -577,10 +562,20 @@
   margin-top: 1.6rem;
 }
 
+.private-request-section h2 {
+  margin-bottom: 0.75rem;
+  color: var(--gold);
+}
+
 .private-request-section h3,
 .private-request-section h4 {
   margin-bottom: 0.85rem;
   color: var(--white);
+}
+
+.private-request-section h2 {
+  font-size: var(--font-size-private-title);
+  line-height: 1.35;
 }
 
 .private-request-section h3 {
@@ -649,7 +644,9 @@
 .private-material-toggle,
 .private-danger-button,
 .private-success-button,
-.private-finished-button {
+.private-finished-button,
+.private-cinema-button,
+.private-wedding-button {
   min-height: 40px;
   padding: 0.55rem 0.75rem;
   font-size: var(--font-size-private-small);
@@ -688,6 +685,18 @@
   color: var(--priv-delivered) !important;
 }
 
+.private-cinema-button {
+  border: 1px solid color-mix(in srgb, var(--priv-cinema) 45%, transparent);
+  background: transparent;
+  color: var(--priv-cinema) !important;
+}
+
+.private-wedding-button {
+  border: 1px solid color-mix(in srgb, var(--priv-wedding) 45%, transparent);
+  background: transparent;
+  color: var(--priv-wedding) !important;
+}
+
 .private-gold-button:hover {
   background: color-mix(in srgb, var(--gold) 16%, transparent);
   outline: none;
@@ -710,11 +719,21 @@
   background: color-mix(in srgb, var(--priv-success) 16%, transparent);
 }
 
+.private-cinema-button:hover {
+  background: color-mix(in srgb, var(--priv-cinema) 16%, transparent);
+}
+
+.private-wedding-button:hover {
+  background: color-mix(in srgb, var(--priv-wedding) 16%, transparent);
+}
+
 .private-gold-button:disabled,
 .private-material-toggle:disabled,
 .private-danger-button:disabled,
-.private-success-button:disabled ,
-.private-finished-button:disabled {
+.private-success-button:disabled,
+.private-finished-button:disabled
+.private-cinema-button:disabled,
+.private-wedding-button:disabled  {
   cursor: not-allowed;
   opacity: 0.6;
 }
@@ -834,7 +853,7 @@
   gap: 0.85rem;
 }
 
-.finished-events-header {
+.closed-events-header {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -843,29 +862,17 @@
   margin-bottom: 0.85rem;
 }
 
-.finished-events-header h3 {
+.closed-events-header h3 {
   margin: 0;
   color: var(--white);
   font-size: var(--font-size-private-large);
 }
 
-.finished-events-filter {
+.closed-events-filter {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
-  color: var(--text-secondary);
-  font-size: var(--font-size-private-small);
-}
-
-.finished-events-filter select {
-  min-height: 40px;
-  padding: 0.5rem 0.7rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--black);
-  color: var(--white);
-  font: inherit;
 }
 
 .private-request-card {
@@ -895,11 +902,6 @@
 .private-request-card.date-conflict-pending {
   border-left-color: var(--priv-warning);
   background: color-mix(in srgb, var(--priv-warning) 16%, transparent);
-}
-
-.private-request-card > .private-view-button {
-  margin-top: auto;
-  font-size: var(--font-size-private-caption);
 }
 
 .private-request-heading time.date-conflict-confirmed {
@@ -944,23 +946,10 @@
 }
 
 .private-view-button {
-  display: inline-block;
-  margin-top: 0.65rem;
-  border: 1px solid color-mix(in srgb, var(--gold) 50%, transparent);
-  background: color-mix(in srgb, var(--gold) 8%, transparent);
-  color: var(--gold);
-  padding: 0.9rem 1.3rem;
   font-size: var(--font-size-private-caption);
   text-transform: uppercase;
   letter-spacing: 0.15rem;
-  cursor: pointer;
-}
-
-.private-view-button:hover,
-.private-view-button:focus-visible {
-  border-color: var(--gold);
-  background: color-mix(in srgb, var(--gold) 16%, transparent);
-  outline: none;
+  margin-top: auto;
 }
 
 .request-details-form-grid {

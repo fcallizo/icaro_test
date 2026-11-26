@@ -16,7 +16,7 @@ export function ConfirmedTab({ requests, selectedDate, onView }: { requests: Pri
   return (
     <div className="private-tab-panel" role="tabpanel">
       <section className="private-request-section">
-        <h3>Eventos confirmados</h3>
+        <h2>Eventos confirmados</h2>
         {confirmedPrimaryEvents.length || confirmedSecondaryEvents.length ? (
           <div className="private-confirmed-grid">
             {confirmedPrimaryEvents.map((request) => <RequestCard key={request.id} request={request} onView={() => onView(request)} />)}

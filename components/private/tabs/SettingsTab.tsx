@@ -67,11 +67,18 @@ export function SettingsTab({
   return (
     <div className="private-tab-panel calendar-blocks-tab" role="tabpanel">
       <section className="private-request-section">
-        <h3>Panel de configuración</h3>
+        <h2>Panel de configuración</h2>
 
         {/* Tu bloque actual de propiedades generales */}
         <div className="settings-tab-pannel">
-          <h4>Propiedades generales</h4>
+          <div className="wedding-prices-admin-header">
+            <div>
+              <span className="eyebrow">Propiedades generales</span>
+              <p>
+                Características que afectan al funcionamiento de la aplicación.
+              </p>
+            </div>
+          </div>
 
           <div className="private-calendar-controls">
             <label className="private-calendar-toggle">
@@ -85,7 +92,7 @@ export function SettingsTab({
                 }
               />
               <span className="private-calendar-toggle-track" aria-hidden="true" />
-              <span>Unificar calendarios</span>
+              <span className="private-calendar-toggle-text">Unificar calendarios</span>
             </label>
 
             <p>
@@ -93,10 +100,10 @@ export function SettingsTab({
             </p>
           </div>
           <div className="private-calendar-controls">
-            <label className="finished-events-filter" htmlFor="finished-events-period">
+            <label className="closed-events-filter" htmlFor="closed-events-period">
               Periodo de búsqueda
               <select
-                id="finished-events-period"
+                id="closed-events-period"
                 disabled={isSavingCalendarSetting}
                 value={historyRange}
                 onChange={(event) => {onHistoryRangeChange(parseInt(event.target.value))}}
@@ -110,7 +117,7 @@ export function SettingsTab({
             </label>
 
             <p>
-              Muestra los eventos finalizados yrechazados dentro del periodo seleccionado.
+              Muestra los eventos finalizados y rechazados dentro del periodo seleccionado.
             </p>
           </div>
         </div>

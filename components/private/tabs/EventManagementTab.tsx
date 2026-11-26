@@ -123,7 +123,7 @@ export function EventManagementTab({ isAdmin }: EventManagementTabProps) {
   return (
     <div className="private-tab-panel event-management-panel" role="tabpanel">
       <section className="private-request-section">
-        <h3>Gestionar colaboradores</h3>
+        <h2>Gestionar colaboradores</h2>
         {isAdmin && (
           <>
             <p className="event-management-intro">

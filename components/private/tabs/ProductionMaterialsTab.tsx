@@ -74,7 +74,7 @@ export function ProductionMaterialsTab({
   return (
     <div className="private-tab-panel production-materials-tab" role="tabpanel">
       <section className="private-request-section">
-        <h3>Catálogo de materiales de producción</h3>
+        <h2>Catálogo de materiales de producción</h2>
         <p className="production-materials-intro">Los precios base se copiarán al desglose del contrato al seleccionar el material y podrán ajustarse para cada evento.</p>
 
         {isLoading ? (

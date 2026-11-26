@@ -600,6 +600,8 @@ export function PrivateArea() {
       : '',
     selectedDateIsBlocked ? 'Esta fecha está marcada como no disponible.' : '',
   ].filter(Boolean).join(' ');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
   const eventTypePrompt = `¿Qué tipo de evento quieres añadir para el ${selectedDateLabel}?`;
 
   return (
@@ -662,7 +664,7 @@ export function PrivateArea() {
                 selectedDate={selectedDate}
                 onDateSelect={setSelectedDate}
               />
-              {selectedDate && !selectedDateHasConfirmedOrFinishedEvent && (
+              {selectedDate && (new Date(selectedDate) > today && !selectedDateHasConfirmedOrFinishedEvent && !selectedDateIsBlocked) && (
                 <div className="private-calendar-add-event" role="status">
                   <p>
                     {(selectedDateHasPendingRequest ? ' Ya existe una solicitud pendiente' : 'No hay eventos fijados')
@@ -797,8 +799,8 @@ export function PrivateArea() {
           title="Añadir evento"
           message={eventCreationWarning ? `${eventCreationWarning} ${eventTypePrompt}` : eventTypePrompt}
           choices={[
-            { label: 'Producción', onSelect: () => handleStartCreatingRequest('production') },
-            { label: 'Boda', onSelect: () => handleStartCreatingRequest('wedding') },
+            { label: '🎬 Producción', style:"private-cinema-button", onSelect: () => handleStartCreatingRequest('production') },
+            { label: '💍 Boda', style:"private-wedding-button", onSelect: () => handleStartCreatingRequest('wedding') },
           ]}
           onCancel={() => setIsChoosingEventType(false)}
           onConfirm={() => setIsChoosingEventType(false)}

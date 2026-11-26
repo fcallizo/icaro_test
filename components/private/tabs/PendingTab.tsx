@@ -37,6 +37,7 @@ export function PendingTab({ requests, selectedDate, onView }: PendingTabProps) 
   return (
     <div className="private-tab-panel" role="tabpanel">
       <section className="private-request-section">
+        <h2>Eventos Pendientes</h2>
         <h3>Solicitudes de boda</h3>
         {pendingWeddings.length ? (
           <div className="private-notification-grid">

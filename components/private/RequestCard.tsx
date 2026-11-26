@@ -37,7 +37,7 @@ export function RequestCard({
       </div>
       <h4>{title}</h4>
       <p className="private-request-summary">{eventType ? eventPlace || 'Lugar por confirmar' : isWedding ? request.ceremonia || 'Lugar por confirmar' : request.tipo || 'Producción audiovisual'}</p>
-      <button type="button" className="private-view-button" onClick={onView}>Ver detalle</button>
+      <button type="button" className="private-gold-button private-view-button" onClick={onView}>Ver detalle</button>
     </article>
   );
 }

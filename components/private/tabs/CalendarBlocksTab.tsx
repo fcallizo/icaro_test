@@ -35,7 +35,7 @@ export function CalendarBlocksTab({ blocks, selectedDateLabel, busyId, isCreatin
   return (
     <div className="private-tab-panel calendar-blocks-tab" role="tabpanel">
       <section className="private-request-section">
-        <h3>Días no disponibles</h3>
+        <h2>Días no disponibles</h2>
         <p className="calendar-blocks-intro">Bloquea días libres, vacaciones u otras fechas. Se marcarán como ocupadas en el calendario.</p>
         {selectedDateLabel && <p className="calendar-blocks-intro">Mostrando bloqueos que incluyen el {selectedDateLabel}.</p>}
 

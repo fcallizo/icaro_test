@@ -2,6 +2,8 @@
 
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { ConfirmationDialog } from '@/components/private/ConfirmationDialog';
+import { StatusToast, StatusToastTone } from '@/components/common/StatusToast';
+import { PageTheme } from '@/lib/properties';
 
 type PrivateUser = {
   id: string;
@@ -22,11 +24,10 @@ async function getUsers() {
 export function AdminUsersTab() {
   const [users, setUsers] = useState<PrivateUser[]>([]);
   const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
   const [busyId, setBusyId] = useState('');
   const [isInviting, setIsInviting] = useState(false);
   const [userToDelete, setUserToDelete] = useState<PrivateUser | null>(null);
+  const [toast, setToast] = useState<{ message: string; tone: StatusToastTone; surface?: PageTheme } | null>(null);
 
   const refreshUsers = useCallback(async () => {
     setUsers(await getUsers());
@@ -40,7 +41,7 @@ export function AdminUsersTab() {
       })
       .catch((loadError: unknown) => {
         if (active) {
-          setError(loadError instanceof Error ? loadError.message : 'No se pudieron cargar los usuarios.');
+          setToast({ message: loadError instanceof Error ? loadError.message : 'No se pudieron cargar los usuarios.', tone: 'error' });
         }
       });
     return () => {
@@ -51,8 +52,6 @@ export function AdminUsersTab() {
   const handleInvite = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsInviting(true);
-    setMessage('');
-    setError('');
     try {
       const response = await fetch('/api/private/users', {
         method: 'POST',
@@ -62,10 +61,10 @@ export function AdminUsersTab() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'No se pudo enviar la invitación.');
       setEmail('');
-      setMessage(data.message || 'Invitación enviada.');
+      setToast({ message: data.message || 'Invitación enviada.', tone: 'success' });
       await refreshUsers();
     } catch (inviteError) {
-      setError(inviteError instanceof Error ? inviteError.message : 'No se pudo enviar la invitación.');
+      setToast({ message: inviteError instanceof Error ? inviteError.message : 'No se pudo enviar la invitación.', tone: 'error' });
     } finally {
       setIsInviting(false);
     }
@@ -73,8 +72,6 @@ export function AdminUsersTab() {
 
   const handleAdminChange = async (user: PrivateUser) => {
     setBusyId(user.id);
-    setMessage('');
-    setError('');
     try {
       const response = await fetch('/api/private/users', {
         method: 'PATCH',
@@ -83,10 +80,10 @@ export function AdminUsersTab() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'No se pudieron actualizar los permisos.');
-      setMessage(data.message);
+      setToast({ message: data.message, tone: 'success' });
       await refreshUsers();
     } catch (updateError) {
-      setError(updateError instanceof Error ? updateError.message : 'No se pudieron actualizar los permisos.');
+      setToast({ message: updateError instanceof Error ? updateError.message : 'No se pudieron actualizar los permisos.', tone: 'error' });
     } finally {
       setBusyId('');
     }
@@ -97,8 +94,6 @@ export function AdminUsersTab() {
       ? user.notifications | flag
       : user.notifications & ~flag;
     setBusyId(user.id);
-    setMessage('');
-    setError('');
     try {
       const response = await fetch('/api/private/users', {
         method: 'PATCH',
@@ -107,10 +102,10 @@ export function AdminUsersTab() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'No se pudieron actualizar las notificaciones.');
-      setMessage(data.message);
+      setToast({ message: data.message, tone: 'success' });
       await refreshUsers();
     } catch (updateError) {
-      setError(updateError instanceof Error ? updateError.message : 'No se pudieron actualizar las notificaciones.');
+      setToast({ message: updateError instanceof Error ? updateError.message : 'No se pudieron actualizar las notificaciones.', tone: 'error' });
     } finally {
       setBusyId('');
     }
@@ -123,8 +118,6 @@ export function AdminUsersTab() {
     }
 
     setBusyId(user.id);
-    setMessage('');
-    setError('');
     try {
       const response = await fetch('/api/private/users', {
         method: 'DELETE',
@@ -133,12 +126,12 @@ export function AdminUsersTab() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'No se pudo eliminar el usuario.');
-      setMessage(data.message);
+      setToast({ message: data.message, tone: 'success' });
       setUserToDelete(null);
       await refreshUsers();
     } catch (deleteError) {
       setUserToDelete(null);
-      setError(deleteError instanceof Error ? deleteError.message : 'No se pudo eliminar el usuario.');
+      setToast({ message: deleteError instanceof Error ? deleteError.message : 'No se pudo eliminar el usuario.', tone: 'error' });
     } finally {
       setBusyId('');
     }
@@ -146,90 +139,86 @@ export function AdminUsersTab() {
 
   return (
     <div className="private-tab-panel private-users-panel">
-      <header className="private-users-heading">
-        <div>
-          <h2>Gestión de usuarios</h2>
-          <p>Invita por correo y administra el acceso al área privada.</p>
+      <section className="private-request-section">
+        <h2>Gestión de usuarios</h2>
+        <p className="event-management-intro">
+          Invita por correo y administra el acceso al área privada.
+        </p>
+
+        <form className="private-user-invite-form" onSubmit={handleInvite}>
+          <label htmlFor="private-invite-email">Correo electrónico</label>
+          <input
+            id="private-invite-email"
+            type="email"
+            autoComplete="email"
+            maxLength={254}
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            required
+          />
+          <button type="submit" className="private-gold-button" disabled={isInviting}>
+            {isInviting ? 'Enviando...' : 'Enviar invitación'}
+          </button>
+        </form>
+
+        <div className="private-users-list">
+          {users.map((user) => (
+            <article className="private-user-row" key={user.id}>
+              <div>
+                <strong>{user.email || '(sin correo)'}</strong>
+                <p>
+                  <span className={`${user.isAdmin ? 'private-user-role-admin' : ''}`}>
+                    {user.isAdmin ? 'Administrador' : 'Usuario'}
+                  </span>
+                  <span> {' · '} </span>
+                  <span className={`${user.passwordSet ? 'private-user-status-active' : ''}`}>
+                    {user.passwordSet ? 'Acceso activado' : 'Invitación pendiente'}
+                  </span>
+                </p>
+              </div>
+              <div>
+                <fieldset className="private-user-notifications" disabled={Boolean(busyId)}>
+                  <legend>Notificaciones por correo</legend>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={(user.notifications & 1) === 1}
+                      onChange={(event) => void handleNotificationChange(user, 1, event.target.checked)}
+                    />
+                    Solicitudes de producción
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={(user.notifications & 2) === 2}
+                      onChange={(event) => void handleNotificationChange(user, 2, event.target.checked)}
+                    />
+                    Solicitudes de boda
+                  </label>
+                </fieldset>
+              </div>
+              <div className="private-user-actions">
+                <button
+                  type="button"
+                  className="private-gold-button"
+                  onClick={() => void handleAdminChange(user)}
+                  disabled={Boolean(busyId) || !user.passwordSet}
+                >
+                  {busyId === user.id ? 'Guardando...' : user.isAdmin ? 'Quitar admin' : 'Hacer admin'}
+                </button>
+                <button
+                  type="button"
+                  className="private-discard-button"
+                  onClick={() => void handleDelete(user)}
+                  disabled={Boolean(busyId)}
+                >
+                  {busyId === user.id ? 'Guardando...' : 'Eliminar'}
+                </button>
+              </div>
+            </article>
+          ))}
+          {users.length === 0 && <p className="private-empty-state">No hay usuarios que mostrar.</p>}
         </div>
-      </header>
-
-      <form className="private-user-invite-form" onSubmit={handleInvite}>
-        <label htmlFor="private-invite-email">Correo electrónico</label>
-        <input
-          id="private-invite-email"
-          type="email"
-          autoComplete="email"
-          maxLength={254}
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          required
-        />
-        <button type="submit" className="private-gold-button" disabled={isInviting}>
-          {isInviting ? 'Enviando...' : 'Enviar invitación'}
-        </button>
-      </form>
-
-      {message && <p className="private-users-message" role="status">{message}</p>}
-      {error && <p className="private-error-message" role="alert">{error}</p>}
-
-      <div className="private-users-list">
-        {users.map((user) => (
-          <article className="private-user-row" key={user.id}>
-            <div>
-              <strong>{user.email || '(sin correo)'}</strong>
-              <p>
-                <span className={`${user.isAdmin ? 'private-user-role-admin' : ''}`}>
-                  {user.isAdmin ? 'Administrador' : 'Usuario'}
-                </span>
-                <span> {' · '} </span>
-                <span className={`${user.passwordSet ? 'private-user-status-active' : ''}`}>
-                  {user.passwordSet ? 'Acceso activado' : 'Invitación pendiente'}
-                </span>
-              </p>
-            </div>
-            <div>
-              <fieldset className="private-user-notifications" disabled={Boolean(busyId)}>
-                <legend>Notificaciones por correo</legend>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={(user.notifications & 1) === 1}
-                    onChange={(event) => void handleNotificationChange(user, 1, event.target.checked)}
-                  />
-                  Solicitudes de producción
-                </label>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={(user.notifications & 2) === 2}
-                    onChange={(event) => void handleNotificationChange(user, 2, event.target.checked)}
-                  />
-                  Solicitudes de boda
-                </label>
-              </fieldset>
-            </div>
-            <div className="private-user-actions">
-              <button
-                type="button"
-                className="private-gold-button"
-                onClick={() => void handleAdminChange(user)}
-                disabled={Boolean(busyId) || !user.passwordSet}
-              >
-                {busyId === user.id ? 'Guardando...' : user.isAdmin ? 'Quitar admin' : 'Hacer admin'}
-              </button>
-              <button
-                type="button"
-                className="private-discard-button"
-                onClick={() => void handleDelete(user)}
-                disabled={Boolean(busyId)}
-              >
-                {busyId === user.id ? 'Guardando...' : 'Eliminar'}
-              </button>
-            </div>
-          </article>
-        ))}
-        {users.length === 0 && !error && <p className="private-empty-state">No hay usuarios que mostrar.</p>}
-      </div>
         {userToDelete && (
           <ConfirmationDialog
             title="Eliminar usuario"
@@ -241,6 +230,8 @@ export function AdminUsersTab() {
             onConfirm={() => void handleDelete(userToDelete, true)}
           />
         )}
+        <StatusToast message={toast?.message || ''} tone={toast?.tone || 'success'} surface={toast?.surface} onDismiss={() => setToast(null)} />
+      </section>
     </div>
   );
 }
