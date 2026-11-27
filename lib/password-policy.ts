@@ -116,7 +116,7 @@ const isForbiddenCp = (cp: number) => inRanges(cp, FORBIDDEN_RANGES);
 
 const isAllowedSymbol = (char: string) => ALLOWED_SYMBOLS.indexOf(char) !== -1;
 
-export type PasswordCheckId = 'length' | 'upper' | 'lower' | 'special' | 'confirm';
+export type PasswordCheckId = 'length' | 'upper' | 'lower' | 'digit' | 'special' | 'confirm';
 
 export type PasswordCheck = {
   id: PasswordCheckId;
@@ -141,11 +141,31 @@ export type PasswordAssessment = {
   length: number;
 };
 
-const REQUIRED: Omit<PasswordCheck, 'ok'>[] = [
-  { id: 'length', label: `Al menos ${PASSWORD_MIN} caracteres`, required: true },
-  { id: 'upper', label: 'Al menos una mayúscula', required: true },
-  { id: 'lower', label: 'Al menos una minúscula', required: true },
-  { id: 'special', label: 'Al menos un símbolo', required: true },
+type PasswordSignals = {
+  length: number;
+  hasUpper: boolean;
+  hasLower: boolean;
+  hasDigit: boolean;
+  hasSymbol: boolean;
+};
+
+/**
+ * Reglas obligatorias. Cada una trae su propio predicado a propósito: con una
+ * lista de id's + un `switch` para evaluarlos, añadir 'digit' y olvidarse del
+ * `case` dejaba la comprobación en `false` para SIEMPRE (contraseña imposible de
+ * aceptar, y eso solo se ve en producción). Aquí es imposible: si hay regla,
+ * hay test, y el tipo obliga.
+ */
+const REQUIRED: { id: PasswordCheckId; label: string; test: (s: PasswordSignals) => boolean }[] = [
+  {
+    id: 'length',
+    label: `Al menos ${PASSWORD_MIN} caracteres`,
+    test: (s) => s.length >= PASSWORD_MIN && s.length <= PASSWORD_MAX,
+  },
+  { id: 'upper', label: 'Al menos una mayúscula', test: (s) => s.hasUpper },
+  { id: 'lower', label: 'Al menos una minúscula', test: (s) => s.hasLower },
+  { id: 'digit', label: 'Al menos un número', test: (s) => s.hasDigit },
+  { id: 'special', label: 'Al menos un símbolo', test: (s) => s.hasSymbol },
 ];
 
 /** Mayor repetición de un mismo carácter, en unidades UTF-16 (basta para detectar 'aaa'). */
@@ -258,31 +278,14 @@ export function assessPassword(raw: string, confirm?: string): PasswordAssessmen
     problems.push('Esa contraseña es demasiado previsible; usa una frase distinta.');
   }
 
-  const checks: PasswordCheck[] = [];
+  const signals: PasswordSignals = { length, hasUpper, hasLower, hasDigit, hasSymbol };
 
-  for (let index = 0; index < REQUIRED.length; index += 1) {
-    const check = REQUIRED[index];
-    let ok = false;
-
-    switch (check.id) {
-      case 'length':
-        ok = length >= PASSWORD_MIN && length <= PASSWORD_MAX;
-        break;
-      case 'upper':
-        ok = hasUpper;
-        break;
-      case 'lower':
-        ok = hasLower;
-        break;
-      case 'special':
-        ok = hasSymbol;
-        break;
-      default:
-        ok = false;
-    }
-
-    checks.push({ id: check.id, label: check.label, required: check.required, ok });
-  }
+  const checks: PasswordCheck[] = REQUIRED.map((rule) => ({
+    id: rule.id,
+    label: rule.label,
+    required: true,
+    ok: rule.test(signals),
+  }));
 
   if (typeof confirm === 'string') {
     checks.push({
@@ -314,7 +317,10 @@ export function assessPassword(raw: string, confirm?: string): PasswordAssessmen
 
   if (hasUpper && hasLower) score += 12;
   if (hasSymbol) score += 10;
-  if (hasDigit) score += 5;
+  // OJO: antes había un `+5` por tener dígito. Al pasar el dígito a obligatorio,
+  // ese bonus se lo lleva todo el mundo y la escala entera subía 5 puntos (fair se
+  // leía como good sin ser mejor contraseña). El peso se lo lleva la longitud.
+  if (length >= 14) score += 5;
 
   const diversity = length > 0 ? distinct / length : 0;
   if (diversity >= 0.75) score += 10;
@@ -327,6 +333,12 @@ export function assessPassword(raw: string, confirm?: string): PasswordAssessmen
   else if (run >= 4) score -= 8;
 
   if (hasSpace && length >= 15) score += 8;
+
+  // Con el dígito obligatorio, la salida fácil es pegar un año al final
+  // ('Caballo#2026'). No se rechaza —sería fricción sin ganar casi nada—, pero
+  // la barra lo refleja, que es para lo que sirve la barra.
+  if (/(19|20)[0-9]{2}$/.test(value)) score -= 4;
+  if (/[0-9]{1,3}$/.test(value) && length <= 10) score -= 3;
 
   score = Math.max(0, Math.min(100, score));
 

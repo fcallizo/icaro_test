@@ -209,7 +209,7 @@ export function WorksGallery({ kind, isCompact }: WorksGalleryProps) {
                 )}
                 <div className="works-project-overlay">
                   <strong>{modifyCardName(folder.name)}</strong>
-                  <small>Ver fotografías</small>
+                  <small>Ver Albúm</small>
                 </div>
               </button>
             ))}
