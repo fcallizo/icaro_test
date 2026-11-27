@@ -535,24 +535,13 @@ span.nav-label>a {
   }
 }
 
+.flicker-anim {
+  animation: flicker 5s ease-in-out infinite alternate;
+}
+
 @keyframes flicker {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  40% {
-    opacity: 0.85;
-  }
-
-  60% {
-    opacity: 1;
-  }
-
-  80% {
-    opacity: 0.9;
-  }
+  0%, 60%, 100% { opacity: 1; }
+  40%, 80% { opacity: 0.65; }
 }
 
 .intro-title {
@@ -2140,6 +2129,10 @@ input[type="time"] {
 .dot.active {
   background: var(--gold);
 }
+
+.nf { display: grid; place-items: center; min-height: 100dvh; padding: 2rem 1.25rem; text-align: center; }
+.nf__inner { display: grid; justify-items: center; gap: 1rem; max-width: 32rem; }
+.nf__actions { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; }
 
 @media (max-width: 1000px) {
   .main-nav {
