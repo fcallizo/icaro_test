@@ -5,21 +5,20 @@ import Link from 'next/link';
 import { LEVEL_LABEL, PASSWORD_MAX, PASSWORD_MIN, assessPassword } from '@/lib/password-policy';
 import { StatusToast, StatusToastTone } from '../common/StatusToast';
 import { PageTheme } from '@/lib/properties';
+import PasswordField from '../common/PasswordField';
 
 export function SetPrivatePasswordForm({ token }: { token: string }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [toast, setToast] = useState<{ message: string; tone: StatusToastTone; surface?: PageTheme } | null>(null);
   const [retryAfter, setRetryAfter] = useState(0);
   const [touchedConfirm, setTouchedConfirm] = useState(false);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   const uid = useId();
   const mainId = `${uid}-password`;
-  const confirmId = `${uid}-confirm`;
   const hintId = `${uid}-hint`;
   const messageRef = useRef<HTMLParagraphElement>(null);
 
@@ -107,72 +106,34 @@ export function SetPrivatePasswordForm({ token }: { token: string }) {
         <h1>Crear contraseña</h1>
         {token ? (
           <form className="private-login-form" onSubmit={handleSubmit} noValidate>
-            <div className="ppw-field">
-              <label htmlFor={mainId}>Contraseña</label>
-              <input
-                id={mainId}
-                className="ppw-input"
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                autoComplete="new-password"
-                aria-describedby={locked ? undefined : hintId}
-                minLength={PASSWORD_MIN}
-                maxLength={PASSWORD_MAX}
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                onBlur={() => setTouchedConfirm(true)}
-                disabled={locked}
-                required
-                spellCheck={false}
-                autoCapitalize="none"
-                autoCorrect="off"
-              />
-              {!locked && (
-                <button
-                  type="button"
-                  className="ppw-eye"
-                  onClick={() => setShowPassword((current) => !current)}
-                  aria-pressed={showPassword}
-                  aria-controls={mainId}
-                  aria-label={showPassword ? 'Ocultar la contraseña' : 'Mostrar la contraseña'}
-                >
-                  <EyeIcon visible={showPassword} />
-                </button>
-              )}
-            </div>
+            <PasswordField
+              label="Contraseña"
+              name="password"
+              value={password}
+              onChange={setPassword}
+              autoComplete="new-password"
+              inputRef={passwordRef}
+              describedBy={locked ? undefined : hintId}
+              minLength={PASSWORD_MIN}
+              maxLength={PASSWORD_MAX}
+              disabled={locked}
+              required
+              onBlur={() => setTouchedConfirm(true)}
+            />
 
-            <div className="ppw-field">
-              <label htmlFor={confirmId}>Confirmar contraseña</label>
-              <input
-                id={confirmId}
-                className="ppw-input"
-                type={showConfirm ? 'text' : 'password'}
-                name="password-confirm"
-                autoComplete="new-password"
-                minLength={PASSWORD_MIN}
-                maxLength={PASSWORD_MAX}
-                value={confirmPassword}
-                onChange={(event) => setConfirmPassword(event.target.value)}
-                onBlur={() => setTouchedConfirm(true)}
-                disabled={locked}
-                required
-                spellCheck={false}
-                autoCapitalize="none"
-                autoCorrect="off"
-              />
-              {!locked && (
-                <button
-                  type="button"
-                  className="ppw-eye"
-                  onClick={() => setShowConfirm((current) => !current)}
-                  aria-pressed={showConfirm}
-                  aria-controls={confirmId}
-                  aria-label={showConfirm ? 'Ocultar la confirmación' : 'Mostrar la confirmación'}
-                >
-                  <EyeIcon visible={showConfirm} />
-                </button>
-              )}
-            </div>
+            <PasswordField
+              label="Confirmar contraseña"
+              name="password-confirm"
+              value={confirmPassword}
+              onChange={setConfirmPassword}
+              autoComplete="new-password"
+              toggleLabels={{ show: 'Mostrar la confirmación', hide: 'Ocultar la confirmación' }}
+              minLength={PASSWORD_MIN}
+              maxLength={PASSWORD_MAX}
+              disabled={locked}
+              required
+              onBlur={() => setTouchedConfirm(true)}
+            />
 
             {confirmMismatch && (<p className="ppw-inline-error" role="alert"> Las contraseñas no coinciden. </p>)}
 

@@ -15,6 +15,7 @@ import { DEFAULT_WEDDING_PRICES, WeddingPrices } from '@/lib/wedding-form';
 import { AdminUsersTab } from '@/components/private/tabs/AdminUsersTab';
 import { ConfirmationDialog } from '@/components/private/ConfirmationDialog';
 import { eventTypeLabel, RUTA_LOGO_ALAS } from '@/lib/properties';
+import PasswordField from '../common/PasswordField';
 
 async function getPrivateRequests() {
   const response = await fetch('/api/private/requests', { cache: 'no-store' });
@@ -98,6 +99,7 @@ export function PrivateArea() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
   const [toast, setToast] = useState<{ message: string; tone: StatusToastTone } | null>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
   const [confirmation, setConfirmation] = useState<{
     message: string;
     onConfirm: () => void;
@@ -642,8 +644,15 @@ export function PrivateArea() {
             <form className="private-login-form" onSubmit={handleLogin}>
               <label htmlFor="private-email">Correo electrónico</label>
               <input id="private-email" name="email" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} required />
-              <label htmlFor="private-password">Contraseña</label>
-              <input id="private-password" name="password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required />
+              <PasswordField
+                label="Contraseña"
+                name="password"
+                value={password}
+                onChange={setPassword}
+                autoComplete="current-password"
+                inputRef={passwordRef}
+                required
+              />
               <button type="submit" className="private-gold-button" disabled={isSubmitting || setupRequired || !sessionReady}>
                 {isSubmitting ? 'Validando...' : 'Acceder'}
               </button>
