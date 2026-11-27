@@ -7,6 +7,7 @@
 @import "./styles/settings.css";
 @import "./styles/equipo.css";
 @import "./styles/wedding-extras.css";
+@import "./styles/password-policy.css";
 
 :root {
   --font-size-caption: 0.8125rem;
